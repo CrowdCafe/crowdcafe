@@ -7,7 +7,6 @@ from datetime import datetime
 from decimal import Decimal
 from datetime import  timedelta
 
-#from pyuploadcare.dj import FileField
 
 STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'),)
 CATEGORY_CHOISE = (('CF', 'Caffè'), ('CP', 'Cappuccino'), ('WN', 'Wine'),)
