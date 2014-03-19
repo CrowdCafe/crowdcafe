@@ -1,0 +1,62 @@
+{% extends 'kitchen/kitchen.html'%}
+{%load static%}
+
+{% block kitchen%}
+
+<!-- content-8  -->
+<section class="content-8 v-center">
+	<div>
+		<div class="container">
+			<form method='POST' action='{% url 'kitchen-task-save' %}' enctype="multipart/form-data">
+				{% csrf_token %}
+				<div class="row">
+					<div class="span3">
+						<p class='lead'>Dataset</p>
+						<p class=''>.csv file</p>
+						<label class="uploadbutton">
+							<div class="btn" >Upload</div>
+							<p>pick a .csv file</p>
+							<input type="file" name='file' onchange="this.previousSibling.previousSibling.innerHTML = this.value"/>
+						</label>
+					</div>
+					<div class="span3">
+						<p class='lead'>UI Template</p>
+						<p class=''>Your workers will interact with it</p>
+						<select name="task_uitemplate" class='select' value="0" class="select-block span3" style="display: none;">
+							<option value="0">Pair comparison</option>
+							<option value="1">Sentiment analysis</option>
+							<option value="2">Subset selection</option>
+						</select>
+					</div>
+					<div class="span3">
+						<p class='lead'>Category</p>
+						<p class=''>Don't cheat ;)</p>
+						<select name="task_category" class='select' value="0" class="select-block span3" style="display: none;">
+							<option value="0">Caffè (0.03&cent; / 10sec)</option>
+							<option value="1">Cappuccino (0.33&cent; / 2min)</option>
+							<option value="2">Wine (custom)</option>
+						</select>
+					</div>
+					<div class="span3">
+						<p class='lead'>Instructions</p>
+						<p class=''>Be short and straight forward</p>
+						<input type='text' name='task_title' placeholder='Click image containing animals'>
+					</div>
+				</div>
+				<div class='row'>
+					<hr/>
+				</div>
+				<div class='row'>
+					<div class="span12">
+						<p class='center'> <input type = 'submit' class='btn btn-primary' value='Save The Task'></p>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>
+{% endblock%}
+
+{% block scripts%}
+
+{% endblock%}

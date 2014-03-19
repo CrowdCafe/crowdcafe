@@ -1,0 +1,46 @@
+{% extends 'kitchen/kitchen.html'%}
+{%load static%}
+
+{% block kitchen%}
+<!-- content-8  -->
+<section class="content-8 v-center">
+	<div>
+		<div class="container">
+			<div class="row">
+				<div class="span12">
+					<p class='lead'>Tasks <a class='btn btn-primary' href='{% url 'kitchen-task-new'%}'>Create new</a></p>
+				</div>
+
+			</div>
+			{% for task in tasks%}
+			<div class="row">
+				<div class="span1">
+					#{{task.id}}
+				</div>
+				<div class="span4">
+					<strong>{{task.title}}</strong>
+				</div>
+				<div class="span2">
+					{% if task.dataset_file%}
+					<a href='{{task.dataset_file.url}}' target='_blank'>{{task.dataset_file}}</a>
+					{% endif%}
+				</div>
+				<div class="span1">
+					{{task.status}}
+				</div>
+				<div class="span1">
+					{{task.template}}
+				</div>
+				<div class="span1">
+					{{task.category}}
+				</div>
+				<div class="span2">
+					{{task.date_created}}
+				</div>
+			</div>
+			{% endfor%}
+		</div>
+	</div>
+
+</section>
+{% endblock%}

@@ -1,0 +1,7 @@
+.btn{
+	border:2px solid;
+}
+
+label.uploadbutton input {
+	display: none;   
+}

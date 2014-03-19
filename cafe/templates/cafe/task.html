@@ -1,0 +1,47 @@
+{% extends 'cafe/cafe.html'%}
+{%load static%}
+
+{% block cafe%}
+
+<!-- content-8  -->
+<section class="content-8 v-center">
+	<div>
+		<div class="container">
+			<div class="row">
+				<div class="span3">
+					<p class='lead'>Dataset</p>
+					<input type="hidden" role="uploadcare-uploader" />
+				</div>
+				<div class="span3">
+					<p class='lead'>UI Template</p>
+					<select name="task_uitemplate" class='select' value="0" class="select-block span3" style="display: none;">
+						<option value="0">Pair comparison</option>
+						<option value="1">Sentiment analysis</option>
+						<option value="2">Subset selection</option>
+					</select>
+				</div>
+				<div class="span3">
+					<p class='lead'>Category</p>
+					<select name="task_category" class='select' value="0" class="select-block span3" style="display: none;">
+						<option value="0">Caffè (0.03&cent; / 10sec)</option>
+						<option value="1">Cappuccino (0.33&cent; / 2min)</option>
+						<option value="2">Wine (custom)</option>
+					</select>
+				</div>
+				<div class="span3">
+					<p class='lead'>Instructions</p>
+					<input type='text' placeholder='Click image containing animals'>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock%}
+
+{% block scripts%}
+<script>
+UPLOADCARE_AUTOSTORE = true;
+UPLOADCARE_PUBLIC_KEY = "836dedbc4248cfcec9f4";
+</script>
+<script src="//ucarecdn.com/widget/0.18.3/uploadcare/uploadcare-0.18.3.min.js"></script>
+{% endblock%}
