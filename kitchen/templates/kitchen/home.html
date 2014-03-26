@@ -6,39 +6,57 @@
 <section class="content-8 v-center">
 	<div>
 		<div class="container">
+
+
+
 			<div class="row">
 				<div class="span12">
 					<p class='lead'>Tasks <a class='btn btn-primary' href='{% url 'kitchen-task-new'%}'>Create new</a></p>
 				</div>
-
 			</div>
-			{% for task in tasks%}
-			<div class="row">
-				<div class="span1">
-					#{{task.id}}
-				</div>
-				<div class="span4">
-					<strong>{{task.title}}</strong>
-				</div>
-				<div class="span2">
-					{% if task.dataset_file%}
-					<a href='{{task.dataset_file.url}}' target='_blank'>{{task.dataset_file}}</a>
-					{% endif%}
-				</div>
-				<div class="span1">
-					{{task.status}}
-				</div>
-				<div class="span1">
-					{{task.template}}
-				</div>
-				<div class="span1">
-					{{task.category}}
-				</div>
-				<div class="span2">
-					{{task.date_created}}
-				</div>
-			</div>
-			{% endfor%}
+			<table class='table table-hover'>
+				<tbody>
+					{% for task in tasks%}
+					<tr>
+						<td>
+							#{{task.id}}
+						</td>
+						<td>
+							<strong>{{task.title}}</strong>
+						</td>
+						<td>
+							<strong>{{task.description}}</strong>
+						</td>
+						<td>
+							{% if task.dataset_file%}
+							<a href='{{task.dataset_file.url}}' target='_blank'>dataset</a>
+							{% endif%}
+						</td>
+						<td>
+							{% if task.options_file%}
+							<a href='{{task.options_file.url}}' target='_blank'>options</a>
+							{% endif%}
+						</td>
+						<td>
+							{{task.status}}
+						</td>
+						<td>
+							{{task.template}}
+						</td>
+						<td>
+							{{task.category}}
+						</td>
+						<td>
+							{{task.date_created}}
+						</td>
+						<td>
+							<!--a href='#' ><i class="fa fa-pencil-square-o"></i> Edit</a--> |
+							<a href='{% url "kitchen-task-delete" task.id%}' ><i class="fa fa-trash-o"></i> Delete</a>
+						</td>
+					</tr>
+					{% endfor%}
+				</tbody>
+			</table>
 		</div>
 	</div>
 

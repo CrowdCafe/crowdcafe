@@ -3,13 +3,16 @@
     <div>
         <div class="container">
             <div class="hero-unit">
-                <h1>Crowdsourcing Cafe</h1>
+                <h1>CrowdCafe</h1>
                 <p>
                     Mobile crowdsourcing platform<br>for easy and fun tasks execution.
                 </p>
+<br/><br/><br/><br/>
                 <p>
-                    <a href="{% url 'socialauth_begin' 'facebook' %}" class="btn btn-facebook btn-lg btn-facebook-inversed"><i class="fa fa-facebook"></i> Connect with Facebook </a>
-                    <a href="{% url 'socialauth_begin' 'google' %}" class="btn btn-googleplus btn-lg btn-googleplus-inversed"><i class="fa fa-google-plus"></i> Connect with Google+ </a>
+                    <a href="{% url 'socialauth_begin' 'facebook' %}" class="btn btn-facebook-inversed btn-lg"><i class="fa fa-facebook"></i> Connect with Facebook </a>
+                    <a href="{% url 'socialauth_begin' 'google' %}" class="btn btn-googleplus-inversed btn-lg"><i class="fa fa-google-plus"></i> Connect with Google+ </a>
+                    <a href="{% url 'socialauth_begin' 'twitter' %}" class="btn btn-twitter-inversed btn-lg"><i class="fa fa-twitter"></i> Connect with Twitter </a>
+                    <a href="{% url 'socialauth_begin' 'github' %}" class="btn btn-github-inversed btn-lg"><i class="fa fa-github"></i> Connect with Github </a>
                 </p>
             </div>
         </div>

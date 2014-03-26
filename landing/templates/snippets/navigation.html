@@ -8,7 +8,9 @@
 				<div class="nav-collapse collapse pull-right">
 					<ul class="nav">
 						{% if user.is_authenticated %}
-						<li><a href="#">{{user.profile.short_name}}</a></li>
+						<li><a href="{% url 'cafe-tasks-list' %}">API</a></li>
+						<li><a href="{% url 'kitchen-home'%}">Kitchen</a></li>
+						<li><a href="{% url 'kitchen-home'%}">{{user.profile.short_name}}</a></li>
 						<li><a class='muted' href="{% url 'logout'%}">Logout <i class="fa fa-arrow-circle-o-right"></i></a></li>
 						{% endif %}
 					</ul>

@@ -18,3 +18,9 @@ boto>=2.4
 lxml  
 django-model-utils                                         
 django-storages==1.1.8
+scraperwiki
+django-celery
+twython
+django-jsonfield==0.9.4
+jsonify
+django-cors-headers

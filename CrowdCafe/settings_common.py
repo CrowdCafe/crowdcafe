@@ -1,4 +1,7 @@
 # Django settings for CrowdCafe project.
+BROKER_URL = "amqp://guest:guest@localhost:5672//"
+
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -85,6 +88,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -113,6 +117,11 @@ INSTALLED_APPS = (
     'account',
     'kitchen',
     'cafe',
+    'firebase',
+    'djcelery',
+    'jsonify',
+    'rest_framework',
+    'corsheaders',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -160,7 +169,7 @@ AUTHENTICATION_BACKENDS = (
 #    'social_auth.backends.contrib.livejournal.LiveJournalBackend',
 #    'social_auth.backends.contrib.orkut.OrkutBackend',
 #    'social_auth.backends.contrib.foursquare.FoursquareBackend',
-#    'social_auth.backends.contrib.github.GithubBackend',
+    'social_auth.backends.contrib.github.GithubBackend',
 #    'social_auth.backends.contrib.vkontakte.VKontakteBackend',
 #    'social_auth.backends.contrib.live.LiveBackend',
 #    'social_auth.backends.contrib.skyrock.SkyrockBackend',
@@ -169,7 +178,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter','facebook','google')
+SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter','facebook','google','github')
 
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
@@ -182,17 +191,42 @@ SOCIAL_AUTH_PIPELINE = (
     'account.pipes.get_user_addinfo',
 )
 
+REST_FRAMEWORK = {
+# Use hyperlinked styles by default.
+# Only used if the `serializer_class` attribute is not set on a view.
+    'DEFAULT_MODEL_SERIALIZER_CLASS':
+    'rest_framework.serializers.HyperlinkedModelSerializer'
 
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    #]
+}
 #GITHUB_EXTENDED_PERMISSIONS = ['user:email']
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+GITHUB_EXTENDED_PERMISSIONS = ['user:email']
 GOOGLE_EXTENDED_PERMISSIONS = ['email']
 
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_METHODS = (
+        'GET'
+    )
+CORS_ALLOW_HEADERS = (
+        'x-requested-with',
+        'content-type',
+        'accept',
+        'origin',
+        'authorization',
+        'x-csrftoken'
+    )
 #LOGIN_URL='/account/registration/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL = '/error/'
 
 # -----------------------------------------------------------------------------
-DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
+#DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 

@@ -27,18 +27,4 @@ class Profile(models.Model):
             return 'https://facebook.com/'+str(self.user.username.encode('utf-8'))
         else:
             return 'http://www.gravatar.com/' + hashlib.md5(self.user.email.lower()).hexdigest() 
-    
-    @property
-    def avatar(self):
-        if self.logged_in_via_fb:
-            facebook_id=UserSocialAuth.objects.filter(user=self.user,provider='facebook').get().uid
-            return 'https://graph.facebook.com/'+str(facebook_id)+'/picture/'
-        else:
-            email = self.user.email
-            default = settings.DEFAULT_AVATAR
-            size = 40
-            # construct the url
-            gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
-            gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
-            return gravatar_url
 #------------------------

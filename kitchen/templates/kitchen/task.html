@@ -10,47 +10,101 @@
 			<form method='POST' action='{% url 'kitchen-task-save' %}' enctype="multipart/form-data">
 				{% csrf_token %}
 				<div class="row">
-					<div class="span3">
-						<p class='lead'>Dataset</p>
-						<p class=''>.csv file</p>
-						<label class="uploadbutton">
-							<div class="btn" >Upload</div>
-							<p>pick a .csv file</p>
-							<input type="file" name='file' onchange="this.previousSibling.previousSibling.innerHTML = this.value"/>
-						</label>
+					<div class="span4">
+						<p class='lead center'>Check Existing Tasks</p>
+						<iframe width='300px' height="450px" src="http://localhost/Code/Web/CrowdCafe-cafe/"></iframe>
 					</div>
-					<div class="span3">
-						<p class='lead'>UI Template</p>
-						<p class=''>Your workers will interact with it</p>
-						<select name="task_uitemplate" class='select' value="0" class="select-block span3" style="display: none;">
-							<option value="0">Pair comparison</option>
-							<option value="1">Sentiment analysis</option>
-							<option value="2">Subset selection</option>
-						</select>
+					<div class='span8'>
+						<div class="row">
+							<div class="span4">
+								<p class='lead'>Title</p>
+								<input type='text' name='task_title' placeholder='Sentiment Analysis'>
+							</div>
+							<div class="span4">
+								<p class='lead'>Instructions</p>
+								<input type='text' name='task_description' placeholder='Swipe each tweet and pick a sentiment'>
+							</div>
+						</div>
+						<!--div class='row'>
+							<div class="span4">
+								<p class='lead'>Category</p>
+								<label class="radio">
+									<input type="radio" name="task_category" id="optionsRadios2" value="CF" data-toggle="radio" checked="checked">
+									Caffè (0.03&cent; / 10sec)
+								</label>
+
+								<label class="radio">
+									<input type="radio" name="task_categoryDisabled" id="optionsRadios3" value="CP" data-toggle="radio" disabled="">
+									Soon Cappuccino (0.33&cent; / 2min)
+								</label>
+								<label class="radio">
+									<input type="radio" name="task_categoryDisabled" id="optionsRadios4" value="WN" data-toggle="radio" disabled="">
+									Soon Wine (custom)
+								</label>
+							</div>
+
+							<div class="span4">
+								<p class='lead'>UI Template</p>
+								<label class="radio">
+									<input type="radio" name="task_uitemplate" id="optionsRadios2" value="SR" data-toggle="radio" checked="checked">
+									Swiping rows
+								</label>
+
+								<label class="radio">
+									<input type="radio" name="task_uitemplateDisabled" id="optionsRadios3" value="PC" data-toggle="radio" disabled="">
+									Soon Pair comparison
+								</label>
+								<label class="radio">
+									<input type="radio" name="task_uitemplateDisabled" id="optionsRadios4" value="SS" data-toggle="radio" disabled="">
+									Soon Subset selection
+								</label>
+							</div>
+						</div-->
+						<div class="row">
+							<div class="span4">
+								<p class='lead'>Dataset</p>
+								<label class="uploadbutton">
+									<div class="btn" >Upload</div>
+									<p><a href = '{% static "files/dataset_template.csv" %}' target='_blank'>dataset template</a></p>
+									<input type="file" name='dataset' onchange="this.previousSibling.previousSibling.innerHTML = this.value"/>
+								</label>
+							</div>
+							<div class="span4">
+								<p class='lead'>Feed</p>
+								<input  class='block'  type='text' style='float:left;margin-top:2px;width: 50px;text-align: center;padding-right: 15px;' name='feed_amount' value='20' >
+								<input type='text' class='block' name='feed_handler' style='float: left;width: 100px;margin-top: 2px;' placeholder='#trento'>
+								<select name="feed-type" value="0" class=" span2">
+									<option value="0" selected>Twitter</option>
+									<option value="1" >Facebook</option>
+									<option value="2" >Instagram</option>
+								</select>
+							</div>
+						</div>
+						<div class="row">
+							<div class="span2 offset1">
+								<span class=''>Data items/instance:</span> <input  class='block'  type='text' style='width: 50px;text-align: center;padding-right: 15px;' name='dataitems_per_instance' value='5' >
+							</div>
+							<div class="span2">
+								<span class=''>Min answers/data item:</span>
+								<input type='text' style='width: 50px;text-align: center;padding-right: 15px;'  name='min_answers_per_item' value='1' >
+
+							</div>
+							<div class="span2">
+								<span class=''>Min confidence, %:</span>
+								<input type='text' style='width: 50px;text-align: center;padding-right: 15px;'   name='min_confidence' value='50' >
+							</div>
+						</div>
+						<div class='row'>
+							<hr/>
+						</div>
+						<div class='row'>
+							<div class="span8">
+								<p class='center'> <input type = 'submit' class='btn btn-primary' value='Save The Task'></p>
+							</div>
+						</div>
 					</div>
-					<div class="span3">
-						<p class='lead'>Category</p>
-						<p class=''>Don't cheat ;)</p>
-						<select name="task_category" class='select' value="0" class="select-block span3" style="display: none;">
-							<option value="0">Caffè (0.03&cent; / 10sec)</option>
-							<option value="1">Cappuccino (0.33&cent; / 2min)</option>
-							<option value="2">Wine (custom)</option>
-						</select>
-					</div>
-					<div class="span3">
-						<p class='lead'>Instructions</p>
-						<p class=''>Be short and straight forward</p>
-						<input type='text' name='task_title' placeholder='Click image containing animals'>
-					</div>
-				</div>
-				<div class='row'>
-					<hr/>
-				</div>
-				<div class='row'>
-					<div class="span12">
-						<p class='center'> <input type = 'submit' class='btn btn-primary' value='Save The Task'></p>
-					</div>
-				</div>
+				</div>						
+
 			</form>
 		</div>
 	</div>
