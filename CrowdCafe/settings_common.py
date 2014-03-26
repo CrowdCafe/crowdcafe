@@ -118,8 +118,6 @@ INSTALLED_APPS = (
     'kitchen',
     'cafe',
     'firebase',
-    'djcelery',
-    'jsonify',
     'rest_framework',
     'corsheaders',
     # Uncomment the next line to enable the admin:
