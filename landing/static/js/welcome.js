@@ -44,9 +44,11 @@ function fadedEls(el, shift) {
         });
 
         // Faded elements
-        fadedEls($('.content-7'), 300);
-        fadedEls($('.content-8'), 300);
-        fadedEls($('.price-1'), 300);
+        fadedEls($('.welcome-block-categories'), 300);
+        fadedEls($('.welcome-block-contexts'), 300);
+        fadedEls($('.welcome-block-opensource'), 300);
+        fadedEls($('.welcome-block-philosophy'), 300);
+        fadedEls($('.welcome-block-rewards'), 300);
 
         // Ani screen
         (function(el) {

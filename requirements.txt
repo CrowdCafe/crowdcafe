@@ -2,7 +2,7 @@ Django==1.5.1
 MySQL-python
 Markdown
 PyYAML
-django-social-auth
+django-social-auth==0.7.7
 django-filter
 httplib2
 oauth2
@@ -11,7 +11,6 @@ wsgiref
 requests
 djangorestframework
 djrill==0.7.0
-django-jsonify
 django-gravatar==0.1.0
 boto>=2.4  
 lxml  
@@ -21,5 +20,4 @@ scraperwiki
 django-celery
 twython
 django-jsonfield==0.9.4
-jsonify
 django-cors-headers
