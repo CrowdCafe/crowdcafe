@@ -9,19 +9,18 @@ from decimal import Decimal
 from datetime import  timedelta
 
 
-
 STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'),)
 CATEGORY_CHOISE = (('CF', 'Caffè'), ('CP', 'Cappuccino'), ('WN', 'Wine'),)
 TEMPLATE_CHOISE = (('PC', 'Pair comparison'), ('SR', 'Swiping rows'), ('SS', 'Subset selection'),)
 
 class Task(models.Model):
     owner = models.ForeignKey(User)
-    title = models.CharField(max_length=200, default='New task')
-    description = models.CharField(max_length=1000, default='***')
+    title = models.CharField(max_length=255, default='New task')
+    description = models.CharField(max_length=1024, default='***')
 
     category = models.CharField(max_length=2, choices=CATEGORY_CHOISE, default='CF', blank=True)
     template = models.CharField(max_length=2, choices=TEMPLATE_CHOISE, default='PR', blank=True)
-    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='ST', blank=True)
+    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='ST')
 
     dataset_file = models.FileField(upload_to='datasets',blank = True)
     options_file = models.FileField(upload_to='options',blank = True)

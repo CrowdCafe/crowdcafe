@@ -1,0 +1,65 @@
+{% extends 'rewards/rewards.html'%}
+{%load static%}
+
+{% block rewards%}
+<!-- content-8  -->
+<section class="content-7 v-center">
+	<div>
+		<div class="container">
+			<div class="row">
+				<h3><img src='{% static "Developer/flat-ui/images/icons/Gift-Box@2x.png" %}'>
+				</h3>
+				{% if request.user.is_superuser %}
+				<p>
+					<a class='btn btn-primary' href='{% url 'rewards-vendor-new'%}'><i class="fa fa-plus"></i> vendor</a>
+				</p>
+				{% endif%}
+			</div>
+		</div>
+
+
+
+
+		{% for vendor in vendors%}
+		<!-- content-7  -->
+
+		<div class="container">
+			<h3>{{vendor.title}}{% if request.user.is_superuser %}
+				<a href = '{% url "rewards-vendor-reward-new" vendor.id %}'><i class="fa fa-plus"></i></a>
+				{% endif%}</h3>
+				<div class="row v-center">
+					<div class="span3">                            
+						<div class="span3">
+							{{vendor.description}}
+							<p>
+								<a href="{{vendor.website_url}}" target="_blank">website</a>
+							</p>
+							<p>
+								<a href="{{vendor.website_url}}" target="_blank">{{vendor.address}}</a>
+							</p>
+						</div>
+					</div>
+					<div class="span4">                           
+						<div class="span4 offset1">
+
+							<img src="{{vendor.image_url}}" alt="">
+
+						</div>
+					</div>
+					<div class="span3">                            
+						<div class="span3 offset1">
+							{% for reward in vendor.rewards%}
+							<h6>{{reward.title}} for {{reward.cost}}&euro; {% if request.user.is_superuser %} <a href = '{% url "rewards-vendor-reward-instances" reward.id %}'>instances</a> {% endif%}</h6>
+							<p>{{reward.description}}</p>
+							{{reward.image_url}}
+
+							{% endfor%}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{% endfor%}
+		</div>
+	</section>
+	{% endblock%}

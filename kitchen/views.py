@@ -82,9 +82,6 @@ def TaskSave(request):
 		if 'options' in request.FILES:
 			new_task.options_file.save(str(new_task.id)+request.FILES['options'].name, request.FILES['options'])
 			new_task.save()
-
-			# Save options to Firebase
-			# fromCSVToFirebase(new_task.options_file.url,r['name'],'options')
 			#----------------------------------
 	if len(dataset)>0:
 		createTaskInstances(new_task,dataset)

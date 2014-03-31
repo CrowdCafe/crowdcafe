@@ -1,5 +1,6 @@
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render_to_response, redirect, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets
 from rest_framework.views import APIView
@@ -9,9 +10,15 @@ from rest_framework.decorators import api_view,renderer_classes
 from rest_framework.renderers import JSONRenderer, YAMLRenderer, JSONPRenderer
 
 
-from kitchen.models import Task, TaskInstance, DataItem
-from serializers import TaskSerializer,TaskInstanceSerializer
 
+from kitchen.models import Task, TaskInstance, DataItem
+from serializers import TaskSerializer,TaskInstanceSerializer, UserSerializer
+
+@api_view(['GET'])
+@login_required
+def getUser(request):
+	serializer = UserSerializer(request.user)
+	return Response(serializer.data)
 
 @api_view(['GET'])
 def getTasks(request):
