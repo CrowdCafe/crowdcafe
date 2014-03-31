@@ -7,7 +7,7 @@
 	<div>
 		<div class="container">
 			<div class="row">
-				<h3><img src='{% static "Developer/flat-ui/images/icons/Gift-Box@2x.png" %}'>
+				<h3><img src='{% static "Developer/flat-ui/images/icons/Gift-Box@2x.png" %}' width="100">
 				</h3>
 				{% if request.user.is_superuser %}
 				<p>
@@ -35,7 +35,7 @@
 								<a href="{{vendor.website_url}}" target="_blank">website</a>
 							</p>
 							<p>
-								<a href="{{vendor.website_url}}" target="_blank">{{vendor.address}}</a>
+								<a href="https://www.google.com/maps/place/{{vendor.address}}/" target="_blank">{{vendor.address}}</a>
 							</p>
 						</div>
 					</div>
@@ -51,7 +51,7 @@
 							{% for reward in vendor.rewards%}
 							<h6>{{reward.title}} for {{reward.cost}}&euro; {% if request.user.is_superuser %} <a href = '{% url "rewards-vendor-reward-instances" reward.id %}'>instances</a> {% endif%}</h6>
 							<p>{{reward.description}}</p>
-							{{reward.image_url}}
+							<p>Available: {{reward.amount_available}}</p>
 
 							{% endfor%}
 						</div>

@@ -33,6 +33,10 @@ class Reward(models.Model):
 	
 	owner = models.ForeignKey(User)
 	cost = models.FloatField()
+	@property
+	def amount_available(self):
+		return RewardInstance.objects.filter(reward = self, status = 'NA').count()
+		#finish
 
 class RewardInstance(models.Model):
 	reward = models.ForeignKey(Reward)
