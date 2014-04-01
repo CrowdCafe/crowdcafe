@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_auth',
+    'mobi',
     'storages',
     'landing',
     'account',

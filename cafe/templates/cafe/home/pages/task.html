@@ -5,7 +5,7 @@
 	<div class="navbar-inner">
 		<div class="left"><a href="#" class="back link">Back</a></div>
 		<div class="center sliding task-title">{{taskinstance.task.title}}</div>
-		<div class="right"><a href="index.html" class="link">Complete</a></div>
+		<div class="right"><a href="{% url 'cafe-task-list'%}" class="back link"><i class="icon icon-bars-blue"></i></a></div>
 	</div>
 </div>
 {% endblock%}

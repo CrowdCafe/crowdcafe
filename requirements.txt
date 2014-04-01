@@ -21,3 +21,4 @@ django-celery
 twython
 django-jsonfield==0.9.4
 django-cors-headers
+django-mobi==0.1.7
