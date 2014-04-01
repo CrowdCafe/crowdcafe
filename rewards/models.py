@@ -32,6 +32,7 @@ class Vendor(models.Model):
 	@property
 	def rewards(self):
 		return Reward.objects.filter(vendor = self).all()
+
 class Reward(models.Model):
 	vendor = models.ForeignKey(Vendor)
 
@@ -45,7 +46,6 @@ class Reward(models.Model):
 	@property
 	def amount_available(self):
 		return RewardInstance.objects.filter(reward = self, status = 'NA').count()
-		#finish
 
 class RewardInstance(models.Model):
 	reward = models.ForeignKey(Reward)

@@ -6,3 +6,6 @@ from django.template import RequestContext
 
 def Auth(request):
 	return render_to_response('cafe/auth.html', context_instance=RequestContext(request))
+
+def Welcome(request):
+	return render_to_response('cafe/welcome.html', context_instance=RequestContext(request))

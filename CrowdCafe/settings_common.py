@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'landing',
     'account',
     'kitchen',
+    'api',
     'cafe',
     'rewards',
     'firebase',

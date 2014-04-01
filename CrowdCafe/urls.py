@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     url(r'', include('social_auth.urls')),
     url(r'kitchen/', include('kitchen.urls')),
     url(r'cafe/', include('cafe.urls')),
+    url(r'api/', include('api.urls')),
     url(r'user/', include('account.urls')),
     url(r'rewards/', include('rewards.urls')),
     )

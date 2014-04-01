@@ -1,0 +1,11 @@
+{% extends 'cafe/mobilebase.html'%}
+{%load static%}
+
+{% block content%}
+
+{% include 'cafe/blocks/landing.html'%}
+{% endblock%}
+
+{% block js%}
+<script src="{% static 'js/welcome.js'%}"></script>
+{% endblock%}

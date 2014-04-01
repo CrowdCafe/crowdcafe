@@ -6,6 +6,8 @@ urlpatterns = patterns('',
     #===============================================================================
     # Views
     #-------------------------------------------------------------------------------
-    url(r'auth/$', views.Auth, name='cafe-auth'),  
-    url(r'welcome/$', views.Welcome, name='cafe-home'),
+    
+    url(r'user/$', views.getUser, name='api-user'),
+    url(r'tasks/$', views.getTasks, name='api-tasks-list'),
+    url(r'tasks/(?P<task_id>\d+)/instance/$', views.getInstance, name='api-get-instance'),
 )
