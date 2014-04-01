@@ -15,12 +15,11 @@ def id_generator(size=4, chars=string.ascii_lowercase + string.digits):
 def generateRewardCode():
 	# 1234-5678-9012-3456
 	code = ''
-	for i in range(4):
+	for i in range(2):
 		if code!='':
 			code+='-'
 		code+=str(randint(1000, 9999))
 	return code
-
 
 class Vendor(models.Model):
 	title = models.CharField(max_length=255, default='New vendor')
