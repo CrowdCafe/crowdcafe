@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from account.models import AccountTransaction
 import string
 import random
+from random import randint
 
 REWARD_STATUSES = (('NA', 'Not active'), ('AC', 'Active'), ('PS', 'Purchased'))
 
@@ -11,6 +12,15 @@ def id_generator(size=4, chars=string.ascii_lowercase + string.digits):
     code = ''.join(random.choice(chars) for x in range(size))
     print(code)
     return code
+def generateRewardCode():
+	# 1234-5678-9012-3456
+	code = ''
+	for i in range(4):
+		if code!='':
+			code+='-'
+		code+=str(randint(1000, 9999))
+	return code
+
 
 class Vendor(models.Model):
 	title = models.CharField(max_length=255, default='New vendor')
@@ -45,7 +55,7 @@ class RewardInstance(models.Model):
 	transaction = models.ForeignKey(AccountTransaction, null=True, blank=True)
 	
 	index = models.IntegerField(null=True, blank=True)
-	code = models.CharField(max_length=32,default=lambda: id_generator()+'-'+id_generator()+'-'+id_generator()+'-'+id_generator())
+	code = models.CharField(max_length=32,default=lambda: generateRewardCode())
 
 	date_created = models.DateTimeField(auto_now_add=True, auto_now=False) 
 	date_updated = models.DateTimeField(auto_now_add=True, auto_now=True) 
