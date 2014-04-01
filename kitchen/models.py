@@ -31,7 +31,9 @@ class Task(models.Model):
     dataitems_per_instance = models.IntegerField(default = 5)
     min_answers_per_item = models.IntegerField(default = 1)
     min_confidence = models.IntegerField(default = 50)
-
+    @property
+    def amount_instances(self):
+        return TaskInstance.objects.filter(task = self).count()
 class TaskInstance(models.Model):
     task = models.ForeignKey(Task)
     @property

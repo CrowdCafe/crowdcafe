@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% include 'cafe/home/meta.html'%}
+	{% include 'cafe/home/styles.html'%}
+</head>
+<body>
+	<!-- Panels overlay-->
+	<div class="panel-overlay"></div>
+	<!-- Left panel with reveal effect-->
+	<div class="panel panel-left panel-reveal">
+		<div class="content-block">
+			<p>Left panel content goes here</p>
+		</div>
+	</div>
+	<!-- Right panel with cover effect-->
+	<div class="panel panel-right panel-cover">
+		<div class="content-block">
+			<p>Right panel content goes here</p>
+		</div>
+	</div>
+
+	<!-- Views-->
+	<div class="views">
+
+		<!-- Your main view, should have "view-main" class-->
+		<div class="view view-main">
+			{% block navigation%}
+
+			{% endblock%}
+			{% block content%}
+
+			{% endblock%}
+		</div>
+	</div>
+	{% include 'cafe/home/scripts.html'%}
+</body>
+</html>

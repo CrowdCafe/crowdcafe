@@ -1,0 +1,38 @@
+{% extends 'cafe/ios7base.html'%}
+{%load static%}
+{% block navigation%}
+<!-- Top Navbar-->
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="left"><a href="#" class="back link">Back</a></div>
+		<div class="center sliding">Available tasks</div>
+	</div>
+</div>
+{% endblock%}
+
+{% block content%}
+<div class="pages ">
+	<!-- Page, data-page contains page name-->
+	<div data-page="page1" class="page">
+		<!-- Scrollable page content-->
+		<div class="page-content">
+			<div class="list-block media-list">
+				<ul>
+					{% for task in tasks%}
+					<li><a href="{% url 'cafe-taskinstance-assign' task.id %}" task-id = "{{task.id}}" class="item-link item-content task">
+						<div class="item-media"></div>
+						<div class="item-inner">
+							<div class="item-title-row">
+								<div class="item-title">{{task.title}}</div>
+								<div class="item-after">{{task.amount_instances}}</div>
+							</div>
+							<div class="item-subtitle">{{task.description}}</div>
+						</div></a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock%}

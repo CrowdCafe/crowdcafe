@@ -1,0 +1,19 @@
+.list-block .swipeout-actions-inner a.positive{
+  background: #4CD964;
+}
+.list-block .swipeout-actions-inner a.negative{
+  background: #FF3B30;
+}
+.list-block .swipeout-actions-inner a.neutral{
+  background: #D6CEC3;
+}
+.list-block .swipeout-actions-inner a.dontknow{
+  background: #898C90;
+}
+.list-block .item-text{
+	height:auto;
+	-webkit-line-clamp: 10;
+}
+.avatar{
+	border-radius: 50%;
+}
