@@ -1,4 +1,4 @@
-from kitchen.models import Task, TaskInstance, DataItem
+from kitchen.models import Task, TaskInstance, DataItem, Answer, AnswerItem
 
 from django.contrib.auth.models import User
 from account.models import Profile
@@ -25,10 +25,25 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ('id','owner', 'title','description','category','template','status','date_created','date_deadline')
 
+class AnswerSerializer(serializers.ModelSerializer):
+    executor = UserSerializer(many=False)
+    class Meta:
+        model = Answer
+        fields = ('id','executor','date_created','status')
+
+class AnswerItemSerializer(serializers.ModelSerializer):
+    answer = AnswerSerializer(many=False)
+    class Meta:
+        model = AnswerItem
+        fields = ('id','value','answer')
+
 class DataItemSerializer(serializers.ModelSerializer):
+    answeritems = AnswerItemSerializer(many = True)
     class Meta:
         model = DataItem
-        fields = ('id','value')
+        fields = ('id','answeritems')
+
+
 
 class TaskInstanceSerializer(serializers.ModelSerializer):
     dataitems = DataItemSerializer(many=True)

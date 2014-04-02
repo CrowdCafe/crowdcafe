@@ -1,5 +1,5 @@
 /*
- * Framework7 0.5.4
+ * Framework7 0.6.6
  * Full Featured HTML Framework For Building iOS7 Apps
  *
  * http://www.idangero.us/framework7
@@ -10,7 +10,7 @@
  *
  * Licensed under MIT
  *
- * Released on: March 20, 2014
+ * Released on: April 1, 2014
 */
 (function () {
 
@@ -19,8 +19,6 @@
     Framework 7
     ===========================*/
     window.Framework7 = function (params) {
-        // CSS ":active" pseudo selector fix
-        document.addEventListener('touchstart', function () {}, true);
     
         // App
         var app = this;
@@ -96,9 +94,13 @@
                 selector: viewSelector,
                 params: viewParams || {},
                 history: [],
+                contentCache: {},
                 url: '',
                 pagesContainer: $('.pages', container)[0],
                 main: $(container).hasClass('view-main'),
+                loadContent: function (content) {
+                    app.loadContent(view, content);
+                },
                 loadPage: function (url) {
                     app.loadPage(view, url);
                 },
@@ -159,8 +161,8 @@
                 dynamicNavbar,
                 el;
         
-            viewContainer.on(app.touchEvents.start, function (e) {
-                if (!allowViewTouchMove || !app.params.swipeBackPage) return;
+            function handleTouchStart(e) {
+                if (!allowViewTouchMove || !app.params.swipeBackPage || isTouched || app.swipeoutOpenedEl) return;
                 isMoved = false;
                 isTouched = true;
                 isScrolling = undefined;
@@ -168,10 +170,10 @@
                 touchesStart.y = e.type === 'touchstart' ? e.targetTouches[0].pageY : e.pageY;
                 touchStartTime = (new Date()).getTime();
                 dynamicNavbar = view.params.dynamicNavbar && viewContainer.find('.navbar-inner').length > 1;
-            });
-            viewContainer.on(app.touchEvents.move, function (e) {
+            }
+            
+            function handleTouchMove(e) {
                 if (!isTouched) return;
-                
                 var pageX = e.type === 'touchmove' ? e.targetTouches[0].pageX : e.pageX;
                 var pageY = e.type === 'touchmove' ? e.targetTouches[0].pageY : e.pageY;
                 if (typeof isScrolling === 'undefined') {
@@ -210,8 +212,12 @@
         
                 // Transform pages
                 activePage.transform('translate3d(' + touchesDiff + 'px,0,0)');
-                if (app.params.swipeBackPageBoxShadow) activePage[0].style.boxShadow = '0px 0px 12px rgba(0,0,0,' + (0.5 - 0.5 * percentage) + ')';
-                previousPage.transform('translate3d(' + (touchesDiff / 5 - viewContainerWidth / 5) + 'px,0,0)');
+                if (app.params.swipeBackPageBoxShadow && app.device.os !== 'android') activePage[0].style.boxShadow = '0px 0px 12px rgba(0,0,0,' + (0.5 - 0.5 * percentage) + ')';
+        
+                var pageTranslate = (touchesDiff / 5 - viewContainerWidth / 5);
+                if (app.device.pixelRatio === 1) pageTranslate = Math.round(pageTranslate);
+        
+                previousPage.transform('translate3d(' + pageTranslate + 'px,0,0)');
                 previousPage[0].style.opacity = 0.9 + 0.1 * percentage;
         
                 // Dynamic Navbars Animation
@@ -220,20 +226,24 @@
                         el = $(activeNavElements[i]);
                         el[0].style.opacity = (1 - percentage * 1.3);
                         if (el[0].className.indexOf('sliding') >= 0) {
-                            el.transform('translate3d(' + (percentage * el[0].f7NavbarRightOffset) + 'px,0,0)');
+                            var activeNavTranslate = percentage * el[0].f7NavbarRightOffset;
+                            if (app.device.pixelRatio === 1) activeNavTranslate = Math.round(activeNavTranslate);
+                            el.transform('translate3d(' + activeNavTranslate + 'px,0,0)');
                         }
                     }
                     for (i = 0; i < previousNavElements.length; i++) {
                         el = $(previousNavElements[i]);
                         el[0].style.opacity = percentage * 1.3 - 0.3;
                         if (el[0].className.indexOf('sliding') >= 0) {
-                            el.transform('translate3d(' + (el[0].f7NavbarLeftOffset * (1 - percentage)) + 'px,0,0)');
+                            var previousNavTranslate = el[0].f7NavbarLeftOffset * (1 - percentage);
+                            if (app.device.pixelRatio === 1) previousNavTranslate = Math.round(previousNavTranslate);
+                            el.transform('translate3d(' + previousNavTranslate + 'px,0,0)');
                         }
                     }
                 }
         
-            });
-            viewContainer.on(app.touchEvents.end, function (e) {
+            }
+            function handleTouchEnd(e) {
                 if (!isTouched || !isMoved) {
                     isTouched = false;
                     isMoved = false;
@@ -295,7 +305,11 @@
                     app.allowPageChange = true;
                     if (pageChanged) app.afterGoBack(view, activePage, previousPage);
                 });
-            });
+            }
+        
+            viewContainer.on(app.touchEvents.start, handleTouchStart);
+            viewContainer.on(app.touchEvents.move, handleTouchMove);
+            viewContainer.on(app.touchEvents.end, handleTouchEnd);
         };
         /*======================================================
         ************   Navbars && Toolbars   ************
@@ -406,6 +420,10 @@
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.onload = function (e) {
+                if (app.params.onAjaxComplete) {
+                    app.params.onAjaxComplete(xhr);
+                    $(document).trigger('ajaxComplete', {xhr: xhr});
+                }
                 if (callback) {
                     if (this.status === 200 || this.status === 0) {
                         callback(this.responseText, false);
@@ -423,8 +441,12 @@
                     }
                 }
             };
-            xhr.send();
+            if (app.params.onAjaxStart) {
+                app.params.onAjaxStart(xhr);
+                $(document).trigger('ajaxStart', {xhr: xhr});
+            }
             app.xhr = xhr;
+            xhr.send();
             return xhr;
         };
         /*======================================================
@@ -444,13 +466,13 @@
                 from: position
             };
             // Before Init Callback
-            if (app.params.onBeforePageInit) {
-                app.params.onBeforePageInit(pageData);
+            if (app.params.onPageBeforeInit) {
+                app.params.onPageBeforeInit(pageData);
             }
-            if (view.params.onBeforePageInit) {
-                view.params.onBeforePageInit(pageData);
+            if (view.params.onPageBeforeInit) {
+                view.params.onPageBeforeInit(pageData);
             }
-            $(document).trigger('beforePageInit', {page: pageData});
+            $(document).trigger('pageBeforeInit', {page: pageData});
             app.initPage(pageContainer);
             // Init Callback
             if (app.params.onPageInit) {
@@ -511,18 +533,149 @@
         };
         // Init Page Events and Manipulations
         app.initPage = function (pageContainer) {
-            // Prevent Togglers from bubbling AnimationEnd events
-            $(pageContainer).find('.switch').on('webkitAnimationEnd OAnimationEnd MSAnimationEnd animationend', function (e) {
-                e.stopPropagation();
-            });
             // Size navbars on page load
-            app.sizeNavbars($(pageContainer).parents('.view')[0]);
+            if (app.sizeNavbars) app.sizeNavbars($(pageContainer).parents('.view')[0]);
             // Init messages
-            app.initMessages(pageContainer);
+            if (app.initMessages) app.initMessages(pageContainer);
         };
         // Load Page
         app.allowPageChange = true;
         app._tempDomElement = document.createElement('div');
+        
+        function _load(view, url, content) {
+            var viewContainer = $(view.container),
+                newPage, oldPage, pagesInView, i, oldNavbarInner, newNavbarInner, navbar, dynamicNavbar;
+        
+            // Parse DOM to find new page
+            if (url || (typeof content === 'string')) {
+                app._tempDomElement.innerHTML = content;
+            } else {
+                if ('length' in content && content.length > 1) {
+                    app._tempDomElement = document.createElement('div');
+                    for (var ci = 0; ci < content.length; ci++) {
+                        $(app._tempDomElement).append(content[ci]);
+                    }
+                } else {
+                    app._tempDomElement.innerHTML = '';
+                    $(app._tempDomElement).append(content);
+                }
+            }
+        
+            newPage = $('.page', app._tempDomElement);
+            if (newPage.length > 1) {
+                newPage = $(app._tempDomElement).find('.view-main .page');
+            }
+        
+            // If pages not found or there are still more than one, exit
+            if (newPage.length === 0 || newPage.length > 1) {
+                app.allowPageChange = true;
+                return;
+            }
+            newPage.addClass('page-on-right');
+        
+            // Find old page (should be the last one) and remove older pages
+            pagesInView = viewContainer.find('.page');
+            if (pagesInView.length > 1) {
+                for (i = 0; i < pagesInView.length - 2; i++) {
+                    $(pagesInView[i]).remove();
+                }
+                $(pagesInView[i]).remove();
+            }
+            oldPage = viewContainer.find('.page');
+        
+            // Dynamic navbar
+            if (view.params.dynamicNavbar) {
+                dynamicNavbar = true;
+                // Find navbar
+                newNavbarInner = $('.navbar-inner', app._tempDomElement);
+                if (newNavbarInner.length > 1) {
+                    newNavbarInner = $('.view-main .navbar-inner', app._tempDomElement);
+                }
+                if (newNavbarInner.length === 0 || newNavbarInner > 1) {
+                    dynamicNavbar = false;
+                }
+                navbar = viewContainer.find('.navbar');
+                oldNavbarInner = navbar.find('.navbar-inner');
+                if (oldNavbarInner.length > 0) {
+                    for (i = 0; i < oldNavbarInner.length - 1; i++) {
+                        $(oldNavbarInner[i]).remove();
+                    }
+                    if (newNavbarInner.length === 0 && oldNavbarInner.length === 1) {
+                        $(oldNavbarInner[0]).remove();
+                    }
+                    oldNavbarInner = navbar.find('.navbar-inner');
+                }
+            }
+            if (dynamicNavbar) {
+                newNavbarInner.addClass('navbar-on-right');
+                navbar.append(newNavbarInner[0]);
+            }
+        
+            // save content areas into view's cache
+            if (!url) {
+                url = '#content-' + Math.floor(Math.random() * 10000) + 1;
+                view.contentCache[url] = { nav: newNavbarInner, page: newPage };
+            }
+        
+            // Update View history
+            view.url = url;
+            view.history.push(url);
+            
+            // Append Old Page and add classes for animation
+            $(view.pagesContainer).append(newPage[0]);
+        
+            // Page Init Events
+            app.pageInitCallback(view, newPage[0], url, 'right');
+            
+            if (dynamicNavbar) {
+                newNavbarInner.find('.sliding').each(function () {
+                    $(this).transform('translate3d(' + (this.f7NavbarRightOffset) + 'px,0,0)');
+                });
+            }
+            // Force reLayout
+            var clientLeft = newPage[0].clientLeft;
+        
+            // Before Anim Callback
+            app.pageAnimCallbacks('before', view, {pageContainer: newPage[0], url: url, position: 'left', oldPage: oldPage, newPage: newPage});
+            
+            newPage.addClass('page-from-right-to-center');
+            oldPage.addClass('page-from-center-to-left').removeClass('page-on-center');
+        
+            // Dynamic navbar animation
+            if (dynamicNavbar) {
+                newNavbarInner.removeClass('navbar-on-right').addClass('navbar-from-right-to-center');
+                newNavbarInner.find('.sliding').each(function () {
+                    $(this).transform('translate3d(0px,0,0)');
+                });
+                oldNavbarInner.removeClass('navbar-on-center').addClass('navbar-from-center-to-left');
+                oldNavbarInner.find('.sliding').each(function () {
+                    $(this).transform('translate3d(' + (this.f7NavbarLeftOffset) + 'px,0,0)');
+                });
+            }
+        
+            newPage.animationEnd(function (e) {
+                app.allowPageChange = true;
+                newPage.toggleClass('page-from-right-to-center page-on-center page-on-right');
+                oldPage.toggleClass('page-from-center-to-left page-on-left');
+                if (dynamicNavbar) {
+                    newNavbarInner.toggleClass('navbar-from-right-to-center navbar-on-center');
+                    oldNavbarInner.toggleClass('navbar-from-center-to-left navbar-on-left');
+                }
+                app.pageAnimCallbacks('after', view, {pageContainer: newPage[0], url: url, position: 'right', oldPage: oldPage, newPage: newPage});
+            });
+        }
+        app.loadContent = function (view, content) {
+            if (!app.allowPageChange) return false;
+            app.allowPageChange = false;
+            if (app.xhr) {
+                app.xhr.abort();
+                app.xhr = false;
+            }
+        
+            _load(view, null, content);
+        
+            app.allowPageChange = true;
+        };
         app.loadPage = function (view, url) {
             if (!app.allowPageChange) return false;
             if (view.url === url) return false;
@@ -536,107 +689,8 @@
                     app.allowPageChange = true;
                     return;
                 }
-                var viewContainer = $(view.container),
-                    newPage, oldPage, pagesInView, i, oldNavbarInner, newNavbarInner, navbar, dynamicNavbar;
         
-                // Parse DOM to find new page
-                app._tempDomElement.innerHTML = data;
-                newPage = $('.page', app._tempDomElement);
-                if (newPage.length > 1) {
-                    newPage = $(app._tempDomElement).find('.view-main .page');
-                }
-        
-                // If pages not found or there are still more than one, exit
-                if (newPage.length === 0 || newPage.length > 1) {
-                    app.allowPageChange = true;
-                    return;
-                }
-                newPage.addClass('page-on-right');
-        
-                // Update View history
-                view.url = url;
-                view.history.push(url);
-        
-                // Find old page (should be the last one) and remove older pages
-                pagesInView = viewContainer.find('.page');
-                if (pagesInView.length > 1) {
-                    for (i = 0; i < pagesInView.length - 2; i++) {
-                        $(pagesInView[i]).remove();
-                    }
-                    $(pagesInView[i]).remove();
-                }
-                oldPage = viewContainer.find('.page');
-        
-                // Dynamic navbar
-                if (view.params.dynamicNavbar) {
-                    dynamicNavbar = true;
-                    // Find navbar
-                    newNavbarInner = $('.navbar-inner', app._tempDomElement);
-                    if (newNavbarInner.length > 1) {
-                        newNavbarInner = $('.view-main .navbar-inner', app._tempDomElement);
-                    }
-                    if (newNavbarInner.length === 0 || newNavbarInner > 1) {
-                        dynamicNavbar = false;
-                    }
-                    navbar = viewContainer.find('.navbar');
-                    oldNavbarInner = navbar.find('.navbar-inner');
-                    if (oldNavbarInner.length > 0) {
-                        for (i = 0; i < oldNavbarInner.length - 1; i++) {
-                            $(oldNavbarInner[i]).remove();
-                        }
-                        if (newNavbarInner.length === 0 && oldNavbarInner.length === 1) {
-                            $(oldNavbarInner[0]).remove();
-                        }
-                        oldNavbarInner = navbar.find('.navbar-inner');
-                    }
-                }
-                if (dynamicNavbar) {
-                    newNavbarInner.addClass('navbar-on-right');
-                    navbar.append(newNavbarInner[0]);
-                }
-        
-                // Append Old Page and add classes for animation
-                $(view.pagesContainer).append(newPage[0]);
-        
-                // Page Init Events
-                app.pageInitCallback(view, newPage[0], url, 'right');
-                
-                if (dynamicNavbar) {
-                    newNavbarInner.find('.sliding').each(function () {
-                        $(this).transform('translate3d(' + (this.f7NavbarRightOffset) + 'px,0,0)');
-                    });
-                }
-                // Force reLayout
-                var clientLeft = newPage[0].clientLeft;
-        
-                // Before Anim Callback
-                app.pageAnimCallbacks('before', view, {pageContainer: newPage[0], url: url, position: 'left', oldPage: oldPage, newPage: newPage});
-                
-                newPage.addClass('page-from-right-to-center');
-                oldPage.addClass('page-from-center-to-left').removeClass('page-on-center');
-        
-                // Dynamic navbar animation
-                if (dynamicNavbar) {
-                    newNavbarInner.removeClass('navbar-on-right').addClass('navbar-from-right-to-center');
-                    newNavbarInner.find('.sliding').each(function () {
-                        $(this).transform('translate3d(0px,0,0)');
-                    });
-                    oldNavbarInner.removeClass('navbar-on-center').addClass('navbar-from-center-to-left');
-                    oldNavbarInner.find('.sliding').each(function () {
-                        $(this).transform('translate3d(' + (this.f7NavbarLeftOffset) + 'px,0,0)');
-                    });
-                }
-        
-                newPage.animationEnd(function (e) {
-                    app.allowPageChange = true;
-                    newPage.toggleClass('page-from-right-to-center page-on-center page-on-right');
-                    oldPage.toggleClass('page-from-center-to-left page-on-left');
-                    if (dynamicNavbar) {
-                        newNavbarInner.toggleClass('navbar-from-right-to-center navbar-on-center');
-                        oldNavbarInner.toggleClass('navbar-from-center-to-left navbar-on-left');
-                    }
-                    app.pageAnimCallbacks('after', view, {pageContainer: newPage[0], url: url, position: 'right', oldPage: oldPage, newPage: newPage});
-                });
+                _load(view, url, data);
         
             });
         };
@@ -651,6 +705,96 @@
             var viewContainer = $(view.container),
                 pagesInView = viewContainer.find('.page'),
                 oldPage, newPage, oldNavbarInner, newNavbarInner, navbar, dynamicNavbar;
+        
+            function _preload() {
+                newPage = $('.page', app._tempDomElement);
+                if (newPage.length > 1) {
+                    newPage = $(app._tempDomElement).find('.view-main .page');
+                }
+        
+                // If pages not found or there are still more than one, exit
+                if (newPage.length === 0 || newPage.length > 1) {
+                    app.allowPageChange = true;
+                    return;
+                }
+                newPage.addClass('page-on-left');
+        
+                // Find old page (should be the only one)
+                oldPage = $(viewContainer.find('.page')[0]);
+        
+                // Dynamic navbar
+                if (view.params.dynamicNavbar) {
+                    dynamicNavbar = true;
+                    // Find navbar
+                    newNavbarInner = $('.navbar-inner', app._tempDomElement);
+                    if (newNavbarInner.length > 1) {
+                        newNavbarInner = $('.view-main .navbar-inner', app._tempDomElement);
+                    }
+                    if (newNavbarInner.length === 0 || newNavbarInner > 1) {
+                        dynamicNavbar = false;
+                    }
+                    
+                }
+        
+                if (dynamicNavbar) {
+                    navbar = viewContainer.find('.navbar');
+                    oldNavbarInner = navbar.find('.navbar-inner');
+                    newNavbarInner.addClass(oldNavbarInner.length > 0 ? 'navbar-on-left' : 'navbar-on-center');
+                    if (oldNavbarInner.length > 1) {
+                        $(oldNavbarInner[0]).remove();
+                        oldNavbarInner = navbar.find('.navbar-inner');
+                    }
+                    navbar.prepend(newNavbarInner[0]);
+                }
+                // Prepend new Page and add classes for animation
+                $(view.pagesContainer).prepend(newPage[0]);
+        
+                // Page Init Events
+                app.pageInitCallback(view, newPage[0], url, 'left');
+        
+                if (dynamicNavbar && newNavbarInner.hasClass('navbar-on-left')) {
+                    newNavbarInner.find('.sliding').each(function () {
+                        $(this).transform('translate3d(' + (this.f7NavbarLeftOffset) + 'px,0,0)');
+                    });
+                }
+        
+                // Exit if we need only to preload page
+                if (preloadOnly) {
+                    newPage.addClass('page-on-left');
+                    app.allowPageChange = true;
+                    return;
+                }
+        
+                // Update View's URL
+                view.url = url;
+        
+                // Force reLayout
+                var clientLeft = newPage[0].clientLeft;
+        
+                // Before Anim Callback
+                app.pageAnimCallbacks('before', view, {pageContainer: newPage[0], url: url, position: 'left', oldPage: oldPage, newPage: newPage});
+        
+                newPage.addClass('page-from-left-to-center');
+                oldPage.removeClass('page-on-center').addClass('page-from-center-to-right');
+        
+                // Dynamic navbar animation
+                if (dynamicNavbar) {
+                    newNavbarInner.removeClass('navbar-on-left').addClass('navbar-from-left-to-center');
+                    newNavbarInner.find('.sliding').each(function () {
+                        $(this).transform('translate3d(0px,0,0)');
+                    });
+                    oldNavbarInner.removeClass('navbar-on-center').addClass('navbar-from-center-to-right');
+                    oldNavbarInner.find('.sliding').each(function () {
+                        $(this).transform('translate3d(' + (this.f7NavbarRightOffset) + 'px,0,0)');
+                    });
+                }
+        
+                newPage.animationEnd(function () {
+                    app.afterGoBack(view, oldPage[0], newPage[0]);
+                    app.pageAnimCallbacks('after', view, {pageContainer: newPage[0], url: url, position: 'left', oldPage: oldPage, newPage: newPage});
+                });
+            }
+        
             if (pagesInView.length > 1) {
                 // Exit if only preloadOnly
                 if (preloadOnly) {
@@ -707,6 +851,17 @@
                     app.allowPageChange = true;
                     return;
                 }
+                
+                // Check current url is in cache?
+                if (url in view.contentCache) {
+                    var _cache = view.contentCache[url];
+        
+                    app._tempDomElement = document.createElement('div');
+                    $(app._tempDomElement).append(_cache.nav[0]).append(_cache.page[0]);
+                    _preload();
+                    return;
+                }
+        
                 app.get(url, function (data, error) {
                     if (error) {
                         app.allowPageChange = true;
@@ -714,93 +869,8 @@
                     }
                     // Parse DOM to find new page
                     app._tempDomElement.innerHTML = data;
-                    newPage = $('.page', app._tempDomElement);
-                    if (newPage.length > 1) {
-                        newPage = $(app._tempDomElement).find('.view-main .page');
-                    }
-        
-                    // If pages not found or there are still more than one, exit
-                    if (newPage.length === 0 || newPage.length > 1) {
-                        app.allowPageChange = true;
-                        return;
-                    }
-                    newPage.addClass('page-on-left');
-        
-                    // Find old page (should be the only one)
-                    oldPage = $(viewContainer.find('.page')[0]);
-        
-                    // Dynamic navbar
-                    if (view.params.dynamicNavbar) {
-                        dynamicNavbar = true;
-                        // Find navbar
-                        newNavbarInner = $('.navbar-inner', app._tempDomElement);
-                        if (newNavbarInner.length > 1) {
-                            newNavbarInner = $('.view-main .navbar-inner', app._tempDomElement);
-                        }
-                        if (newNavbarInner.length === 0 || newNavbarInner > 1) {
-                            dynamicNavbar = false;
-                        }
-                        
-                    }
-        
-                    if (dynamicNavbar) {
-                        navbar = viewContainer.find('.navbar');
-                        oldNavbarInner = navbar.find('.navbar-inner');
-                        newNavbarInner.addClass(oldNavbarInner.length > 0 ? 'navbar-on-left' : 'navbar-on-center');
-                        if (oldNavbarInner.length > 1) {
-                            $(oldNavbarInner[0]).remove();
-                            oldNavbarInner = navbar.find('.navbar-inner');
-                        }
-                        navbar.prepend(newNavbarInner[0]);
-                    }
-                    // Prepend new Page and add classes for animation
-                    $(view.pagesContainer).prepend(newPage[0]);
-        
-                    // Page Init Events
-                    app.pageInitCallback(view, newPage[0], url, 'left');
-        
-                    if (dynamicNavbar && newNavbarInner.hasClass('navbar-on-left')) {
-                        newNavbarInner.find('.sliding').each(function () {
-                            $(this).transform('translate3d(' + (this.f7NavbarLeftOffset) + 'px,0,0)');
-                        });
-                    }
                     
-                    // Exit if we need only to preload page
-                    if (preloadOnly) {
-                        newPage.addClass('page-on-left');
-                        app.allowPageChange = true;
-                        return;
-                    }
-        
-                    // Update View's URL
-                    view.url = url;
-        
-                    // Force reLayout
-                    var clientLeft = newPage[0].clientLeft;
-        
-                    // Before Anim Callback
-                    app.pageAnimCallbacks('before', view, {pageContainer: newPage[0], url: url, position: 'left', oldPage: oldPage, newPage: newPage});
-        
-                    newPage.addClass('page-from-left-to-center');
-                    oldPage.removeClass('page-on-center').addClass('page-from-center-to-right');
-        
-                    // Dynamic navbar animation
-                    if (dynamicNavbar) {
-                        newNavbarInner.removeClass('navbar-on-left').addClass('navbar-from-left-to-center');
-                        newNavbarInner.find('.sliding').each(function () {
-                            $(this).transform('translate3d(0px,0,0)');
-                        });
-                        oldNavbarInner.removeClass('navbar-on-center').addClass('navbar-from-center-to-right');
-                        oldNavbarInner.find('.sliding').each(function () {
-                            $(this).transform('translate3d(' + (this.f7NavbarRightOffset) + 'px,0,0)');
-                        });
-                    }
-        
-                    newPage.animationEnd(function () {
-                        app.afterGoBack(view, oldPage[0], newPage[0]);
-                        app.pageAnimCallbacks('after', view, {pageContainer: newPage[0], url: url, position: 'left', oldPage: oldPage, newPage: newPage});
-                    });
-        
+                    _preload();
                 });
             }
         };
@@ -819,6 +889,11 @@
             }
             // Update View's Hitory
             view.history.pop();
+            // Check current page is content based only
+            if (view.url.indexOf('#content-') > -1 && (view.url in view.contentCache)) {
+                view.contentCache[view.url] = null;
+                delete view.contentCache[view.url];
+            }
             // Preload previous page
             if (app.params.preloadPreviousPage) {
                 app.goBack(view, false, true);
@@ -913,11 +988,17 @@
         app.showPreloader = function (title) {
             return app.modal({
                 title: title || app.params.modalPreloaderTitle,
-                text: '<div class="preloader"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'
+                text: '<div class="preloader"></div>'
             });
         };
         app.hidePreloader = function () {
             app.closeModal();
+        };
+        app.showIndicator = function () {
+            $('body').append('<div class="preloader-indicator-overlay"></div><div class="preloader-indicator-modal"><span class="preloader preloader-white"></span></div>');
+        };
+        app.hideIndicator = function () {
+            $('.preloader-indicator-overlay, .preloader-indicator-modal').remove();
         };
         // Action Sheet
         app.actions = function (params) {
@@ -970,13 +1051,15 @@
             var groups = modal.find('.actions-modal-group');
             groups.each(function (index, el) {
                 var groupIndex = index;
-                $(el).find('.actions-modal-button').each(function (index, el) {
+                $(el).children().each(function (index, el) {
                     var buttonIndex = index;
                     var buttonParams = params[groupIndex][buttonIndex];
-                    $(el).tap(function (e) {
-                        if (buttonParams.close !== false) app.closeModal(modal);
-                        if (buttonParams.onClick) buttonParams.onClick(modal, e);
-                    });
+                    if ($(el).hasClass('actions-modal-button')) {
+                        $(el).tap(function (e) {
+                            if (buttonParams.close !== false) app.closeModal(modal);
+                            if (buttonParams.onClick) buttonParams.onClick(modal, e);
+                        });
+                    }
                 });
             });
             app.openModal(modal);
@@ -1113,7 +1196,7 @@
             var isPopover = modal.hasClass('popover');
             var isPopup = modal.hasClass('popup');
             if (!isPopover) {
-                modal.toggleClass('modal-in modal-out').transitionEnd(function (e) {
+                modal.removeClass('modal-in').addClass('modal-out').transitionEnd(function (e) {
                     modal.trigger('closed');
                     if (!isPopup) modal.remove();
                     if (isPopup) modal.removeClass('modal-out').hide();
@@ -1214,14 +1297,14 @@
         app.updateMessagesAngles = function (messages) {
             messages.find('.message-sent').each(function () {
                 var message = $(this);
-                if (!message.next().hasClass('message-sent') && !message.hasClass('message-pic')) {
+                if (!message.next().hasClass('message-sent')) {
                     message.addClass('message-last');
                 }
                 else message.removeClass('message-last');
             });
             messages.find('.message-received').each(function () {
                 var message = $(this);
-                if (!message.next().hasClass('message-received') && !message.hasClass('message-pic')) {
+                if (!message.next().hasClass('message-received')) {
                     message.addClass('message-last');
                 }
                 else message.removeClass('message-last');
@@ -1245,26 +1328,31 @@
             }
             app._animFrame(animScroll);
         };
-        app.openedSwipeOutEl = undefined;
-        app.allowSwipeOut = true;
-        app.initSwipeOutList = function () {
+        /*===============================================================================
+        ************   Swipeout Actions (Swipe to delete)   ************
+        ===============================================================================*/
+        app.swipeoutOpenedEl = undefined;
+        app.allowSwipeout = true;
+        app.initSwipeout = function () {
             var isTouched, isMoved, isScrolling, touchesStart = {}, touchStartTime, touchesDiff, swipeOutEl, swipeOutContent, swipeOutActions, swipeOutActionsWidth, translate, opened;
             $(document).on(app.touchEvents.start, function (e) {
-                if (app.openedSwipeOutEl) {
+                if (app.swipeoutOpenedEl) {
                     var target = $(e.target);
                     if (!(
-                        app.openedSwipeOutEl.is(target[0]) ||
-                        target.parents('.swipeout').is(app.openedSwipeOutEl) ||
+                        app.swipeoutOpenedEl.is(target[0]) ||
+                        target.parents('.swipeout').is(app.swipeoutOpenedEl) ||
                         target.hasClass('modal-in') ||
                         target.parents('.modal-in').length > 0 ||
                         target.hasClass('modal-overlay')
                         )) {
-                        app.closeSwipeOutList(app.openedSwipeOutEl);
+                        app.swipeoutClose(app.swipeoutOpenedEl);
                     }
                 }
             });
-            $(document).on(app.touchEvents.start, '.list-block li.swipeout', function (e) {
-                if (!app.allowSwipeOut) return;
+            
+        
+            function handleTouchStart(e) {
+                if (!app.allowSwipeout) return;
                 isMoved = false;
                 isTouched = true;
                 isScrolling = undefined;
@@ -1272,10 +1360,9 @@
                 touchesStart.y = e.type === 'touchstart' ? e.targetTouches[0].pageY : e.pageY;
                 touchStartTime = (new Date()).getTime();
         
-            });
-            $(document).on(app.touchEvents.move, '.list-block li.swipeout', function (e) {
+            }
+            function handleTouchMove(e) {
                 if (!isTouched) return;
-                
                 var pageX = e.type === 'touchmove' ? e.targetTouches[0].pageX : e.pageX;
                 var pageY = e.type === 'touchmove' ? e.targetTouches[0].pageY : e.pageY;
                 if (typeof isScrolling === 'undefined') {
@@ -1287,11 +1374,12 @@
                 }
         
                 if (!isMoved) {
+                    /*jshint validthis:true */
                     swipeOutEl = $(this);
                     swipeOutContent = swipeOutEl.find('.swipeout-content');
                     swipeOutActions = swipeOutEl.find('.swipeout-actions-inner');
                     swipeOutActionsWidth = swipeOutActions.width();
-                    opened = swipeOutEl.hasClass('opened');
+                    opened = swipeOutEl.hasClass('swipeout-opened');
                     swipeOutEl.removeClass('transitioning');
                 }
                 isMoved = true;
@@ -1306,8 +1394,8 @@
                 
                 swipeOutContent.transform('translate3d(' + translate + 'px,0,0)');
         
-            });
-            $(document).on(app.touchEvents.end, '.list-block li.swipeout', function (e) {
+            }
+            function handleTouchEnd(e) {
                 if (!isTouched || !isMoved) {
                     isTouched = false;
                     isMoved = false;
@@ -1316,7 +1404,7 @@
                 isTouched = false;
                 isMoved = false;
                 var timeDiff = (new Date()).getTime() - touchStartTime;
-                if (!(translate === 0 || translate === -swipeOutActionsWidth)) app.allowSwipeOut = false;
+                if (!(translate === 0 || translate === -swipeOutActionsWidth)) app.allowSwipeout = false;
                 
                 var action;
                 if (opened) {
@@ -1342,70 +1430,167 @@
                     }
                 }
                 if (action === 'open') {
-                    app.openedSwipeOutEl = swipeOutEl;
+                    app.swipeoutOpenedEl = swipeOutEl;
                     swipeOutEl.trigger('open');
-                    swipeOutEl.addClass('opened transitioning');
+                    swipeOutEl.addClass('swipeout-opened transitioning');
                     swipeOutContent.transform('translate3d(' + -swipeOutActionsWidth + 'px,0,0)');
                 }
                 else {
                     swipeOutEl.trigger('close');
-                    app.openedSwipeOutEl = undefined;
-                    swipeOutEl.addClass('transitioning').removeClass('opened');
+                    app.swipeoutOpenedEl = undefined;
+                    swipeOutEl.addClass('transitioning').removeClass('swipeout-opened');
                     swipeOutContent.transform('translate3d(' + 0 + 'px,0,0)');
                 }
                 swipeOutContent.transitionEnd(function () {
-                    app.allowSwipeOut = true;
+                    app.allowSwipeout = true;
                     swipeOutEl.trigger(action === 'open' ? 'opened' : 'closed');
                 });
-            });
+            }
+            $(document).on(app.touchEvents.start, '.list-block li.swipeout', handleTouchStart);
+            $(document).on(app.touchEvents.move, '.list-block li.swipeout', handleTouchMove);
+            $(document).on(app.touchEvents.end, '.list-block li.swipeout', handleTouchEnd);
         };
-        app.openSwipeOutList = function (el) {
+        app.swipeoutOpen = function (el) {
             el = $(el);
             if (!el.hasClass('swipeout')) return;
             if (el.length === 0) return;
             if (el.length > 1) el = $(el[0]);
-            el.trigger('open').addClass('transitioning opened');
+            el.trigger('open').addClass('transitioning swipeout-opened');
             var swipeOutActions = el.find('.swipeout-actions-inner');
             el.find('.swipeout-content').transform('translate3d(-' + swipeOutActions.width() + 'px,0,0)').transitionEnd(function () {
                 el.trigger('opened');
             });
-            app.openedSwipeOutEl = el;
+            app.swipeoutOpenedEl = el;
         };
-        app.closeSwipeOutList = function (el) {
+        app.swipeoutClose = function (el) {
             el = $(el);
             if (el.length === 0) return;
-            app.allowSwipeOut = false;
+            app.allowSwipeout = false;
             el.trigger('close');
-            el.removeClass('opened')
+            el.removeClass('swipeout-opened')
                 .addClass('transitioning')
             .find('.swipeout-content')
                 .transform('translate3d(' + 0 + 'px,0,0)')
                 .transitionEnd(function () {
                     el.trigger('closed');
-                    app.allowSwipeOut = true;
+                    app.allowSwipeout = true;
                 });
         
-            if (app.openedSwipeOutEl[0] === el[0]) app.openedSwipeOutEl = undefined;
+            if (app.swipeoutOpenedEl[0] === el[0]) app.swipeoutOpenedEl = undefined;
         };
-        app.deleteSwipeOutList = function (el) {
+        app.swipeoutDelete = function (el) {
             el = $(el);
             if (el.length === 0) return;
             if (el.length > 1) el = $(el[0]);
-            app.openedSwipeOutEl = undefined;
+            app.swipeoutOpenedEl = undefined;
             el.trigger('delete');
             el.css({height: el.outerHeight() + 'px'});
             var clientLeft = el[0].clientLeft;
             el.css({height: 0 + 'px'}).addClass('deleting transitioning').transitionEnd(function () {
                 el.trigger('deleted');
-                el.remove();
+            //    el.remove();
             });
+            
             el.find('.swipeout-content').transform('translate3d(-100%,0,0)');
+        };
+        /*======================================================
+        ************   Pull To Refresh   ************
+        ======================================================*/
+        app.initPullToRefresh = function () {
+            var isTouched, isMoved, touchesStart = {}, isScrolling, touchesDiff, touchStartTime, container, refresh = false, useTranslate = false, startTranslate = 0;
+            function handleTouchStart(e) {
+                if (isTouched) return;
+                isMoved = false;
+                isTouched = true;
+                isScrolling = undefined;
+                touchesStart.x = e.type === 'touchstart' ? e.targetTouches[0].pageX : e.pageX;
+                touchesStart.y = e.type === 'touchstart' ? e.targetTouches[0].pageY : e.pageY;
+                touchStartTime = (new Date()).getTime();
+            }
+            
+            function handleTouchMove(e) {
+                if (!isTouched) return;
+                var pageX = e.type === 'touchmove' ? e.targetTouches[0].pageX : e.pageX;
+                var pageY = e.type === 'touchmove' ? e.targetTouches[0].pageY : e.pageY;
+                if (typeof isScrolling === 'undefined') {
+                    isScrolling = !!(isScrolling || Math.abs(pageY - touchesStart.y) > Math.abs(pageX - touchesStart.x));
+                }
+                if (!isScrolling) {
+                    isTouched = false;
+                    return;
+                }
+                if (!isMoved) {
+                    /*jshint validthis:true */
+                    container = $(this);
+                    container.removeClass('transitioning');
+                    startTranslate = container.hasClass('refreshing') ? 44 : 0;
+                    if (container[0].scrollHeight === container[0].offsetHeight || app.device.os !== 'ios') {
+                        useTranslate = true;
+                    }
+                    else {
+                        useTranslate = false;
+                    }
+                }
+                isMoved = true;
+                touchesDiff = pageY - touchesStart.y;
+                if (touchesDiff > 0 && container[0].scrollTop <= 0 || container[0].scrollTop < 0) {
+                    if (useTranslate) {
+                        e.preventDefault();
+                        container.transform('translate3d(0,' + (Math.pow(touchesDiff, 0.85) + startTranslate) + 'px,0)');
+                    }
+                    if ((useTranslate && Math.pow(touchesDiff, 0.85) > 44) || (!useTranslate && touchesDiff >= 88)) {
+                        refresh = true;
+                        container.addClass('pull-up');
+                    }
+                    else {
+                        refresh = false;
+                        container.removeClass('pull-up');
+                    }
+                }
+                else {
+                    container.removeClass('pull-up');
+                    refresh = false;
+                    return;
+                }
+            }
+            function handleTouchEnd(e) {
+                if (!isTouched || !isMoved) {
+                    isTouched = false;
+                    isMoved = false;
+                    return;
+                }
+                container.addClass('transitioning');
+                container.transform('');
+                if (refresh) {
+                    container.addClass('refreshing');
+                    container.trigger('refresh', {
+                        done: function () {
+                            app.pullToRefreshDone(container);
+                        }
+                    });
+                }
+                isTouched = false;
+                isMoved = false;
+            }
+            $(document).on(app.touchEvents.start, '.pull-to-refresh-content', handleTouchStart);
+            $(document).on(app.touchEvents.move, '.pull-to-refresh-content', handleTouchMove);
+            $(document).on(app.touchEvents.end, '.pull-to-refresh-content', handleTouchEnd);
+        };
+        
+        app.pullToRefreshDone = function (container) {
+            container = $(container);
+            if (container.length === 0) container = $('.pull-to-refresh-content.refreshing');
+            container.removeClass('refreshing').addClass('transitioning');
+            container.transitionEnd(function () {
+                container.removeClass('transitioning pull-up');
+            });
         };
         /*===============================================================================
         ************   Handle clicks and make them fast (on tap);   ************
         ===============================================================================*/
         app.initClickEvents = function () {
-            $(document).tap('a, .open-panel, .close-panel, .panel-overlay, .modal-overlay, .swipeout-delete, .close-popup, .open-popup, .open-popover', function (e) {
+            function handleTap(e) {
+                /*jshint validthis:true */
                 var clicked = $(this);
                 var url = clicked.attr('href');
                 // External
@@ -1414,7 +1599,6 @@
                 }
                 // Open Panel
                 if (clicked.hasClass('open-panel')) {
-                    // e.preventDefault();
                     if ($('.panel').length === 1) {
                         if ($('.panel').hasClass('panel-left')) app.openPanel('left');
                         else app.openPanel('right');
@@ -1463,6 +1647,26 @@
                         app.closeModal();
                     if ($('.popover.modal-in').length > 0) app.closeModal('.popover.modal-in');
                 }
+                // Radios/checkboxes
+                if (clicked.hasClass('label-checkbox') || clicked.hasClass('label-radio')) {
+                    var input = clicked.find('input');
+                    if (input.attr('type') === 'checkbox') {
+                        if (input[0].checked === true) input[0].checked = false;
+                        else input[0].checked = true;
+                    }
+                    if (input.attr('type') === 'radio') {
+                        clicked.find('input')[0].checked = true;
+                    }
+                    input.trigger('change');
+                    return;
+                }
+                if ($.supportTouch) {
+                    if (clicked.parent().hasClass('label-switch')) {
+                        clicked[0].checked = !clicked[0].checked;
+                        clicked.trigger('change');
+                    }
+                }
+                
                 // Tabs
                 if (clicked.hasClass('tab-link')) {
                     var newTab = $(clicked.attr('href'));
@@ -1475,14 +1679,20 @@
                 }
                 // Swipeout Delete
                 if (clicked.hasClass('swipeout-delete')) {
+                    //-------------------------------------------------
+                    // PAVEL's FIX
+                    clicked.parents('.dataitem').find('.dataitem_answer').val(clicked.attr('answer'));
+                    //-------------------------------------------------
                     if (clicked.attr('data-confirm')) {
                         var modal = app.confirm(clicked.attr('data-confirm'), function () {
-                            app.deleteSwipeOutList(clicked.parents('.swipeout'));
+                            app.swipeoutDelete(clicked.parents('.swipeout'));
+
                         });
                     }
                     else {
-                        app.deleteSwipeOutList(clicked.parents('.swipeout'));
+                        app.swipeoutDelete(clicked.parents('.swipeout'));
                     }
+
                         
                 }
                 // Load Page
@@ -1507,18 +1717,30 @@
                     if (clicked.hasClass('back')) view.goBack(clicked.attr('href'));
                     else view.loadPage(clicked.attr('href'));
                 }
-            });
+            }
+            $(document).tap('a, .open-panel, .close-panel, .panel-overlay, .modal-overlay, .swipeout-delete, .close-popup, .open-popup, .open-popover, .label-checkbox, .label-radio, .label-switch, .label-switch input', handleTap);
+            
             //Disable clicks
-            $(document).on('click', 'a', function (e) {
+            function handleClick(e) {
+                /*jshint validthis:true */
                 if (!$(this).hasClass('external')) e.preventDefault();
-            });
+            }
+            $(document).on('click', 'a, .label-checkbox, .label-radio', handleClick);
         };
         /*======================================================
         ************   App Resize Actions   ************
         ======================================================*/
-        app.onResize = function () {
-            app.sizeNavbars();
-            // Something else could be here
+        app.initResize = function () {
+            $(window).on('resize', app.resize);
+            $(window).on('orientationchange', app.orientationchange);
+        };
+        app.resize = function () {
+            if (app.sizeNavbars) app.sizeNavbars();
+        };
+        app.orientationchange = function () {
+            if (app.device && app.device.minimalUi) {
+                if (window.orientation === 90 || window.orientation === -90) document.body.scrollTop = 0;
+            }
         };
         /*=====================================================================================
         ************   Detect that app in fullscreen mode or chopped by statusbar  ************
@@ -1543,21 +1765,80 @@
                 $('body').removeClass('with-statusbar-overlay');
             }
         };
+        /*===========================
+        Device/OS Detection
+        ===========================*/
+        app.getDeviceInfo = function () {
+            var device = {};
+            var ua = navigator.userAgent;
+        
+            var android = ua.match(/(Android);?[\s\/]+([\d.]+)?/);
+            var ipad = ua.match(/(iPad).*OS\s([\d_]+)/);
+            var ipod = ua.match(/(iPod)(.*OS\s([\d_]+))?/);
+            var iphone = !ipad && ua.match(/(iPhone\sOS)\s([\d_]+)/);
+        
+            // Android
+            if (android) {
+                device.os = 'android';
+                device.osVersion = android[2];
+            }
+            if (ipad || iphone || ipod) {
+                device.os = 'ios';
+            }
+            // iOS
+            if (iphone && !ipod) device.osVersion = iphone[2].replace(/_/g, '.');
+            if (ipad) device.osVersion = ipad[2].replace(/_/g, '.');
+            if (ipod) device.osVersion = ipod[3] ? ipod[3].replace(/_/g, '.') : null;
+        
+            // Webview
+            device.webview = !!navigator.standalone;
+        
+                
+            // Minimal UI
+            if (device.os && device.os === 'ios') {
+                var osVersionArr = device.osVersion.split('.');
+                device.minimalUi = !device.webview &&
+                                    (ipod || iphone) &&
+                                    (osVersionArr[0] * 1 === 7 ? osVersionArr[1] * 1 >= 1 : osVersionArr[0] * 1 > 7) &&
+                                    $('meta[name="viewport"]').length > 0 && $('meta[name="viewport"]').attr('content').indexOf('minimal-ui') >= 0;
+            }
+        
+            // Pixel Ratio
+            device.pixelRatio = window.devicePixelRatio || 1;
+        
+            // Add html classes
+            if (device.os) {
+                var className = device.os +
+                                ' ' +
+                                device.os + '-' + device.osVersion.replace(/\./g, '-') +
+                                ' ' +
+                                device.os + '-' + device.osVersion.split('.')[0];
+                $('html').addClass(className);
+            }
+        
+            // Export to app
+            app.device = device;
+        };
         /*======================================================
         ************   App Init   ************
         ======================================================*/
         app.init = function () {
+            if (app.getDeviceInfo) app.getDeviceInfo();
             // Init Click events
-            app.initClickEvents();
-            app.initSwipeOutList();
+            if (app.initClickEvents) app.initClickEvents();
+            // Init Swipeouts events
+            if (app.initSwipeout) app.initSwipeout();
             // Detect statusbar
-            app.detectStatusBar();
+            if (app.detectStatusBar) app.detectStatusBar();
+            // Init Pull To Refresh
+            if (app.initPullToRefresh) app.initPullToRefresh();
             // Init each page callbacks
             $('.page').each(function () {
                 app.initPage(this);
             });
-            // App resize events
-            $(window).on('resize', app.onResize);
+            // Init resize events
+            if (app.initResize) app.initResize();
+            
             // App Init callback
             if (app.params.onAppInit) app.params.onAppInit();
         };
@@ -1689,29 +1970,26 @@
                 listener = arguments[0];
                 targetSelector = false;
             }
+            function handleTouchStart(e) {
+                isTouched = true;
+                isMoved = false;
+            }
+            function handleTouchMove(e) {
+                if (!isTouched || isMoved) return;
+                isMoved = true;
+            }
+            function handleTouchEnd(e) {
+                e.preventDefault(); // - to prevent Safari's Ghost click
+                if (isTouched && !isMoved) {
+                    /*jshint validthis:true */
+                    listener.call(this, e);
+                }
+                isTouched = isMoved = false;
+            }
             if ($.supportTouch) {
-                dom.on('touchstart', targetSelector, function (e) {
-                    isTouched = true;
-                    isMoved = false;
-                    // touchesStart.x = e.targetTouches[0].pageX;
-                    // touchesStart.y = e.targetTouches[0].pageY;
-                    // deltaX = deltaY = 0;
-                    // touchStartTime = (new Date()).getTime();
-                });
-                dom.on('touchmove', targetSelector, function (e) {
-                    if (!isTouched) return;
-                    isMoved = true;
-                    // deltaX = e.targetTouches[0].pageX - touchesStart.x;
-                    // deltaY = e.targetTouches[0].pageY - touchesStart.y;
-                });
-                dom.on('touchend', targetSelector, function (e) {
-                    // var timeDiff = (new Date()).getTime() - touchStartTime;
-                    e.preventDefault(); // - to prevent Safari's Ghost click
-                    if (isTouched && !isMoved) {
-                        listener.call(this, e);
-                    }
-                    isTouched = isMoved = false;
-                });
+                dom.on('touchstart', targetSelector, handleTouchStart);
+                dom.on('touchmove', targetSelector, handleTouchMove);
+                dom.on('touchend', targetSelector, handleTouchEnd);
             }
             else {
                 dom.on('click', targetSelector, listener);
@@ -1725,8 +2003,16 @@
         },
         trigger: function (eventName, eventData) {
             for (var i = 0; i < this.length; i++) {
-                var e = new CustomEvent(eventName, {detail: eventData, bubbles: true, cancelable: true});
-                this[i].dispatchEvent(e);
+                var evt;
+                try {
+                    evt = new CustomEvent(eventName, {detail: eventData, bubbles: true, cancelable: true});
+                }
+                catch (e) {
+                    evt = document.createEvent('Event');
+                    evt.initEvent(eventName, true, true);
+                    evt.detail = eventData;
+                }
+                this[i].dispatchEvent(evt);
             }
             return this;
         },
@@ -1873,12 +2159,24 @@
                 return this;
             }
         },
+        text: function (text) {
+            if (typeof text === 'undefined') {
+                if (this[0]) {
+                    return this[0].textContent.trim();
+                }
+                else return null;
+            }
+            else {
+                for (var i = 0; i < this.length; i++) {
+                    this[0].textContent = text;
+                }
+            }
+        },
         is: function (selector) {
             var compareWith;
             if (typeof selector === 'string') compareWith = document.querySelectorAll(selector);
             else if (selector.nodeType) compareWith = [selector];
             else compareWith = selector;
-            var match = false;
             for (var i = 0; i < compareWith.length; i++) {
                 if (compareWith[i] === this[0]) return true;
             }
@@ -1907,7 +2205,11 @@
         prepend: function (newChild) {
             for (var i = 0; i < this.length; i++) {
                 if (typeof newChild === 'string') {
-                    this[i].innerHTML = newChild + this[i].innerHTML;
+                    var tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = newChild;
+                    for (var j = tempDiv.childNodes.length - 1; j >= 0; j--) {
+                        this[i].insertBefore(tempDiv.childNodes[j], this[i].childNodes[0]);
+                    }
                 }
                 else {
                     this[i].insertBefore(newChild, this[i].childNodes[0]);
@@ -1942,10 +2244,15 @@
             }
             else return new Dom7([]);
         },
-        parent: function () {
+        parent: function (selector) {
             var parents = [];
             for (var i = 0; i < this.length; i++) {
-                parents.push(this[i].parentNode);
+                if (selector) {
+                    if ($(this[i].parentNode).is(selector)) parents.push(this[i].parentNode);
+                }
+                else {
+                    parents.push(this[i].parentNode);
+                }
             }
             return $($.unique(parents));
         },
@@ -1993,7 +2300,7 @@
         },
         remove: function () {
             for (var i = 0; i < this.length; i++) {
-                this[i].parentNode.removeChild(this[i]);
+                if (this[i].parentNode) this[i].parentNode.removeChild(this[i]);
             }
             return this;
         },
@@ -2042,6 +2349,9 @@
             if (unique.indexOf(arr[i]) === -1) unique.push(arr[i]);
         }
         return unique;
+    };
+    $.trim = function (str) {
+        return str.trim();
     };
     $.supportTouch = (function () {
         return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);

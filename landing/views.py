@@ -16,4 +16,3 @@ def Welcome(request):
 	if request.mobile:
 		return redirect('cafe-welcome')
 	return render_to_response('landing/welcome.html', context_instance=RequestContext(request))
-    

@@ -33,4 +33,11 @@ def getInstance(request, task_id):
 
 	serializer = TaskInstanceSerializer(taskinstance)
 	return Response(serializer.data)
+
+@api_view(['GET'])
+@login_required
+def getAnswers(request, task_id):
+	taskinstances = TaskInstance.objects.filter(task__id = task_id,task__owner = request.user).all()
+	serializer = TaskInstanceSerializer(taskinstances)
+	return Response(serializer.data)
 	

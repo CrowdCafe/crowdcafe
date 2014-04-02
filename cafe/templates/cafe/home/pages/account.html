@@ -1,0 +1,36 @@
+{% extends 'cafe/ios7base.html'%}
+{%load static%}
+{% block navigation%}
+<!-- Top Navbar-->
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="left"><a href="{% url 'cafe-home'%}" class="link">Home</a></div>
+		<div class="center sliding">Account</div>
+	</div>
+</div>
+{% endblock%}
+
+{% block content%}
+<!-- Pages, because we need fixed-through navbar and toolbar, it has additional appropriate classes-->
+<div class="pages navbar-through toolbar-through">
+	<!-- Page, data-page contains page name-->
+	<div data-page="index" class="page">
+		<!-- Scrollable page content-->
+		<div class="page-content">
+			<div class="content-block-title">{{user.profile.full_name}}</div>
+			<div class="content-block ">
+				<h1>{{user.profile.account.balance}}&euro;</h1>
+			</div>
+			
+			<div class="content-block">
+				<p><a href="{% url 'cafe-rewards'%}" class="button">Rewards</a></p>
+				<p><a href="{% url 'cafe-transactions'%}" class="button">Transactions</a></p>
+				<div class="content-block ">
+					<p><hr/></p>
+				</div>
+				<p><a href="{% url 'logout'%}" onclick="window.location ='{% url 'logout'%}'; " class="button button-red logout">Logout</a></p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock%}

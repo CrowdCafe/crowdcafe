@@ -7,6 +7,7 @@ from datetime import datetime
 import jsonfield
 from decimal import Decimal
 from datetime import  timedelta
+from account.models import AccountTransaction
 
 
 STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'),)
@@ -36,23 +37,36 @@ class Task(models.Model):
         return TaskInstance.objects.filter(task = self).count()
 class TaskInstance(models.Model):
     task = models.ForeignKey(Task)
+    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='ST')
     @property
     def dataitems(self):
         return DataItem.objects.filter(taskinstance = self).all()
+    @property
+    def answers(self):
+        return Answer.objects.filter(taskinstance = self).all()
 
 class DataItem(models.Model):
     taskinstance = models.ForeignKey(TaskInstance)
     value = jsonfield.JSONField()
+    @property
+    def answeritems(self):
+        return AnswerItem.objects.filter(dataitem = self).all()
     def __unicode__(self):
         return str(self.id)
 
 class Answer(models.Model):
+    taskinstance = models.ForeignKey(TaskInstance)
     executor = models.ForeignKey(User, blank = True)
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
     status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='ST', blank=True)
 
     def __unicode__(self):
         return str(self.id)
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            transaction = AccountTransaction(owner = self.executor.profile.account,amount = 0.03, type = 'EG', description = 'answer for task was provided')
+            transaction.save()
+        super(Answer, self).save(*args, **kwargs)
 
 class AnswerItem(models.Model):
     answer = models.ForeignKey(Answer, blank = True)

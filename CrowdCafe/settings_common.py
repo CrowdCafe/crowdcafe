@@ -1,7 +1,34 @@
+#!/usr/bin/env python
+#coding: utf8 
+
 # Django settings for CrowdCafe project.
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 
-
+TASK_CATEGORY_DETAILS = [
+    {
+        'id':'CF',
+        'title':'Caffè',
+        'cost':0.03,
+        'icon':'cafe/img/icons/caffe.jpg',
+        'time':'less than 10 sec',
+        'description':'No typing, only clicking and swiping. No learning.'
+    },{
+        'id':'CP',
+        'title':'Cappuccino',
+        'cost':0.35,
+        'icon':'cafe/img/icons/cappuccino.png',
+        'time':'less than 2 min',
+        'description':'Some typing, some learning.'
+        
+    },{   
+        'id':'WN',
+        'title':'Wine',
+        'cost':1,
+        'icon':'cafe/img/icons/wine.png',
+        'time':'more than 2 min',
+        'description':'Custom tasks.'
+    }
+]
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

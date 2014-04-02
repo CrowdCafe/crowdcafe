@@ -51,7 +51,8 @@
 						</td>
 						<td>
 							<!--a href='#' ><i class="fa fa-pencil-square-o"></i> Edit</a--> |
-							<a href='{% url "kitchen-task-delete" task.id%}' ><i class="fa fa-trash-o"></i> Delete</a>
+							<a href='{% url "kitchen-task-delete" task.id%}' ><i class="fa fa-trash-o"></i> Delete</a> |
+							<a href='{% url "api-task-answers" task.id%}' ><i class="fa fa-file-text-o"></i> JSON</a>
 						</td>
 					</tr>
 					{% endfor%}

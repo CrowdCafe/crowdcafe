@@ -41,6 +41,9 @@ class Account(models.Model):
     @property
     def balance(self):
         return self.total_deposit + self.total_earning - self.total_spending
+    @property
+    def transactions(self):
+        return AccountTransaction.objects.filter(owner = self).all()
 
 TRANSACTION_TYPE = (('DT','deposit'),('EG','earning'),('SG','spending'))
 #CURRENCY_TYPE = (('RL','real'),('VL','virtual'))
@@ -51,3 +54,11 @@ class AccountTransaction(models.Model):
     type = models.CharField(max_length=2, choices=TRANSACTION_TYPE)
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False) 
     description = models.CharField(max_length=1000, blank = True)
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            if self.type == 'EG':
+                self.owner.total_earning +=self.amount
+            if self.type == 'SG':
+                self.owner.total_spending -=self.amount
+            self.owner.save()
+        super(AccountTransaction, self).save(*args, **kwargs)
