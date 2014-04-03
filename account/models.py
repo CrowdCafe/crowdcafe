@@ -26,10 +26,6 @@ class Profile(models.Model):
             return 'https://facebook.com/'+str(self.user.username.encode('utf-8'))
         else:
             return 'http://www.gravatar.com/' + hashlib.md5(self.user.email.lower()).hexdigest() 
-
-    def save(self, *args, **kwargs):
-        account, created = Account.objects.get_or_create(profile=self)
-        account.save()
 #------------------------
 
 class Account(models.Model):
