@@ -28,7 +28,7 @@ def Home(request):
 		return redirect('cafe-welcome')
 @login_required 
 def TaskList(request):
-	tasks = Task.objects.filter(status = 'ST').all()
+	tasks = Task.objects.filter(status = 'ST').order_by('-date_created').all()
 	tasks_available = []
 	for task in tasks:
 		if instancesAvailableExist(task,request.user):
@@ -47,7 +47,12 @@ def TaskInstanceAssign(request, task_id):
 def TaskInstanceExecute(request, instance_id): 
 	taskinstance = get_object_or_404(TaskInstance,pk = instance_id)
 	return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))
-
+@login_required 
+def TaskInstanceSkip(request, instance_id): 
+	skipped_instance = get_object_or_404(TaskInstance,pk = instance_id)
+	taskinstance = TaskInstance.objects.filter(pk__gt = instance_id,task = skipped_instance.task).all()[0]
+	return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': taskinstance.id}))
+	
 @login_required 
 def TaskInstanceComplete(request, instance_id): 
 	taskinstance = get_object_or_404(TaskInstance,pk = instance_id)

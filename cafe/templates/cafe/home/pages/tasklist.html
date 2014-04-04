@@ -1,5 +1,6 @@
 {% extends 'cafe/ios7base.html'%}
 {%load static%}
+
 {% block navigation%}
 <!-- Top Navbar-->
 <div class="navbar">
@@ -26,7 +27,7 @@
 								<div class="item-title">{{task.title}}</div>
 								<div class="item-after">{{task.amount_instances}}</div>
 							</div>
-							<div class="item-subtitle">{{task.description}}</div>
+							<div class="item-text">{{task.description}} <br> <i>Published {{task.date_created|timesince}} ago</i></div>
 						</div></a>
 					</li>
 					{% endfor %}

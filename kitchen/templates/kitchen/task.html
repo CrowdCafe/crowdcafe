@@ -1,110 +1,92 @@
 {% extends 'kitchen/kitchen.html'%}
 {%load static%}
 
-{% block kitchen%}
 
+{% block kitchen%}
 <!-- content-8  -->
 <section class="content-8 v-center">
 	<div>
 		<div class="container">
 			<form method='POST' action='{% url 'kitchen-task-save' %}' enctype="multipart/form-data">
 				{% csrf_token %}
+
+				<div class="row">
+					<div class="span6">
+						<p class='lead'>1. Title</p>
+						<input type='text' name='task_title' style="width:100%;padding:10px 0px;" placeholder='Sentiment Analysis'>
+					</div>
+					<div class="span6">
+						<p class='lead'>2. Instructions</p>
+						<input type='text' name='task_description' style="width:100%;padding:10px 0px;" placeholder='Swipe each tweet and pick a sentiment'>
+					</div>
+				</div>
+				<div class='row'>
+					<div class="span6">
+						<p class='lead'>3. Category</p>
+						<label class="radio">
+							<input type="radio" name="task_category" id="optionsRadios2" value="CF" data-toggle="radio" checked="checked">
+							<b>Caffè</b> (0.03&cent; / 10sec)
+						</label>
+
+						<label class="radio">
+							<input type="radio" name="task_category" id="optionsRadios3" value="CP" data-toggle="radio">
+							<b>Cappuccino</b> (0.33&cent; / 2min)
+						</label>
+						<label class="radio">
+							<input type="radio" name="task_category" id="optionsRadios4" value="WN" data-toggle="radio">
+							<b>Wine</b> (1&euro; custom time / custom actions)
+						</label>
+					</div>
+
+					<div class="span6">
+						<p class='lead'>4. User Interface Template (gist raw link)</p>
+						<input  class='block'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' value='https://gist.githubusercontent.com/pavelk2/9953625/raw/34a6b17aa103237a230d0f798557d298f471d709/crowdcafe_template_test.html' >
+				
+					</div>
+				</div>
+				<div class="row">
+					<div class="span6">
+						<p class='lead'>5. Dataset</p>
+						<label class="uploadbutton">
+							<div class="btn"  style="width:100%;padding:10px 0px;">Upload</div>
+							<p><a href = '{% static "files/dataset_template.csv" %}' target='_blank'>dataset template</a></p>
+							<input type="file" name='dataset' onchange="this.previousSibling.previousSibling.innerHTML = this.value"/>
+						</label>
+					</div>
+					<div class="span6">
+						<p class='lead'>5. Feed</p>
+						<input  class='block'  type='text' style='float:left;margin-top:2px;width:15%;text-align: center;' name='feed_amount' value='20' >
+						<input type='text' class='block' name='feed_handler' style='float: left;width: 25%;margin-top: 2px;' placeholder='trento'>
+						<select name="feed-type" value="0" style="width:60%;">
+							<option value="0" selected>Twitter</option>
+							<option value="1" >Facebook</option>
+							<option value="2" >Instagram</option>
+						</select>
+					</div>
+				</div>
 				<div class="row">
 					<div class="span4">
-						<p class='lead center'>Check Existing Tasks</p>
-						<iframe width='300px' height="450px" src="http://kucherbaev.com/research/crowdjsonp/"></iframe>
+						<span>Data items/instance:</span> <input  class='block'  type='text' style='width: 50px;text-align: center;padding-right: 15px;' name='dataitems_per_instance' value='5' >
 					</div>
-					<div class='span8'>
-						<div class="row">
-							<div class="span4">
-								<p class='lead'>Title</p>
-								<input type='text' name='task_title' placeholder='Sentiment Analysis'>
-							</div>
-							<div class="span4">
-								<p class='lead'>Instructions</p>
-								<input type='text' name='task_description' placeholder='Swipe each tweet and pick a sentiment'>
-							</div>
-						</div>
-						<!--div class='row'>
-							<div class="span4">
-								<p class='lead'>Category</p>
-								<label class="radio">
-									<input type="radio" name="task_category" id="optionsRadios2" value="CF" data-toggle="radio" checked="checked">
-									Caffè (0.03&cent; / 10sec)
-								</label>
+					<div class="span4">
+						<span>Min answers/data item:</span>
+						<input type='text' style='width: 50px;text-align: center;padding-right: 15px;'  name='min_answers_per_item' value='1' >
 
-								<label class="radio">
-									<input type="radio" name="task_categoryDisabled" id="optionsRadios3" value="CP" data-toggle="radio" disabled="">
-									Soon Cappuccino (0.33&cent; / 2min)
-								</label>
-								<label class="radio">
-									<input type="radio" name="task_categoryDisabled" id="optionsRadios4" value="WN" data-toggle="radio" disabled="">
-									Soon Wine (custom)
-								</label>
-							</div>
-
-							<div class="span4">
-								<p class='lead'>UI Template</p>
-								<label class="radio">
-									<input type="radio" name="task_uitemplate" id="optionsRadios2" value="SR" data-toggle="radio" checked="checked">
-									Swiping rows
-								</label>
-
-								<label class="radio">
-									<input type="radio" name="task_uitemplateDisabled" id="optionsRadios3" value="PC" data-toggle="radio" disabled="">
-									Soon Pair comparison
-								</label>
-								<label class="radio">
-									<input type="radio" name="task_uitemplateDisabled" id="optionsRadios4" value="SS" data-toggle="radio" disabled="">
-									Soon Subset selection
-								</label>
-							</div>
-						</div-->
-						<div class="row">
-							<div class="span4">
-								<p class='lead'>Dataset</p>
-								<label class="uploadbutton">
-									<div class="btn" >Upload</div>
-									<p><a href = '{% static "files/dataset_template.csv" %}' target='_blank'>dataset template</a></p>
-									<input type="file" name='dataset' onchange="this.previousSibling.previousSibling.innerHTML = this.value"/>
-								</label>
-							</div>
-							<div class="span4">
-								<p class='lead'>Feed</p>
-								<input  class='block'  type='text' style='float:left;margin-top:2px;width: 50px;text-align: center;padding-right: 15px;' name='feed_amount' value='20' >
-								<input type='text' class='block' name='feed_handler' style='float: left;width: 100px;margin-top: 2px;' placeholder='#trento'>
-								<select name="feed-type" value="0" class=" span2">
-									<option value="0" selected>Twitter</option>
-									<option value="1" >Facebook</option>
-									<option value="2" >Instagram</option>
-								</select>
-							</div>
-						</div>
-						<div class="row">
-							<div class="span2 offset1">
-								<span class=''>Data items/instance:</span> <input  class='block'  type='text' style='width: 50px;text-align: center;padding-right: 15px;' name='dataitems_per_instance' value='5' >
-							</div>
-							<div class="span2">
-								<span class=''>Min answers/data item:</span>
-								<input type='text' style='width: 50px;text-align: center;padding-right: 15px;'  name='min_answers_per_item' value='1' >
-
-							</div>
-							<div class="span2">
-								<span class=''>Min confidence, %:</span>
-								<input type='text' style='width: 50px;text-align: center;padding-right: 15px;'   name='min_confidence' value='50' >
-							</div>
-						</div>
-						<div class='row'>
-							<hr/>
-						</div>
-						<div class='row'>
-							<div class="span8">
-								<p class='center'> <input type = 'submit' class='btn btn-primary' value='Save The Task'></p>
-							</div>
-						</div>
 					</div>
-				</div>						
-
+					<div class="span4">
+						<span>Min confidence, %:</span>
+						<input type='text' style='width: 50px;text-align: center;padding-right: 15px;'   name='min_confidence' value='50' >
+					</div>
+				</div>
+				
+				<div class='row'>
+					<hr/>
+				</div>
+				<div class='row'>
+					<div class="span12">
+						<p class='center'> <input type = 'submit' class='btn btn-primary' value='Save task'></p>
+					</div>
+				</div>
 			</form>
 		</div>
 	</div>
@@ -112,5 +94,4 @@
 {% endblock%}
 
 {% block scripts%}
-
 {% endblock%}

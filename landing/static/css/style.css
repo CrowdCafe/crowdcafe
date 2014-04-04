@@ -1001,7 +1001,7 @@ section * {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin-bottom: 30px;
   line-height: 42px;
-  font-weight: 800;
+  /*font-weight: 800;*/
   letter-spacing: -1px;
 }
 @media (max-width: 767px) {

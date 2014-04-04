@@ -1,10 +1,14 @@
 {% extends 'cafe/ios7base.html'%}
 {%load static%}
+
+{% load customtags %}
+
 {% block navigation%}
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="left"><a href="{% url 'cafe-task-list'%}" class="link">List</a></div>
 		<div class="center sliding task-title">{{taskinstance.task.title}}</div>
+		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link">Skip</a></div>
 	</div>
 </div>
 {% endblock%}
@@ -17,34 +21,12 @@
 		<div class="page-content">
 			<form method="POST" action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
 				{% csrf_token %}
-				<div class="content-block-title task-description">{{taskinstance.task.description}}</div>
+				<div class="content-block task-description">{{taskinstance.task.description}}</div>
 				<div class="list-block media-list">
 					<ul class='instance-list'>
 						{% for item in taskinstance.dataitems%}
-						<li class="swipeout dataitem" instance-id="{{item.id}}">
-							<input type = 'hidden' name='dataitem_{{item.id}}_id' value='{{item.id}}'>
-							<input type = 'hidden' name='dataitem_{{item.id}}_answer' class='dataitem_answer' value='none'>
-							<div class="swipeout-content" style="-webkit-transform: translate3d(0px, 0px, 0px);">
-								<a href="#" class="item-link item-content">
-									<div class="item-inner">
-										<div class="item-title-row">
-											<div class="item-title">{{item.value.user.screen_name}}</div>
-											<div class="item-after">{{item.additional}}</div>
-										</div>
-										<!--div class="item-subtitle">{{item.value.source}}</div-->
-										<div class="item-text">{{item.value.text}}</div>
-									</div>
-								</a>
-							</div>
-							<div class="swipeout-actions">
-								<div class="swipeout-actions-inner from-left">
-									<a href="#" class="demo-actions dontknow swipeout-delete" answer="dontknow">?</a>
-									<a href="#" class="demo-actions positive swipeout-delete" answer="positive">+</a>
-									<a href="#" class="demo-actions neutral swipeout-delete" answer="neutral">~</a>
-									<a href="#" class="demo-actions negative swipeout-delete" answer="negative">-</a>
-								</div>
-							</div>
-						</li>
+						{% include_external taskinstance.task.id %}
+						
 						{%endfor%}
 					</ul>
 				</div>

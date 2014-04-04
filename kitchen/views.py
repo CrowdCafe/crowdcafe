@@ -10,6 +10,7 @@ from social_auth.models import UserSocialAuth
 from firebase import Firebase
 from django.core.files.storage import default_storage as s3_storage
 
+import re
 import csv
 import urllib2
 import StringIO
@@ -46,13 +47,18 @@ def TaskDelete(request, task_id):
 def TaskSave(request):
 
 	print request.FILES
+	template_url = request.POST['userinterface_template']
+	template_html = urllib2.urlopen(template_url).read()
+
 	new_task = Task(
 		owner = request.user, 
 		title = request.POST['task_title'],
 		description = request.POST['task_description'],
 		dataitems_per_instance = int(request.POST['dataitems_per_instance']),
 		min_answers_per_item = int(request.POST['min_answers_per_item']),
-		min_confidence = int(request.POST['min_confidence'])
+		min_confidence = int(request.POST['min_confidence']),
+		template_html  = template_html,
+		template_url = template_url
 	)
 	new_task.save()
 
@@ -75,9 +81,9 @@ def TaskSave(request):
 		if 'dataset' in request.FILES:
 			new_task.dataset_file.save(str(new_task.id)+request.FILES['dataset'].name, request.FILES['dataset'])
 			new_task.save()
-			dataset = collectDataFromCSV(task.dataset_file.url)
+			dataset = collectDataFromCSV(new_task.dataset_file.url)
 			# Save dataset to Firebase
-			fromCSVToFirebase(new_task.dataset_file.url,r['name'],'dataset')
+			#fromCSVToFirebase(new_task.dataset_file.url,r['name'],'dataset')
 			#----------------------------------
 		if 'options' in request.FILES:
 			new_task.options_file.save(str(new_task.id)+request.FILES['options'].name, request.FILES['options'])
@@ -100,7 +106,8 @@ def createTaskInstances(task,dataset):
 
 def collectDataFromCSV(url):
 	dataset = []
-	data = scraperwiki.scrape(csvfile_url)
+	pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
+	data = scraperwiki.scrape(url)
 	reader = csv.reader(data.splitlines(), delimiter = ';')
 	i = 0
 	for row in reader:    
@@ -109,7 +116,7 @@ def collectDataFromCSV(url):
 		else:
 			dataitem = {}
 			for j in range(len(row)):
-				dataitem[headers[j]]=row[j]
+				dataitem[headers[j]] = pattern.sub(u'\uFFFD', row[j]).decode('latin-1').encode("utf-8")
 			dataset.append(dataitem)
 		i+=1
 	print dataset;

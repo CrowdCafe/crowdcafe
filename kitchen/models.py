@@ -32,9 +32,14 @@ class Task(models.Model):
     dataitems_per_instance = models.IntegerField(default = 5)
     min_answers_per_item = models.IntegerField(default = 1)
     min_confidence = models.IntegerField(default = 50)
+
+    template_url = models.URLField(null = True, blank = True)
+    template_html = models.TextField(null = True, blank = True)
+    
     @property
     def amount_instances(self):
         return TaskInstance.objects.filter(task = self).count()
+
 class TaskInstance(models.Model):
     task = models.ForeignKey(Task)
     status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='ST')

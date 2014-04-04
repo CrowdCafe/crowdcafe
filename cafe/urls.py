@@ -16,5 +16,6 @@ urlpatterns = patterns('',
     url(r'tasks/$', views.TaskList, name='cafe-task-list'),
     url(r'tasks/(?P<task_id>\d+)/assign/$', views.TaskInstanceAssign, name='cafe-taskinstance-assign'),
     url(r'instance/(?P<instance_id>\d+)/$', views.TaskInstanceExecute, name='cafe-taskinstance-execute'),
+    url(r'instance/(?P<instance_id>\d+)/skip/$', views.TaskInstanceSkip, name='cafe-taskinstance-skip'),
     url(r'instance/(?P<instance_id>\d+)/complete/$', views.TaskInstanceComplete, name='cafe-taskinstance-complete'),
 )
