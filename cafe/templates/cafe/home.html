@@ -4,6 +4,7 @@
 <!-- Top Navbar-->
 <div class="navbar">
   <div class="navbar-inner">
+    <div class="left"><a href="{% url 'cafe-about'%}" class="link">About</a></div>
     <div class="center sliding">CrowdCafe</div>
     <div class="right"><a href="{% url 'cafe-account'%}" class="link">Account</a></div>
   </div>
@@ -19,7 +20,7 @@
   <div data-page="index" class="page">
     <!-- Scrollable page content-->
     <div class="page-content">
-      <div class="content-block-title">You can perform tasks</div>
+      <div class="content-block-title">You can perform tasks from categories:</div>
       <div class="list-block media-list">
         <ul>
           <li><a href="{% url 'cafe-task-list'%}" class="item-link item-content">
@@ -32,7 +33,7 @@
               <div class="item-subtitle">less than 10 sec</div>
               <div class="item-text">No typing, only clicking and swiping. No learning.</div>
             </div></a></li>
-            <li><a href="#" class="item-link item-content">
+            <!--li><a href="#" class="item-link item-content">
               <div class="item-media"><img src="{% static 'cafe/img/icons/cappuccino.png' %}" width="80"></div>
               <div class="item-inner">
                 <div class="item-title-row">
@@ -51,7 +52,7 @@
                   </div>
                   <div class="item-subtitle">more than 2 min</div>
                   <div class="item-text">Custom tasks.</div>
-                </div></a></li>
+                </div></a></li-->
               </ul>
             </div>
           </div>

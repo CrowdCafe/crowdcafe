@@ -1,0 +1,107 @@
+{% extends 'cafe/ios7base.html'%}
+{%load static%}
+{% block navigation%}
+<!-- Top Navbar-->
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="left"><a href="{% url 'cafe-home'%}" class="link">Home</a></div>
+		<div class="center sliding">About</div>
+	</div>
+</div>
+{% endblock%}
+
+{% block content%}
+<!-- Pages, because we need fixed-through navbar and toolbar, it has additional appropriate classes-->
+<div class="pages navbar-through ">
+	<!-- Page, data-page contains page name-->
+	<div data-page="index" class="page">
+		<!-- Scrollable page content-->
+		<div class="page-content">
+			<div class="media-picture">
+				<img src="{% static 'img/bg/cafe.jpg'%}">
+			</div>
+			<div class="content-block"><h1 class='center'>Welcome to CrowdCafe</h1></div>
+
+			
+			<div class="content-block"><b>CrowdCafe</b> - is a microtask marketplace, where one people publish data classification tasks, and others - perform them for a reward.</div>
+			<div class="content-block-title "><h3>Tasks</h3></div>
+			<div class="content-block ">
+				All tasks are grouped in 3 categories (Caffè, Cappuccino and Wine) with a fixed reward amount and a recommended execution time. The approximate wage on CrowdCafe is <b>10&euro;/hour</b>.
+			</div>
+			<div class="list-block media-list">
+				<ul>
+					<li>
+						<a href="#" class="item-link item-content">
+							<div class="item-media"><img src="{% static 'cafe/img/icons/caffe.jpg' %}" width="80"></div>
+							<div class="item-inner">
+								<div class="item-title-row">
+									<div class="item-title">Caffè</div>
+									<div class="item-after">0.03&euro;</div>
+								</div>
+								<div class="item-subtitle">less than 10 sec</div>
+								<div class="item-text">No typing, only clicking and swiping. No learning.</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#" class="item-link item-content">
+							<div class="item-media"><img src="{% static 'cafe/img/icons/cappuccino.png' %}" width="80"></div>
+							<div class="item-inner">
+								<div class="item-title-row">
+									<div class="item-title">Cappuccino <i>(coming soon)</i></div>
+									<div class="item-after">0.35&euro;</div>
+								</div>
+								<div class="item-subtitle">less than 2 min</div>
+								<div class="item-text">Some typing, some learning.</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#" class="item-link item-content">
+							<div class="item-media"><img src="{% static 'cafe/img/icons/wine.png' %}" width="80"></div>
+							<div class="item-inner">
+								<div class="item-title-row">
+									<div class="item-title">Wine <i>(coming soon)</i></div>
+									<div class="item-after">1&euro;</div>
+								</div>
+								<div class="item-subtitle">more than 2 min</div>
+								<div class="item-text">Custom tasks.</div>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<div class="content-block-title "><h3>Rewards</h3></div>
+
+			<div class="content-block ">
+				The money people earn on CrowdCafe people can change on rewards, such as free bus and train tickets, free coffee and deserts in local bars, movie and museum tickets, Bitcoins, Amazon credits and many other great things.
+			</div>
+			<div class="content-block-title "><h3>Quality control</h3></div>
+			<div class="content-block ">
+				There are <b>real people</b> performing <b>real tasks</b> with <b>real data</b>, published by <b>real people</b> paying <b>real money</b>. So there is no place for cheating or any inappropriate behavior on the platform.
+
+			</div>
+			<div class="content-block ">
+				CrowdCafe brings the best experience to tasks executors, so in case of not respectful behavior from the executors side we have to apply penalties and blocking accounts of violators.
+			</div>
+			<div class="content-block-title "><h3>Who are the people publishing tasks?</h3></div>
+			<div class="content-block ">
+				People who publish tasks on this platform are academic researchers, commercial companies and governmental organisations. They publish here tasks which are very hard to perform automatically using any algorithms, while humans can still perform them well. The results collected in these tasks have a great scientific and commercial impact.
+			</div>
+			<div class="content-block-title "><h3>Who has created CrowdCafe?</h3></div>
+			<div class="content-block ">
+				CrowdCafe was developed as an academic project at the University of Trento (Italy) by PhD students from the Social Informatics research group.
+			</div>
+			<div class="content-block ">
+				Feel free to contact us: <br/>
+				<i>http://crowdcafe.io</i><br/>
+				<i>team@crowdcafe.io</i>
+			</div>
+			<div class="media-picture">
+					<img src="{% static 'img/bg/trento.jpg'%}">
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock%}

@@ -9,6 +9,10 @@ import json
 
 def Welcome(request):
 	return render_to_response('cafe/welcome.html', context_instance=RequestContext(request))
+
+def About(request):
+	return render_to_response('cafe/home/pages/about.html', context_instance=RequestContext(request))
+
 @login_required 
 def Account(request):
 	return render_to_response('cafe/home/pages/account.html', context_instance=RequestContext(request))

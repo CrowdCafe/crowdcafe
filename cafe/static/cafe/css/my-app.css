@@ -17,3 +17,7 @@
 .avatar{
 	border-radius: 50%;
 }
+.media-picture img {
+	width: 100%;
+	display: block;
+}
