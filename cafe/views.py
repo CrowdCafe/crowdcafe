@@ -9,7 +9,7 @@ import json
 
 def Welcome(request):
 	if request.user.is_authenticated():
-		return render_to_response('cafe/home.html', context_instance=RequestContext(request))
+		return redirect('cafe-home')
 	return render_to_response('cafe/welcome.html', context_instance=RequestContext(request))
 
 def About(request):
