@@ -19,7 +19,7 @@
 	<div data-page="page1" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
-			<form method="POST" action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
+			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
 				{% csrf_token %}
 				<div class="content-block task-description">{{taskinstance.task.description}}</div>
 				<div class="list-block media-list">
@@ -39,4 +39,12 @@
 		</div>
 	</div>
 </div>
+{% endblock%}
+
+{% block scripts%}
+<script>
+$$('.button-submit').tap(function(){
+	document.taskForm.submit();
+});
+</script>
 {% endblock%}

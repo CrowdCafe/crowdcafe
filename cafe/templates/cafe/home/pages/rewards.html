@@ -35,7 +35,7 @@
 								{% if reward.image_url%}
 								<div class="item-media"><img src="{{reward.image_url}}" width="80"></div>
 								{% endif%}
-								<div class="item-inner">
+								<div class="item-inner reward">
 									<div class="item-title-row">
 										<div class="item-title">{{reward.title}}</div>
 										<div class="item-after">{{reward.cost}}&euro;</div>
@@ -61,4 +61,14 @@
 		</div>
 	</div>
 </div>
+
+{% endblock%}
+{% block scripts%}
+<script>
+$$('.reward').tap(function(){
+	myApp.confirm('Do you really want to buy this reward?',function(){
+		myApp.alert('Great!');
+	});
+});
+</script>
 {% endblock%}

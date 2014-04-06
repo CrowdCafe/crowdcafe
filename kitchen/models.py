@@ -69,7 +69,7 @@ class Answer(models.Model):
         return str(self.id)
     def save(self, *args, **kwargs):
         if self.pk is None:
-            transaction = AccountTransaction(owner = self.executor.profile.account,amount = 0.03, type = 'EG', description = 'answer for task was provided')
+            transaction = AccountTransaction(owner = self.executor.profile.account,amount = 0.03, type = 'EG', description = 'task_instance ['+str(self.taskinstance.id)+'] completed')
             transaction.save()
         super(Answer, self).save(*args, **kwargs)
 

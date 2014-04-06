@@ -28,9 +28,16 @@
 				<div class="content-block ">
 					<p><hr/></p>
 				</div>
-				<p><a href="{% url 'logout'%}" onclick="window.location ='{% url 'logout'%}'; " class="button button-red logout">Logout</a></p>
+				<p><a href="{% url 'logout'%}" class="button button-red logout">Logout</a></p>
 			</div>
 		</div>
 	</div>
 </div>
+{% endblock%}
+{% block scripts%}
+<script>
+$$('.logout').tap(function(){
+	window.location ='{% url 'logout'%}';
+});
+</script>
 {% endblock%}

@@ -39,7 +39,7 @@ class Account(models.Model):
         return self.total_deposit + self.total_earning - self.total_spending
     @property
     def transactions(self):
-        return AccountTransaction.objects.filter(owner = self).all()
+        return AccountTransaction.objects.filter(owner = self).order_by('-date_created').all()
 
 TRANSACTION_TYPE = (('DT','deposit'),('EG','earning'),('SG','spending'))
 #CURRENCY_TYPE = (('RL','real'),('VL','virtual'))
