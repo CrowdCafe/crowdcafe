@@ -1,13 +1,38 @@
-<section class="header-10-sub v-center bg-midnight-blue welcome-block-primo">
+{%load static%}
+<style>
+.header-10-sub .background{
+	background: #ff884a; /* Old browsers */
+	background: -moz-linear-gradient(top,  #ff884a 0%, #fc3c36 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ff884a), color-stop(100%,#fc3c36)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #ff884a 0%,#fc3c36 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #ff884a 0%,#fc3c36 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #ff884a 0%,#fc3c36 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #ff884a 0%,#fc3c36 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff884a', endColorstr='#fc3c36',GradientType=0 ); /* IE6-9 */
+}
+.hero-unit p{
+	color:white !important;
+	font-weight: 100  !important;
+}
+.hero-unit h4{
+	color:white !important;
+	font-weight: 200  !important;
+}
+.header-10-sub > div > .container{
+	padding-top:20px !important;
+	padding-bottom:20px !important;
+}
+</style>
+<section class="header-10-sub welcome-block-primo">
 	<div class="background">&nbsp;</div>
 	<div>
 		<div class="container">
 			<div class="hero-unit">
-				<h1>CrowdCafe</h1>
+				<p><img src="{% static 'img/logo100.png'%}" class='logo' ></p>
+				<h4>CrowdCafe</h4>
 				<p>
 					You perform simple tasks and earn rewards, such as coffee and deserts in stores around you.
 				</p>
-
 				<p>
 					<a href="{% url 'socialauth_begin' 'facebook' %}" class="btn btn-block btn-facebook-inversed btn-lg"><i class="fa fa-facebook"></i> Connect with Facebook </a>
 					<a href="{% url 'socialauth_begin' 'google-oauth2' %}" class="btn btn-block btn-googleplus-inversed btn-lg"><i class="fa fa-google-plus"></i> Connect with Google+ </a>
