@@ -35,7 +35,7 @@
     
         // Default Parameters
         app.params = {
-            cache: true,
+            cache: false,
             cacheDuration: 1000 * 60 * 10, // Ten minutes 
             preloadPreviousPage: true,
             swipeBackPage: true,
@@ -43,7 +43,7 @@
             swipeBackPageActiveArea: 30,
             swipeBackPageBoxShadow: true,
             // Ajax
-            ajaxLinks: false, // or CSS selector
+            ajaxLinks: true, // or CSS selector
             // Panels
             panelsCloseByOutside: true,
             panelsVisibleZIndex: 6000,
