@@ -119,7 +119,6 @@ def collectDataFromCSV(url):
 				dataitem[headers[j]] = pattern.sub(u'\uFFFD', row[j]).decode('latin-1').encode("utf-8")
 			dataset.append(dataitem)
 		i+=1
-	print dataset;
 	return dataset
 
 def collectDataFromTwitter(keyword, amount):
@@ -132,7 +131,6 @@ def collectDataFromTwitter(keyword, amount):
 	#f = Firebase(settings.FIREBASE['base_url']+'tasks/'+r['name']+'/dataset/', auth_token=settings.FIREBASE['auth_token'])
 	
 	dataset = apicall.getByKeyword(keyword, amount, False)
-	print 
 	return dataset
 '''
 
