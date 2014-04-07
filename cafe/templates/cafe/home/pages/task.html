@@ -44,11 +44,10 @@
 <script>
 $$('.open-popup').tap(function(){
 	var button = $$(this);
-	if (button.attr('wikipedia'))
-		myApp.get('/api/wikipedia/read/?url='+button.attr('wikipedia'),function(data){
-			console.log(data);
-			$$(button.attr('data-popup')+' .content-block').html(data);
-		});
+	if (button.attr('iframe')){
+		var content = '<iframe src="'+button.attr('iframe')+'" height="'+$$(window).height()+'"></iframe>'
+		$$(button.attr('data-popup')+' .content-block').html(content);
+	}
 });
 
 $$('.button-submit').tap(function(){

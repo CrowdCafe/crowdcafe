@@ -1,14 +1,14 @@
 .list-block .swipeout-actions-inner a.positive{
-  background: #4CD964;
+	background: #4CD964;
 }
 .list-block .swipeout-actions-inner a.negative{
-  background: #FF3B30;
+	background: #FF3B30;
 }
 .list-block .swipeout-actions-inner a.neutral{
-  background: #D6CEC3;
+	background: #D6CEC3;
 }
 .list-block .swipeout-actions-inner a.dontknow{
-  background: #898C90;
+	background: #898C90;
 }
 .list-block .item-text{
 	height:auto;
@@ -20,4 +20,14 @@
 .media-picture img {
 	width: 100%;
 	display: block;
+}
+iframe{
+	width: 100%;
+	margin: 0px;
+	display: inline-block;
+	border: none;
+}
+.iframe .content-block{
+	margin: 0px;
+	padding: 0px;
 }
