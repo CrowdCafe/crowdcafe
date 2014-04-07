@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'tasks/(?P<task_id>\d+)/instance/$', views.getInstance, name='api-get-instance'),
 
     url(r'tasks/(?P<task_id>\d+)/answers/$', views.getAnswers, name='api-task-answers'),
+    url(r'wikipedia/read/$', views.readUrl, name='api-url-read'),
 )

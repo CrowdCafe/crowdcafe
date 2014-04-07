@@ -26,13 +26,12 @@
 					<ul class='instance-list'>
 						{% for item in taskinstance.dataitems%}
 						{% include_external taskinstance.task.id %}
-						
 						{%endfor%}
 					</ul>
 				</div>
 				<div class="content-block">
 					<div class="row">
-						<div class="col-100"><a href="#" class="button button-big button-submit" onclick="$('form').submit();">Complete</a></div>
+						<div class="col-100"><a href="#" class="button button-big button-submit">Complete</a></div>
 					</div>
 				</div>
 			</form>
@@ -43,6 +42,15 @@
 
 {% block scripts%}
 <script>
+$$('.open-popup').tap(function(){
+	var button = $$(this);
+	if (button.attr('wikipedia'))
+		myApp.get('/api/wikipedia/read/?url='+button.attr('wikipedia'),function(data){
+			console.log(data);
+			$$(button.attr('data-popup')+' .content-block').html(data);
+		});
+});
+
 $$('.button-submit').tap(function(){
 	document.taskForm.submit();
 });
