@@ -12,7 +12,7 @@ from account.models import AccountTransaction
 
 STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'),)
 CATEGORY_CHOISE = (('CF', 'Caffè'), ('CP', 'Cappuccino'), ('WN', 'Wine'),)
-TEMPLATE_CHOISE = (('PC', 'Pair comparison'), ('SR', 'Swiping rows'), ('SS', 'Subset selection'),)
+TEMPLATE_CHOISE = (('SF', 'Single form'), ('LT', 'List'), ('TL', 'Tiles'),)
 
 class Task(models.Model):
     owner = models.ForeignKey(User)
@@ -67,6 +67,11 @@ class Answer(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+    @property
+    def answeritems(self):
+        return AnswerItem.objects.filter(answer = self).all()
+
+
     def save(self, *args, **kwargs):
         if self.pk is None:
             transaction = AccountTransaction(owner = self.executor.profile.account,amount = 0.03, type = 'EG', description = 'task_instance ['+str(self.taskinstance.id)+'] completed')
@@ -79,3 +84,10 @@ class AnswerItem(models.Model):
     value = jsonfield.JSONField()
     def __unicode__(self):
         return str(self.id)
+    @property
+    def question(self):
+        return self.dataitem.value
+    @property
+    def worker_id(self):
+        return self.answer.executor.id
+

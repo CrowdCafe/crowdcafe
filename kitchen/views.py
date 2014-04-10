@@ -57,13 +57,14 @@ def TaskSave(request):
 		dataitems_per_instance = int(request.POST['dataitems_per_instance']),
 		min_answers_per_item = int(request.POST['min_answers_per_item']),
 		min_confidence = int(request.POST['min_confidence']),
+		template = request.POST['ui_type'],
 		template_html  = template_html,
 		template_url = template_url
 	)
 	new_task.save()
 
 	# Firebase syncronisation
-	f = Firebase(settings.FIREBASE['base_url']+'tasks', auth_token=settings.FIREBASE['auth_token'])
+	'''f = Firebase(settings.FIREBASE['base_url']+'tasks', auth_token=settings.FIREBASE['auth_token'])
 	r = f.push({
 		'id': new_task.id, 
 		'title': new_task.title, 
@@ -72,23 +73,22 @@ def TaskSave(request):
 		})
 	print r['name']
 	f = Firebase(settings.FIREBASE['base_url']+'tasks/'+r['name']+'/dataset/', auth_token=settings.FIREBASE['auth_token'])
+	'''
 	dataset = []
 
 	# -----------------------
-	if request.POST['feed_handler'] != '':
+	dataset_option = request.POST['dataset_option_selected']
+	if dataset_option == 'survey':
+		dataset = [{'no data':'survey'}]
+	elif dataset_option == 'dataset':
+		if request.FILES:
+			if 'dataset' in request.FILES:
+				new_task.dataset_file.save(str(new_task.id)+request.FILES['dataset'].name, request.FILES['dataset'])
+				new_task.save()
+				dataset = collectDataFromCSV(new_task.dataset_file.url)
+	elif dataset_option == 'feed':	
 		dataset = collectDataFromTwitter(request.POST['feed_handler'], int(request.POST['feed_amount']))	
-	if request.FILES:
-		if 'dataset' in request.FILES:
-			new_task.dataset_file.save(str(new_task.id)+request.FILES['dataset'].name, request.FILES['dataset'])
-			new_task.save()
-			dataset = collectDataFromCSV(new_task.dataset_file.url)
-			# Save dataset to Firebase
-			#fromCSVToFirebase(new_task.dataset_file.url,r['name'],'dataset')
-			#----------------------------------
-		if 'options' in request.FILES:
-			new_task.options_file.save(str(new_task.id)+request.FILES['options'].name, request.FILES['options'])
-			new_task.save()
-			#----------------------------------
+	
 	if len(dataset)>0:
 		createTaskInstances(new_task,dataset)
 

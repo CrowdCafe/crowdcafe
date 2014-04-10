@@ -1,7 +1,9 @@
 .btn{
 	border:2px solid;
 }
-
+.btn-toolbar .btn-group .btn{
+	border:none;
+}
 label.uploadbutton input {
 	display: none;   
 }
@@ -10,4 +12,13 @@ iframe{
 }
 .logo{
 	width:50px;
+}
+label.radio{
+	text-align: left;
+}
+.row.dataset_options > div{
+	display:none;
+}
+.row.dataset_options > div.active{
+	display:block;
 }

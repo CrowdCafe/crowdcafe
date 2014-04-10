@@ -7,54 +7,97 @@
 <section class="content-8 v-center">
 	<div>
 		<div class="container">
+			<h1>Create a  task in 5 easy steps:</h1>
 			<form method='POST' action='{% url 'kitchen-task-save' %}' enctype="multipart/form-data">
 				{% csrf_token %}
 
 				<div class="row">
 					<div class="span6">
 						<p class='lead'>1. Title</p>
+						<span>Be specific. 1 - 5 words only. </span>
 						<input type='text' name='task_title' style="width:100%;padding:10px 0px;" placeholder='Sentiment Analysis'>
 					</div>
 					<div class="span6">
 						<p class='lead'>2. Instructions</p>
-						<input type='text' name='task_description' style="width:100%;padding:10px 0px;" placeholder='Swipe each tweet and pick a sentiment'>
+						<span>Clear instructions. Not more than 140 characters.</span>
+						<textarea type='text' name='task_description' style="width:100%;padding:10px 0px;"></textarea>
 					</div>
 				</div>
 				<div class='row'>
-					<div class="span6">
+					<hr/>
+				</div>
+				<div class='row'>
+					<div class="span4">
 						<p class='lead'>3. Category</p>
 						<label class="radio">
-							<input type="radio" name="task_category" id="optionsRadios2" value="CF" data-toggle="radio" checked="checked">
+							<input type="radio" name="task_category" id="optionsRadios1" value="CF" data-toggle="radio" checked="checked">
 							<b>Caffè</b> (0.03&cent; / 10sec)
 						</label>
 
 						<label class="radio">
-							<input type="radio" name="task_category" id="optionsRadios3" value="CP" data-toggle="radio">
+							<input type="radio" name="task_category" id="optionsRadios2" value="CP" data-toggle="radio">
 							<b>Cappuccino</b> (0.33&cent; / 2min)
 						</label>
 						<label class="radio">
-							<input type="radio" name="task_category" id="optionsRadios4" value="WN" data-toggle="radio">
+							<input type="radio" name="task_category" id="optionsRadios3" value="WN" data-toggle="radio">
 							<b>Wine</b> (1&euro; custom time / custom actions)
 						</label>
+						<label class="radio">
+							<input type="radio" name="task_category" id="optionsRadios4" value="TT" data-toggle="radio">
+							<b>Test</b> (0&euro; for testing only)
+						</label>
 					</div>
+					<div class="span4">
+						<p class='lead'>4. UI Type</p>
+						<label class="radio">
+							<input type="radio" name="ui_type" id="uitype1" value="SF" data-toggle="radio" checked="checked">
+							<b>Single form</b>
+						</label>
 
-					<div class="span6">
-						<p class='lead'>4. User Interface Template (gist raw link)</p>
-						<input  class='block'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' value='https://gist.githubusercontent.com/pavelk2/9953625/raw/34a6b17aa103237a230d0f798557d298f471d709/crowdcafe_template_test.html' >
-				
+						<label class="radio">
+							<input type="radio" name="ui_type" id="uitype2" value="LT" data-toggle="radio">
+							<b>List</b>
+						</label>
+						<label class="radio">
+							<input type="radio" name="ui_type" id="uitype3" value="TL" data-toggle="radio">
+							<b>Tiles</b>
+						</label>
+					</div>
+					<div class="span4">
+						<p class='lead'>5. UI Template</p>
+						<span>check existing <a href ="https://github.com/CrowdCafe/crowdcafe-ui-templates" target="_blank" >templates</a> on GitHub.</span>
+						<input  class='block'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' value='https://raw.githubusercontent.com/CrowdCafe/crowdcafe-ui-templates/master/entityrelationship_proof.html' placeholder= 'URL leading to raw HTML file' >
+						<span>URL leading to raw HTML file</span>
 					</div>
 				</div>
+				<div class='row'>
+					<hr/>
+				</div>
 				<div class="row">
-					<div class="span6">
-						<p class='lead'>5. Dataset</p>
+					<div class="span12">
+						<p class='lead'>6. Data <div class="btn-toolbar">
+							<div class="btn-group dataset_options">
+								<a class="btn btn-primary" block-name = "survey" href="#"><i class="fa fa-circle-o"> No data (survey)</i></a>
+								<a class="btn btn-primary" block-name = "dataset" href="#"><i class="fa fa-file-o"> Dataset .CSV</i></a>
+								<a class="btn btn-primary" block-name = "feed" href="#"><i class="fa fa-globe"> Social Network</i></a>
+							</div>
+						</div></p>
+						
+					</div>
+				</div>
+				<input type = "hidden" id="dataset_option_selected" name="dataset_option_selected" value = "">
+				<div class="row dataset_options">
+					<div class="span12 block-survey">
+						<p>No data (survey)</p>
+					</div>
+					<div class="span12 block-dataset">
 						<label class="uploadbutton">
 							<div class="btn"  style="width:100%;padding:10px 0px;">Upload</div>
 							<p><a href = '{% static "files/dataset_template.csv" %}' target='_blank'>dataset template</a></p>
 							<input type="file" name='dataset' onchange="this.previousSibling.previousSibling.innerHTML = this.value"/>
 						</label>
 					</div>
-					<div class="span6">
-						<p class='lead'>5. Feed</p>
+					<div class="span12 block-feed">
 						<input  class='block'  type='text' style='float:left;margin-top:2px;width:15%;text-align: center;' name='feed_amount' value='20' >
 						<input type='text' class='block' name='feed_handler' style='float: left;width: 25%;margin-top: 2px;' placeholder='trento'>
 						<select name="feed-type" value="0" style="width:60%;">
@@ -63,6 +106,9 @@
 							<option value="2" >Instagram</option>
 						</select>
 					</div>
+				</div>
+				<div class='row'>
+					<hr/>
 				</div>
 				<div class="row">
 					<div class="span4">
@@ -94,4 +140,18 @@
 {% endblock%}
 
 {% block scripts%}
+<script>
+$(document).ready(function(){
+	$('.dataset_options > .btn').click(function(){
+		var block_name = $(this).attr('block-name');
+
+		$('.dataset_options > *').removeClass('active');
+		$(this).addClass('active');
+		$('#dataset_option_selected').val(block_name);
+		$('.block-'+block_name).addClass('active');
+
+		return false;
+	});
+});
+</script>
 {% endblock%}

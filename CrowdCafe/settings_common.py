@@ -117,6 +117,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
+    'social_auth.context_processors.social_auth_by_name_backends',
+    'social_auth.context_processors.social_auth_backends',
+    'social_auth.context_processors.social_auth_by_type_backends',
+    'social_auth.context_processors.social_auth_login_redirect',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -126,6 +130,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'social_auth.middleware.SocialAuthExceptionMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -233,18 +238,26 @@ REST_FRAMEWORK = {
 # Use hyperlinked styles by default.
 # Only used if the `serializer_class` attribute is not set on a view.
     'DEFAULT_MODEL_SERIALIZER_CLASS':
-    'rest_framework.serializers.HyperlinkedModelSerializer'
-
+        'rest_framework.serializers.HyperlinkedModelSerializer'
+    ,
+    #'DEFAULT_RENDERER_CLASSES': (
+    #    'rest_framework_csv.renderers.CSVRenderer',
+    #),
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     #'DEFAULT_PERMISSION_CLASSES': [
     #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     #]
 }
-#GITHUB_EXTENDED_PERMISSIONS = ['user:email']
+
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
 GITHUB_EXTENDED_PERMISSIONS = ['user:email']
 GOOGLE_EXTENDED_PERMISSIONS = ['email']
+
+SOCIAL_AUTH_BACKEND_ERROR_URL = '/welcome/'
+LOGIN_ERROR_URL = '/welcome/'
+LOGIN_URL='/welcome/'
+LOGIN_REDIRECT_URL = '/'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -259,9 +272,7 @@ CORS_ALLOW_HEADERS = (
         'authorization',
         'x-csrftoken'
     )
-LOGIN_URL='/welcome/'
-LOGIN_REDIRECT_URL = '/'
-LOGIN_ERROR_URL = '/error/'
+
 
 # -----------------------------------------------------------------------------
 #DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'

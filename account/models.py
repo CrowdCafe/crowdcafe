@@ -45,6 +45,9 @@ TRANSACTION_TYPE = (('DT','deposit'),('EG','earning'),('SG','spending'))
 #CURRENCY_TYPE = (('RL','real'),('VL','virtual'))
 
 class AccountTransaction(models.Model):
+
+    #from_account = models.ForeignKey(Account, related_name = 'from_account', blank = True, null = True)
+    #to_account = models.ForeignKey(Account, related_name = 'to_account', blank = True, null = True)
     owner = models.ForeignKey(Account)
     amount = models.FloatField(default = 0)
     type = models.CharField(max_length=2, choices=TRANSACTION_TYPE)

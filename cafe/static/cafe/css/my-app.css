@@ -31,3 +31,6 @@ iframe{
 	margin: 0px;
 	padding: 0px;
 }
+.content-block-title{
+	white-space:inherit;
+}

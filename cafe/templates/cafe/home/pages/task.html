@@ -8,9 +8,11 @@
 	<div class="navbar-inner">
 		<div class="left"><a href="{% url 'cafe-task-list'%}" class="link">List</a></div>
 		<div class="center sliding task-title">{{taskinstance.task.title}}</div>
-		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link">Skip</a></div>
+		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external">Skip</a></div>
+
 	</div>
 </div>
+
 {% endblock%}
 
 {% block content%}
@@ -22,13 +24,33 @@
 			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
 				{% csrf_token %}
 				<div class="content-block task-description">{{taskinstance.task.description}}</div>
+				<!-- ------------------------------ -->
+				{% if taskinstance.task.template = 'LT'%}
 				<div class="list-block media-list">
 					<ul class='instance-list'>
-						{% for item in taskinstance.dataitems%}
+						{% for item in taskinstance.dataitems %}
 						{% include_external taskinstance.task.id %}
-						{%endfor%}
+						{% endfor %}
 					</ul>
 				</div>
+				{% endif%}
+				<!-- ------------------------------ -->
+				{% if taskinstance.task.template = 'SF' %}
+				{% for item in taskinstance.dataitems %}
+				{% include_external taskinstance.task.id %}
+				{% endfor %}
+				{% endif %}
+				<!-- ------------------------------ -->
+				{% if taskinstance.task.template = 'TL'%}
+				<div class="tiles-block media-list">
+					<ul class='instance-list'>
+						{% for item in taskinstance.dataitems %}
+						{% include_external taskinstance.task.id %}
+						{% endfor %}
+					</ul>
+				</div>
+				{% endif %}
+				<!-- ------------------------------ -->
 				<div class="content-block">
 					<div class="row">
 						<div class="col-100"><a href="#" class="button button-big button-submit">Complete</a></div>

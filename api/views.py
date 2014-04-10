@@ -2,7 +2,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render_to_response, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-
+from django.conf import settings
 
 from rest_framework import viewsets
 from rest_framework.views import APIView
@@ -11,8 +11,13 @@ from rest_framework import status
 from rest_framework.decorators import api_view,renderer_classes
 from rest_framework.renderers import JSONRenderer, YAMLRenderer, JSONPRenderer
 
+from rest_framework_csv import renderers as r
+from rest_framework.settings import api_settings
+
 from kitchen.models import Task, TaskInstance, DataItem
-from serializers import TaskSerializer,TaskInstanceSerializer, UserSerializer
+from serializers import TaskSerializer,TaskInstanceSerializer, UserSerializer,AnswerDataCSVSerializer
+
+
 import requests
 
 @api_view(['GET'])
@@ -49,3 +54,20 @@ def readUrl(request):
 		f = requests.get(url)
 		output = f.text
 	return HttpResponse(output)
+
+
+@api_view(['GET'])
+@login_required
+@renderer_classes((r.CSVRenderer))
+def getCSV(request, task_id):
+	
+	answeritems = []
+	
+	taskinstances = TaskInstance.objects.filter(task__id = task_id,task__owner = request.user).all()
+	for taskinstance in taskinstances:
+		for answer in taskinstance.answers:
+			for answeritem in answer.answeritems:
+				answeritems.append(answeritem)
+
+	serializer = AnswerDataCSVSerializer(answeritems)
+	return Response(serializer.data)

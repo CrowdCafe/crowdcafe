@@ -26,7 +26,9 @@
 			<div class="content-block"><b>CrowdCafe</b> - is a microtask marketplace, where people publish data classification tasks, and others - perform them for a reward.</div>
 			<div class="content-block-title "><h3>Tasks</h3></div>
 			<div class="content-block ">
-				All tasks are grouped in 3 categories (Caffè, Cappuccino and Wine) with a fixed reward amount and a recommended execution time. The approximate wage on CrowdCafe is <b>10&euro;</b>/hour.
+				<div class="content-block-inner">
+					All tasks are grouped in 3 categories (Caffè, Cappuccino and Wine) with a fixed reward amount and a recommended execution time. The approximate wage on CrowdCafe is <b>10&euro;</b>/hour.
+				</div>
 			</div>
 			<div class="list-block media-list">
 				<ul>
@@ -74,33 +76,51 @@
 			<div class="content-block-title "><h3>Rewards</h3></div>
 
 			<div class="content-block ">
-				The money you earn on CrowdCafe can be exchanged on rewards, such as free bus and train tickets, free coffee and deserts in local bars, movie and museum tickets, Bitcoins, Amazon credits and many other great things.
+				<div class="content-block-inner">
+					<p>The money you earn on CrowdCafe can be exchanged on rewards, such as free bus and train tickets, free coffee and deserts in local bars, movie and museum tickets, Bitcoins, Amazon credits and many other great things.
+					</p>
+				</div>
 			</div>
 			<div class="content-block-title "><h3>Quality control</h3></div>
 			<div class="content-block ">
-				There are <b>real people</b> performing <b>real tasks</b> with <b>real data</b>, published by <b>real people</b> paying <b>real money</b>. So there is no place for cheating or any inappropriate behavior on the platform. The quality is controlled by injecting in datasets ground truth data and several other ways.
-			</div>
-			<div class="content-block ">
-				CrowdCafe brings the best experience to tasks executors, so in case of not respectful behavior from the executors side we have to apply penalties and blocking accounts of violators.
-			</div>
-			<div class="content-block-title "><h3>Who are the people publishing tasks?</h3></div>
-			<div class="content-block ">
-				People who publish tasks on this platform are academic researchers, commercial companies and governmental organisations. They publish here tasks which are very hard to perform automatically using any algorithms, while humans can still perform them well. The results collected in these tasks have a great scientific and commercial impact.
-			</div>
-			<div class="content-block-title "><h3>Who has created CrowdCafe?</h3></div>
-			<div class="content-block ">
-				CrowdCafe was developed as an academic project at the University of Trento (Italy) by PhD students from the Social Informatics research group.
-			</div>
-			<div class="content-block ">
-				Feel free to contact us: <br/>
-				<i>http://crowdcafe.io</i><br/>
-				<i>team@crowdcafe.io</i>
-			</div>
+				<div class="content-block-inner">
+					<p>
+						There are <b>real people</b> performing <b>real tasks</b> with <b>real data</b>, published by <b>real people</b> paying <b>real money</b>. So there is no place for cheating or any inappropriate behavior on the platform. The quality is controlled by injecting in datasets ground truth data and several other ways.
+					</p>
+					<p>
+						CrowdCafe brings the best experience to tasks executors, so in case of not respectful behavior from the executors side we have to apply penalties and blocking accounts of violators.</p>
+					</div>
+				</div>
+				<div class="content-block-title "><h3>Who are the people publishing tasks?</h3></div>
+				<div class="content-block ">
+					<div class="content-block-inner">
+						<p>
+							People who publish tasks on this platform are academic researchers, commercial companies and governmental organisations. They publish here tasks which are very hard to perform automatically using any algorithms, while humans can still perform them well. The results collected in these tasks have a great scientific and commercial impact.
+						</p>
+					</div>
+				</div>
+				<div class="content-block-title "><h3>Who has created CrowdCafe?</h3></div>
+				<div class="content-block ">
+					<div class="content-block-inner">
+						<p>
+							CrowdCafe was developed as an academic project at the University of Trento (Italy) by PhD students from the Social Informatics research group.
+						</p>
+						<p>
+							Feel free to contact us: <br/>
+							<i><a href = "{% url 'welcome' %}"  class="link external" target="_blank">crowdcafe.io</a></i><br/>
+							<i><a href = "mailto:team@crowdcafe.io" class="link external" target="_blank">team@crowdcafe.io</a></i>
+						</p>
+						<p>
+							Via Sommarive 5, Povo (TN), 38123, Italy<br/>
+							+39 38838 44504
+						</p>
+					</div>
+				</div>
 			<!--div class="media-picture">
 					<img src="{% static 'img/bg/trento.jpg'%}">
-			</div-->
+				</div-->
+			</div>
 		</div>
 	</div>
-</div>
 
-{% endblock%}
+	{% endblock%}

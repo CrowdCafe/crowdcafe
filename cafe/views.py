@@ -18,6 +18,7 @@ def About(request):
 @login_required 
 def Account(request):
 	return render_to_response('cafe/home/pages/account.html', context_instance=RequestContext(request))
+
 @login_required 
 def Rewards(request):
 	vendors = Vendor.objects.all()
@@ -32,6 +33,7 @@ def Home(request):
 		return render_to_response('cafe/home.html', context_instance=RequestContext(request))
 	else:
 		return redirect('cafe-welcome')
+
 @login_required 
 def TaskList(request):
 	tasks = Task.objects.filter(status = 'ST').order_by('-date_created').all()
@@ -41,6 +43,7 @@ def TaskList(request):
 			tasks_available.append(task)
 
 	return render_to_response('cafe/home/pages/tasklist.html', {'tasks':tasks_available}, context_instance=RequestContext(request))
+
 @login_required 
 def TaskInstanceAssign(request, task_id):
 	task = get_object_or_404(Task, pk = task_id, status = 'ST')
@@ -49,10 +52,12 @@ def TaskInstanceAssign(request, task_id):
 		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id}))
 	else:
 		return redirect('cafe-task-list')
+
 @login_required 
 def TaskInstanceExecute(request, instance_id): 
 	taskinstance = get_object_or_404(TaskInstance,pk = instance_id)
 	return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))
+
 @login_required 
 def TaskInstanceSkip(request, instance_id): 
 	skipped_instance = get_object_or_404(TaskInstance,pk = instance_id)
@@ -65,12 +70,18 @@ def TaskInstanceComplete(request, instance_id):
 	
 	new_answer = Answer(taskinstance=taskinstance, executor = request.user, status = 'FN')
 	new_answer.save()
-	
+
+	print request.POST
 	for dataitem in taskinstance.dataitems:
-		answer_string = str(request.POST['dataitem_'+str(dataitem.id)+'_answer'])
-		new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value={'answer':answer_string})
+		answer_item_value = {}
+		print dataitem.id
+		for key in request.POST:
+			dataitem_handle = 'dataitem_'+str(dataitem.id)
+			if dataitem_handle in key:
+				answer_item_value[key.replace(dataitem_handle,'')] = request.POST[key]
+
+		new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value)
 		new_answer_item.save()
-	
 	
 	if len(taskinstance.answers)>taskinstance.task.min_answers_per_item:
 		taskinstance.status = 'FN'
