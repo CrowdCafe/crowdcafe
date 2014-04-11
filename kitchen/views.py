@@ -63,17 +63,6 @@ def TaskSave(request):
 	)
 	new_task.save()
 
-	# Firebase syncronisation
-	'''f = Firebase(settings.FIREBASE['base_url']+'tasks', auth_token=settings.FIREBASE['auth_token'])
-	r = f.push({
-		'id': new_task.id, 
-		'title': new_task.title, 
-		'description':new_task.description,
-		'requestor':request.user.profile.short_name
-		})
-	print r['name']
-	f = Firebase(settings.FIREBASE['base_url']+'tasks/'+r['name']+'/dataset/', auth_token=settings.FIREBASE['auth_token'])
-	'''
 	dataset = []
 
 	# -----------------------
@@ -128,25 +117,6 @@ def collectDataFromTwitter(keyword, amount):
 	TWITTER_ACCESS_TOKEN_SECRET = (instance.tokens).get('oauth_token_secret')
 	
 	apicall=TwitterCall(client_id=TWITTER_ACCESS_TOKEN,client_secret=TWITTER_ACCESS_TOKEN_SECRET)
-	#f = Firebase(settings.FIREBASE['base_url']+'tasks/'+r['name']+'/dataset/', auth_token=settings.FIREBASE['auth_token'])
 	
 	dataset = apicall.getByKeyword(keyword, amount, False)
 	return dataset
-'''
-
-	f = Firebase(settings.FIREBASE['base_url']+'tasks/'+firebase_parent_id+'/'+firebase_container+'/', auth_token=settings.FIREBASE['auth_token'])
-	data = scraperwiki.scrape(csvfile_url)
-	reader = csv.reader(data.splitlines(), delimiter = ';')
-	i = 0
-	for row in reader:    
-		if i == 0:
-			headers = row
-		else:
-			datarow = {}
-			for j in range(len(row)):
-				datarow[headers[j]]=row[j]
-			r = f.push(datarow)
-		print ' '.join(row)
-		i+=1
-
-'''

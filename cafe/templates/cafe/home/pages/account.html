@@ -14,7 +14,7 @@
 <!-- Pages, because we need fixed-through navbar and toolbar, it has additional appropriate classes-->
 <div class="pages navbar-through toolbar-through">
 	<!-- Page, data-page contains page name-->
-	<div data-page="index" class="page">
+	<div data-page="account" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
 			<div class="content-block-title">{{user.profile.full_name}}</div>
@@ -23,15 +23,14 @@
 			</div>
 			
 			<div class="content-block">
-				<p><a href="{% url 'cafe-rewards'%}" class="button">Rewards</a></p>
+				<p><a href="{% url 'cafe-rewards'%}" class="button">Get rewards</a></p>
 				<p><a href="{% url 'cafe-transactions'%}" class="button">Transactions</a></p>
 				<div class="content-block ">
 					<p><hr/></p>
 				</div>
-				<p><a href="{% url 'logout' %}" class="button button-red external logout">Logout</a></p>
+				<p><a href="{% url 'logout' %}" class="button external logout  button-cancel">Logout</a></p>
 			</div>
 		</div>
 	</div>
 </div>
 {% endblock%}
-

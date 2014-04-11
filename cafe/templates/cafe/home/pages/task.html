@@ -18,7 +18,7 @@
 {% block content%}
 <div class="pages navbar-through toolbar-through">
 	<!-- Page, data-page contains page name-->
-	<div data-page="page1" class="page">
+	<div data-page="task" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
 			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
@@ -60,20 +60,4 @@
 		</div>
 	</div>
 </div>
-{% endblock%}
-
-{% block scripts%}
-<script>
-$$('.open-popup').tap(function(){
-	var button = $$(this);
-	if (button.attr('iframe')){
-		var content = '<iframe src="'+button.attr('iframe')+'" height="'+$$(window).height()+'"></iframe>'
-		$$(button.attr('data-popup')+' .content-block').html(content);
-	}
-});
-
-$$('.button-submit').tap(function(){
-	document.taskForm.submit();
-});
-</script>
 {% endblock%}

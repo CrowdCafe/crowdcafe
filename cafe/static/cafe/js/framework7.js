@@ -1,5 +1,5 @@
 /*
- * Framework7 0.6.6
+ * Framework7 0.7.1
  * Full Featured HTML Framework For Building iOS7 Apps
  *
  * http://www.idangero.us/framework7
@@ -10,7 +10,7 @@
  *
  * Licensed under MIT
  *
- * Released on: April 1, 2014
+ * Released on: April 10, 2014
 */
 (function () {
 
@@ -35,20 +35,28 @@
     
         // Default Parameters
         app.params = {
-            cache: false,
+            cache: true,
             cacheDuration: 1000 * 60 * 10, // Ten minutes 
             preloadPreviousPage: true,
+            // Fast clicks
+            fastClicks : true,
+            // Swipe Back
             swipeBackPage: true,
             swipeBackPageThreshold: 0,
             swipeBackPageActiveArea: 30,
             swipeBackPageBoxShadow: true,
             // Ajax
-            ajaxLinks: true, // or CSS selector
+            ajaxLinks: false, // or CSS selector
+            // Pull To Refresh
+            pullToRefresh: true,
+            // Swipeout
+            swipeout: true,
+            swipeoutNoFollow: false,
             // Panels
             panelsCloseByOutside: true,
             panelsVisibleZIndex: 6000,
             panelsAnimationDuration: 400,
-            // panelsOpenBySwipe: true,
+            // Modals
             modalTemplate: '<div class="modal {{noButtons}}">' +
                                 '<div class="modal-inner">' +
                                     '{{if title}}<div class="modal-title">{{title}}</div>{{/if title}}' +
@@ -64,7 +72,9 @@
             modalCloseByOutside: false,
             modalActionsCloseByOutside: true,
             modalPopupCloseByOutside: true,
-            modalPreloaderTitle: 'Loading... '
+            modalPreloaderTitle: 'Loading... ',
+            // Auto init
+            init: true
         };
     
         // Extend defaults with parameters
@@ -88,14 +98,19 @@
         app.views = [];
         app.addView = function (viewSelector, viewParams) {
             if (!viewSelector) return;
-            var container = $(viewSelector)[0];
+            var $container = $(viewSelector);
+            if ($container.length === 0) return;
+            
+            var container = $container[0];
+            if (typeof viewParams === 'undefined') viewParams = {};
+            var startUrl = container.getAttribute('data-url') || viewParams.startUrl;
             var view = {
                 container: container,
                 selector: viewSelector,
                 params: viewParams || {},
                 history: [],
                 contentCache: {},
-                url: '',
+                url: container.getAttribute('data-url') || viewParams.startUrl,
                 pagesContainer: $('.pages', container)[0],
                 main: $(container).hasClass('view-main'),
                 loadContent: function (content) {
@@ -122,7 +137,10 @@
             };
             // Store to history main view's url
             if (view.main) {
-                view.url = document.location.href;
+                view.url = startUrl || document.location.href;
+                view.history.push(view.url);
+            }
+            else if (startUrl) {
                 view.history.push(view.url);
             }
             // Store View in element for easy access
@@ -161,7 +179,7 @@
                 dynamicNavbar,
                 el;
         
-            function handleTouchStart(e) {
+            function handleTouchStart(e, target) {
                 if (!allowViewTouchMove || !app.params.swipeBackPage || isTouched || app.swipeoutOpenedEl) return;
                 isMoved = false;
                 isTouched = true;
@@ -172,7 +190,7 @@
                 dynamicNavbar = view.params.dynamicNavbar && viewContainer.find('.navbar-inner').length > 1;
             }
             
-            function handleTouchMove(e) {
+            function handleTouchMove(e, target) {
                 if (!isTouched) return;
                 var pageX = e.type === 'touchmove' ? e.targetTouches[0].pageX : e.pageX;
                 var pageY = e.type === 'touchmove' ? e.targetTouches[0].pageY : e.pageY;
@@ -188,8 +206,8 @@
                     var cancel = false;
                     // Calc values during first move fired
                     viewContainerWidth = viewContainer.width();
-                    activePage = $(e.target).is('.page') ? $(e.target) : $(e.target).parents('.page');
-                    previousPage = viewContainer.find('.page-on-left');
+                    activePage = $(target || e.target).is('.page') ? $(target || e.target) : $(target || e.target).parents('.page');
+                    previousPage = viewContainer.find('.page-on-left:not(.cached)');
                     if (touchesStart.x - viewContainer.offset().left > app.params.swipeBackPageActiveArea) cancel = true;
                     if (previousPage.length === 0 || activePage.length === 0) cancel = true;
                     if (cancel) {
@@ -197,8 +215,8 @@
                         return;
                     }
                     if (dynamicNavbar) {
-                        activeNavbar = viewContainer.find('.navbar-on-center');
-                        previousNavbar = viewContainer.find('.navbar-on-left');
+                        activeNavbar = viewContainer.find('.navbar-on-center:not(.cached)');
+                        previousNavbar = viewContainer.find('.navbar-on-left:not(.cached)');
                         activeNavElements = activeNavbar.find('.left, .center, .right');
                         previousNavElements = previousNavbar.find('.left, .center, .right');
                     }
@@ -243,7 +261,7 @@
                 }
         
             }
-            function handleTouchEnd(e) {
+            function handleTouchEnd(e, target) {
                 if (!isTouched || !isMoved) {
                     isTouched = false;
                     isMoved = false;
@@ -310,12 +328,24 @@
             viewContainer.on(app.touchEvents.start, handleTouchStart);
             viewContainer.on(app.touchEvents.move, handleTouchMove);
             viewContainer.on(app.touchEvents.end, handleTouchEnd);
+             
+            view.attachSubEvents = function (page, el) {
+                $(el).on(app.touchEvents.start, function (e) {
+                    return handleTouchStart.apply(page, [e, page]);
+                });
+                $(el).on(app.touchEvents.move, function (e) {
+                    return handleTouchMove.apply(page, [e, page]);
+                });
+                $(el).on(app.touchEvents.end, function (e, page) {
+                    return handleTouchEnd.apply(page, [e, page]);
+                });
+            };
         };
         /*======================================================
         ************   Navbars && Toolbars   ************
         ======================================================*/
         app.sizeNavbars = function (viewContainer) {
-            var navbarInner = viewContainer ? $(viewContainer).find('.navbar .navbar-inner') : $('.navbar .navbar-inner');
+            var navbarInner = viewContainer ? $(viewContainer).find('.navbar .navbar-inner:not(.cached)') : $('.navbar .navbar-inner:not(.cached)');
             navbarInner.each(function () {
                 var tt = $(this),
                     left = tt.find('.left'),
@@ -422,8 +452,8 @@
             xhr.onload = function (e) {
                 if (app.params.onAjaxComplete) {
                     app.params.onAjaxComplete(xhr);
-                    $(document).trigger('ajaxComplete', {xhr: xhr});
                 }
+                $(document).trigger('ajaxComplete', {xhr: xhr});
                 if (callback) {
                     if (this.status === 200 || this.status === 0) {
                         callback(this.responseText, false);
@@ -443,8 +473,8 @@
             };
             if (app.params.onAjaxStart) {
                 app.params.onAjaxStart(xhr);
-                $(document).trigger('ajaxStart', {xhr: xhr});
             }
+            $(document).trigger('ajaxStart', {xhr: xhr});
             app.xhr = xhr;
             xhr.send();
             return xhr;
@@ -469,7 +499,7 @@
             if (app.params.onPageBeforeInit) {
                 app.params.onPageBeforeInit(pageData);
             }
-            if (view.params.onPageBeforeInit) {
+            if (view && view.params.onPageBeforeInit) {
                 view.params.onPageBeforeInit(pageData);
             }
             $(document).trigger('pageBeforeInit', {page: pageData});
@@ -478,7 +508,7 @@
             if (app.params.onPageInit) {
                 app.params.onPageInit(pageData);
             }
-            if (view.params.onPageInit) {
+            if (view && view.params.onPageInit) {
                 view.params.onPageInit(pageData);
             }
             $(document).trigger('pageInit', {page: pageData});
@@ -507,6 +537,9 @@
         
             }
             if (callback === 'before') {
+                // Add data-page on view
+                $(view.container).attr('data-page', pageData.name);
+        
                 // Hide/show navbar dynamically
                 if (newPage.hasClass('no-navbar') && !oldPage.hasClass('no-navbar')) {
                     view.hideNavbar();
@@ -560,6 +593,15 @@
                     $(app._tempDomElement).append(content);
                 }
             }
+            
+            if (view.params.subEvents) {
+                $(app._tempDomElement).find('.page').each(function () {
+                    var page = this;
+                    $(page).find('iframe').on('load', function () {
+                        view.attachSubEvents(page, this.contentWindow.document);
+                    });
+                });
+            }
         
             newPage = $('.page', app._tempDomElement);
             if (newPage.length > 1) {
@@ -574,14 +616,21 @@
             newPage.addClass('page-on-right');
         
             // Find old page (should be the last one) and remove older pages
-            pagesInView = viewContainer.find('.page');
+            pagesInView = viewContainer.find('.page:not(.cached)');
             if (pagesInView.length > 1) {
                 for (i = 0; i < pagesInView.length - 2; i++) {
-                    $(pagesInView[i]).remove();
+                    if (!view.params.domCache)
+                        $(pagesInView[i]).remove();
+                    else
+                        $(pagesInView[i]).addClass('cached');
                 }
-                $(pagesInView[i]).remove();
+                if (!view.params.domCache)
+                    $(pagesInView[i]).remove();
+                else
+                    $(pagesInView[i]).addClass('cached');
             }
-            oldPage = viewContainer.find('.page');
+            
+            oldPage = viewContainer.find('.page:not(.cached)');
         
             // Dynamic navbar
             if (view.params.dynamicNavbar) {
@@ -595,15 +644,21 @@
                     dynamicNavbar = false;
                 }
                 navbar = viewContainer.find('.navbar');
-                oldNavbarInner = navbar.find('.navbar-inner');
+                oldNavbarInner = navbar.find('.navbar-inner:not(.cached)');
                 if (oldNavbarInner.length > 0) {
                     for (i = 0; i < oldNavbarInner.length - 1; i++) {
-                        $(oldNavbarInner[i]).remove();
+                        if (!view.params.domCache)
+                            $(oldNavbarInner[i]).remove();
+                        else
+                            $(oldNavbarInner[i]).addClass('cached');
                     }
                     if (newNavbarInner.length === 0 && oldNavbarInner.length === 1) {
-                        $(oldNavbarInner[0]).remove();
+                        if (!view.params.domCache)
+                            $(oldNavbarInner[0]).remove();
+                        else
+                            $(oldNavbarInner[0]).addClass('cached');
                     }
-                    oldNavbarInner = navbar.find('.navbar-inner');
+                    oldNavbarInner = navbar.find('.navbar-inner:not(.cached)');
                 }
             }
             if (dynamicNavbar) {
@@ -613,8 +668,14 @@
         
             // save content areas into view's cache
             if (!url) {
-                url = '#content-' + Math.floor(Math.random() * 10000) + 1;
-                view.contentCache[url] = { nav: newNavbarInner, page: newPage };
+                url = '#content-' + view.history.length;
+        
+                if (!view.params.domCache) {
+                    if (view.history.length === 1) {
+                        view.contentCache[view.history[0]] = { nav: oldNavbarInner, page: oldPage };
+                    }
+                    view.contentCache[url] = { nav: newNavbarInner, page: newPage };
+                }
             }
         
             // Update View history
@@ -812,7 +873,7 @@
                 if (view.params.dynamicNavbar) {
                     dynamicNavbar = true;
                     // Find navbar
-                    var inners = viewContainer.find('.navbar-inner');
+                    var inners = viewContainer.find('.navbar-inner:not(.cached)');
                     newNavbarInner = $(inners[0]);
                     oldNavbarInner = $(inners[1]);
                 }
@@ -853,7 +914,7 @@
                 }
                 
                 // Check current url is in cache?
-                if (url in view.contentCache) {
+                if (!view.params.domCache && (url in view.contentCache)) {
                     var _cache = view.contentCache[url];
         
                     app._tempDomElement = document.createElement('div');
@@ -883,19 +944,28 @@
             app.allowPageChange = true;
             // Updated dynamic navbar
             if (view.params.dynamicNavbar) {
-                var inners = $(view.container).find('.navbar-inner');
+                var inners = $(view.container).find('.navbar-inner:not(.cached)');
                 var oldNavbar = $(inners[1]).remove();
                 var newNavbar = $(inners[0]).removeClass('navbar-on-left navbar-from-left-to-center').addClass('navbar-on-center');
+        
+                if (app.params.preloadPreviousPage && view.params.domCache) {
+                    var cachedNavs = $(view.container).find('.navbar-inner.cached');
+                    $(cachedNavs[cachedNavs.length - 1]).removeClass('cached');
+                }
             }
-            // Update View's Hitory
+            // Update View's History
             view.history.pop();
             // Check current page is content based only
-            if (view.url.indexOf('#content-') > -1 && (view.url in view.contentCache)) {
+            if (!view.params.domCache && view.url && view.url.indexOf('#content-') > -1 && (view.url in view.contentCache)) {
                 view.contentCache[view.url] = null;
                 delete view.contentCache[view.url];
             }
             // Preload previous page
             if (app.params.preloadPreviousPage) {
+                if (view.params.domCache) {
+                    var cachedPages = $(view.container).find('.page.cached');
+                    $(cachedPages[cachedPages.length - 1]).removeClass('cached');
+                }
                 app.goBack(view, false, true);
             }
         };
@@ -945,7 +1015,7 @@
             
             // Add events on buttons
             modal.find('.modal-button').each(function (index, el) {
-                $(el).tap(function (e) {
+                $(el).on('click', function (e) {
                     if (params.buttons[index].close !== false) app.closeModal(modal);
                     if (params.buttons[index].onClick) params.buttons[index].onClick(modal, e);
                 });
@@ -1055,7 +1125,7 @@
                     var buttonIndex = index;
                     var buttonParams = params[groupIndex][buttonIndex];
                     if ($(el).hasClass('actions-modal-button')) {
-                        $(el).tap(function (e) {
+                        $(el).on('click', function (e) {
                             if (buttonParams.close !== false) app.closeModal(modal);
                             if (buttonParams.onClick) buttonParams.onClick(modal, e);
                         });
@@ -1065,11 +1135,24 @@
             app.openModal(modal);
             return modal[0];
         };
-        app.popover = function (modal, target) {
+        app.popover = function (modal, target, removeOnClose) {
+            if (typeof removeOnClose === 'undefined') removeOnClose = true;
+            if (typeof modal === 'string' && modal.indexOf('<') >= 0) {
+                var _modal = document.createElement('div');
+                _modal.innerHTML = modal;
+                if (_modal.childNodes.length > 0) {
+                    modal = _modal.childNodes[0];
+                    if (removeOnClose) modal.classList.add('remove-on-close');
+                    $('body').append(modal);
+                }
+                else return false; //nothing found
+            }
             modal = $(modal);
             target = $(target);
             if (modal.length === 0 || target.length === 0) return false;
-        
+            if (modal.find('.popover-angle').length === 0) {
+                modal.append('<div class="popover-angle"></div>');
+            }
             modal.show();
         
             function sizePopover() {
@@ -1157,7 +1240,18 @@
             app.openModal(modal);
             return modal[0];
         };
-        app.popup = function (modal) {
+        app.popup = function (modal, removeOnClose) {
+            if (typeof removeOnClose === 'undefined') removeOnClose = true;
+            if (typeof modal === 'string' && modal.indexOf('<') >= 0) {
+                var _modal = document.createElement('div');
+                _modal.innerHTML = modal;
+                if (_modal.childNodes.length > 0) {
+                    modal = _modal.childNodes[0];
+                    if (removeOnClose) modal.classList.add('remove-on-close');
+                    $('body').append(modal);
+                }
+                else return false; //nothing found
+            }
             modal = $(modal);
             if (modal.length === 0) return false;
             modal.show();
@@ -1195,15 +1289,18 @@
             modal.trigger('close');
             var isPopover = modal.hasClass('popover');
             var isPopup = modal.hasClass('popup');
+            var removeOnClose = modal.hasClass('remove-on-close');
             if (!isPopover) {
                 modal.removeClass('modal-in').addClass('modal-out').transitionEnd(function (e) {
                     modal.trigger('closed');
                     if (!isPopup) modal.remove();
                     if (isPopup) modal.removeClass('modal-out').hide();
+                    if (removeOnClose) modal.remove();
                 });
             }
             else {
                 modal.removeClass('modal-in modal-out').trigger('closed').hide();
+                if (removeOnClose) modal.remove();
             }
             return true;
         };
@@ -1387,12 +1484,27 @@
                 e.preventDefault();
                 touchesDiff = pageX - touchesStart.x;
                 translate = touchesDiff  - (opened ? swipeOutActionsWidth : 0);
+        
                 if (translate > 0) translate = 0;
                 if (translate < -swipeOutActionsWidth) {
                     translate = -swipeOutActionsWidth - Math.pow(-translate - swipeOutActionsWidth, 0.8);
                 }
-                
-                swipeOutContent.transform('translate3d(' + translate + 'px,0,0)');
+        
+                if (app.params.swipeoutNoFollow) {
+                    if (touchesDiff < 0 && !opened) {
+                        app.swipeoutOpen(swipeOutEl);
+                        isTouched = false;
+                        isMoved = false;
+                        return;
+                    }
+                    if (touchesDiff > 0 && opened) {
+                        app.swipeoutClose(swipeOutEl);
+                        isTouched = false;
+                        isMoved = false;
+                        return;
+                    }
+                }
+                else swipeOutContent.transform('translate3d(' + translate + 'px,0,0)');
         
             }
             function handleTouchEnd(e) {
@@ -1488,9 +1600,8 @@
             var clientLeft = el[0].clientLeft;
             el.css({height: 0 + 'px'}).addClass('deleting transitioning').transitionEnd(function () {
                 el.trigger('deleted');
-            //    el.remove();
+                el.remove();
             });
-            
             el.find('.swipeout-content').transform('translate3d(-100%,0,0)');
         };
         /*======================================================
@@ -1586,16 +1697,108 @@
             });
         };
         /*===============================================================================
+        ************   Fast Clicks   ************
+        ************   Impressed by https://github.com/ftlabs/fastclick   ************
+        ===============================================================================*/
+        app.initFastClicks = function () {
+            if (!$.supportTouch) return;
+            var touchStartX, touchStartY, touchStartTime, targetElement, trackClick, activeSelection, scrollParent;
+        
+            function targetNeedsFocus(el) {
+                var tag = el.nodeName.toLowerCase();
+                var skipInputs = ('button checkbox file image radio submit').split(' ');
+                if (el.disabled || el.readOnly) return false;
+                if (tag === 'textarea') return true;
+                if (tag === 'select') {
+                    if (app.device.os === 'android') return false;
+                    else return true;
+                }
+                if (tag === 'input' && skipInputs.indexOf(el.type) < 0) return true;
+            }
+            function handleTouchStart(e) {
+                if (e.targetTouches.length > 1) {
+                    return true;
+                }
+                if (app.device.os === 'ios') {
+                    var selection = window.getSelection();
+                    if (selection.rangeCount && !selection.isCollapsed) {
+                        activeSelection = true;
+                        return true;
+                    }
+                }
+                
+                trackClick = true;
+                targetElement = e.target;
+                touchStartTime = (new Date()).getTime();
+                touchStartX = e.targetTouches[0].pageX;
+                touchStartY = e.targetTouches[0].pageY;
+        
+                // Detect scroll parent
+                if (app.device.os === 'ios') {
+                    scrollParent = undefined;
+                    $(targetElement).parents().each(function () {
+                        var parent = this;
+                        if (parent.scrollHeight > parent.offsetHeight && !scrollParent) {
+                            scrollParent = parent;
+                            scrollParent.f7ScrollTop = scrollParent.scrollTop;
+                        }
+                    });
+                }
+            }
+            function handleTouchMove(e) {
+                if (!trackClick) return;
+                trackClick = false;
+                targetElement = null;
+            }
+            function handleTouchEnd(e) {
+                if (!trackClick) {
+                    if (!activeSelection) e.preventDefault();
+                    return true;
+                }
+                var touchEndTime = (new Date()).getTime();
+                if (touchEndTime - touchStartTime > 200) return true;
+        
+                e.preventDefault();
+        
+                trackClick = false;
+                if (app.device.os === 'ios' && scrollParent) {
+                    if (scrollParent.scrollTop !== scrollParent.f7ScrollTop) {
+                        return false;
+                    }
+                }
+        
+                // Trigger focus where required
+                if (targetNeedsFocus(targetElement)) targetElement.focus();
+        
+                // Trigger click
+                var touch = e.changedTouches[0];
+                var evt = document.createEvent('MouseEvents');
+                var eventType = 'click';
+                if (app.device.os === 'android' && targetElement.nodeName.toLowerCase() === 'select') {
+                    eventType = 'mousedown';
+                }
+                evt.initMouseEvent(eventType, true, true, window, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, false, false, false, false, 0, null);
+                
+                targetElement.dispatchEvent(evt);
+            }
+            $(document).on('touchstart', handleTouchStart);
+            $(document).on('touchmove', handleTouchMove);
+            $(document).on('touchend', handleTouchEnd);
+        };
+        /*===============================================================================
         ************   Handle clicks and make them fast (on tap);   ************
         ===============================================================================*/
         app.initClickEvents = function () {
-            function handleTap(e) {
+            function handleClicks(e) {
                 /*jshint validthis:true */
                 var clicked = $(this);
                 var url = clicked.attr('href');
                 // External
                 if (clicked.hasClass('external')) {
                     return;
+                }
+                else if (clicked[0].nodeName.toLowerCase() === 'a') {
+                    e.preventDefault();
                 }
                 // Open Panel
                 if (clicked.hasClass('open-panel')) {
@@ -1647,52 +1850,37 @@
                         app.closeModal();
                     if ($('.popover.modal-in').length > 0) app.closeModal('.popover.modal-in');
                 }
-                // Radios/checkboxes
-                if (clicked.hasClass('label-checkbox') || clicked.hasClass('label-radio')) {
-                    var input = clicked.find('input');
-                    if (input.attr('type') === 'checkbox') {
-                        if (input[0].checked === true) input[0].checked = false;
-                        else input[0].checked = true;
-                    }
-                    if (input.attr('type') === 'radio') {
-                        clicked.find('input')[0].checked = true;
-                    }
-                    input.trigger('change');
-                    return;
-                }
-                if ($.supportTouch) {
-                    if (clicked.parent().hasClass('label-switch')) {
-                        clicked[0].checked = !clicked[0].checked;
-                        clicked.trigger('change');
-                    }
-                }
                 
                 // Tabs
                 if (clicked.hasClass('tab-link')) {
                     var newTab = $(clicked.attr('href'));
+                    if (newTab.length === 0) return;
                     var oldTab = newTab.parent().find('.tab.active').removeClass('active');
                     newTab.addClass('active');
-                    if (clicked.parent().hasClass('buttons-row')) {
-                        clicked.parent().find('.active').removeClass('active');
+                    newTab.trigger('show');
+                    var clickedParent = clicked.parent();
+                    if (clickedParent.hasClass('buttons-row') || clicked.parents('.tabbar').length > 0) {
+                        clickedParent.find('.active').removeClass('active');
                         clicked.addClass('active');
+                    }
+                    if (newTab.find('.navbar').length > 0) {
+                        // Find tab's view
+                        var viewContainer;
+                        if (newTab.hasClass('view')) viewContainer = newTab[0];
+                        else viewContainer = newTab.parents('.view')[0];
+                        app.sizeNavbars(viewContainer);
                     }
                 }
                 // Swipeout Delete
                 if (clicked.hasClass('swipeout-delete')) {
-                    //-------------------------------------------------
-                    // PAVEL's FIX
-                    clicked.parents('.dataitem').find('.dataitem_answer').val(clicked.attr('answer'));
-                    //-------------------------------------------------
                     if (clicked.attr('data-confirm')) {
                         var modal = app.confirm(clicked.attr('data-confirm'), function () {
                             app.swipeoutDelete(clicked.parents('.swipeout'));
-
                         });
                     }
                     else {
                         app.swipeoutDelete(clicked.parents('.swipeout'));
                     }
-
                         
                 }
                 // Load Page
@@ -1707,6 +1895,9 @@
                     }
                     else {
                         view = clicked.parents('.view')[0] && clicked.parents('.view')[0].f7View;
+                        if (view && view.params.linksView) {
+                            view = $(view.params.linksView)[0].f7View;
+                        }
                     }
                     if (!view) {
                         for (var i = 0; i < app.views.length; i++) {
@@ -1718,14 +1909,7 @@
                     else view.loadPage(clicked.attr('href'));
                 }
             }
-            $(document).tap('a, .open-panel, .close-panel, .panel-overlay, .modal-overlay, .swipeout-delete, .close-popup, .open-popup, .open-popover, .label-checkbox, .label-radio, .label-switch, .label-switch input', handleTap);
-            
-            //Disable clicks
-            function handleClick(e) {
-                /*jshint validthis:true */
-                if (!$(this).hasClass('external')) e.preventDefault();
-            }
-            $(document).on('click', 'a, .label-checkbox, .label-radio', handleClick);
+            $(document).on('click', 'a, .open-panel, .close-panel, .panel-overlay, .modal-overlay, .swipeout-delete, .close-popup, .open-popup, .open-popover', handleClicks);
         };
         /*======================================================
         ************   App Resize Actions   ************
@@ -1740,29 +1924,6 @@
         app.orientationchange = function () {
             if (app.device && app.device.minimalUi) {
                 if (window.orientation === 90 || window.orientation === -90) document.body.scrollTop = 0;
-            }
-        };
-        /*=====================================================================================
-        ************   Detect that app in fullscreen mode or chopped by statusbar  ************
-        =====================================================================================*/
-        app.detectStatusBar = function () {
-            var width = $(window).width();
-            var height = $(window).height();
-            if (
-                // iPhone 5
-                (width === 320 && height === 568) ||
-                (width === 568 && height === 320) ||
-                // iPhone 4
-                (width === 320 && height === 480) ||
-                (width === 480 && height === 320) ||
-                // iPad
-                (width === 768 && height === 1024) ||
-                (width === 1024 && height === 768)
-            ) {
-                $('body').addClass('with-statusbar-overlay');
-            }
-            else {
-                $('body').removeClass('with-statusbar-overlay');
             }
         };
         /*===========================
@@ -1786,13 +1947,23 @@
                 device.os = 'ios';
             }
             // iOS
-            if (iphone && !ipod) device.osVersion = iphone[2].replace(/_/g, '.');
-            if (ipad) device.osVersion = ipad[2].replace(/_/g, '.');
-            if (ipod) device.osVersion = ipod[3] ? ipod[3].replace(/_/g, '.') : null;
+            device.iphone = false;
+            device.ipad = false;
+            if (iphone && !ipod) {
+                device.osVersion = iphone[2].replace(/_/g, '.');
+                device.iphone = true;
+            }
+            if (ipad) {
+                device.osVersion = ipad[2].replace(/_/g, '.');
+                device.ipad = true;
+            }
+            if (ipod) {
+                device.osVersion = ipod[3] ? ipod[3].replace(/_/g, '.') : null;
+                device.iphone = true;
+            }
         
             // Webview
-            device.webview = !!navigator.standalone;
-        
+            device.webview = (iphone || ipad || ipod) && ua.match(/.*AppleWebKit(?!.*Safari)/i);
                 
             // Minimal UI
             if (device.os && device.os === 'ios') {
@@ -1801,6 +1972,31 @@
                                     (ipod || iphone) &&
                                     (osVersionArr[0] * 1 === 7 ? osVersionArr[1] * 1 >= 1 : osVersionArr[0] * 1 > 7) &&
                                     $('meta[name="viewport"]').length > 0 && $('meta[name="viewport"]').attr('content').indexOf('minimal-ui') >= 0;
+            }
+        
+            // Check for status bar and fullscreen app mode
+            var windowWidth = $(window).width();
+            var windowHeight = $(window).height();
+            device.statusBar = false;
+            if (
+                device.webview &&
+                (
+                    // iPhone 5
+                    (windowWidth === 320 && windowHeight === 568) ||
+                    (windowWidth === 568 && windowHeight === 320) ||
+                    // iPhone 4
+                    (windowWidth === 320 && windowHeight === 480) ||
+                    (windowWidth === 480 && windowHeight === 320) ||
+                    // iPad
+                    (windowWidth === 768 && windowHeight === 1024) ||
+                    (windowWidth === 1024 && windowHeight === 768)
+                )
+            ) {
+                console.log(device.webview);
+                device.statusBar = true;
+            }
+            else {
+                device.statusBar = false;
             }
         
             // Pixel Ratio
@@ -1815,6 +2011,12 @@
                                 device.os + '-' + device.osVersion.split('.')[0];
                 $('html').addClass(className);
             }
+            if (device.statusBar) {
+                $('html').addClass('with-statusbar-overlay');
+            }
+            else {
+                $('html').removeClass('with-statusbar-overlay');
+            }
         
             // Export to app
             app.device = device;
@@ -1825,16 +2027,22 @@
         app.init = function () {
             if (app.getDeviceInfo) app.getDeviceInfo();
             // Init Click events
+            if (app.initFastClicks && app.params.fastClicks) app.initFastClicks();
             if (app.initClickEvents) app.initClickEvents();
             // Init Swipeouts events
-            if (app.initSwipeout) app.initSwipeout();
-            // Detect statusbar
-            if (app.detectStatusBar) app.detectStatusBar();
+            if (app.initSwipeout && app.params.swipeout) app.initSwipeout();
             // Init Pull To Refresh
-            if (app.initPullToRefresh) app.initPullToRefresh();
+            if (app.initPullToRefresh && app.params.pullToRefresh) app.initPullToRefresh();
             // Init each page callbacks
             $('.page').each(function () {
-                app.initPage(this);
+                var pageContainer = $(this);
+                var viewContainer = pageContainer.parents('.view');
+                var view = viewContainer[0].f7View || false;
+                var url = view && view.url ? view.url : false;
+                if (viewContainer) {
+                    viewContainer.attr('data-page', pageContainer.attr('data-page') || undefined);
+                }
+                app.pageInitCallback(view, this, url, 'center');
             });
             // Init resize events
             if (app.initResize) app.initResize();
@@ -1842,7 +2050,7 @@
             // App Init callback
             if (app.params.onAppInit) app.params.onAppInit();
         };
-        app.init();
+        if (app.params.init) app.init();
         //Return instance        
         return app;
     };
@@ -1962,38 +2170,6 @@
             }
     
             return this;
-        },
-        tap: function (targetSelector, listener) {
-            var dom = this;
-            var isTouched, isMoved, touchesStart = {}, touchStartTime, deltaX, deltaY;
-            if (arguments.length === 1) {
-                listener = arguments[0];
-                targetSelector = false;
-            }
-            function handleTouchStart(e) {
-                isTouched = true;
-                isMoved = false;
-            }
-            function handleTouchMove(e) {
-                if (!isTouched || isMoved) return;
-                isMoved = true;
-            }
-            function handleTouchEnd(e) {
-                e.preventDefault(); // - to prevent Safari's Ghost click
-                if (isTouched && !isMoved) {
-                    /*jshint validthis:true */
-                    listener.call(this, e);
-                }
-                isTouched = isMoved = false;
-            }
-            if ($.supportTouch) {
-                dom.on('touchstart', targetSelector, handleTouchStart);
-                dom.on('touchmove', targetSelector, handleTouchMove);
-                dom.on('touchend', targetSelector, handleTouchEnd);
-            }
-            else {
-                dom.on('click', targetSelector, listener);
-            }
         },
         off: function (event, listener) {
             for (var i = 0; i < this.length; i++) {
@@ -2329,6 +2505,7 @@
         }
         return new Dom7(arr);
     };
+    // Utilites
     $.parseUrlQuery = function (url) {
         var query = {}, i, params, param;
         if (url.indexOf('?') >= 0) url = url.split('?')[1];
@@ -2357,4 +2534,6 @@
         return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
     })();
     $.fn = Dom7.prototype;
+    // Export Selectors engine to global Framework7
+    Framework7.$ = $;
 })();

@@ -48,6 +48,7 @@ def TaskList(request):
 def TaskInstanceAssign(request, task_id):
 	task = get_object_or_404(Task, pk = task_id, status = 'ST')
 	instances = instancesAvailableExist(task,request.user)
+
 	if instances:
 		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id}))
 	else:
@@ -60,9 +61,13 @@ def TaskInstanceExecute(request, instance_id):
 
 @login_required 
 def TaskInstanceSkip(request, instance_id): 
-	skipped_instance = get_object_or_404(TaskInstance,pk = instance_id)
-	taskinstance = TaskInstance.objects.filter(pk__gt = instance_id,task = skipped_instance.task).all()[0]
-	return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': taskinstance.id}))
+	instance = get_object_or_404(TaskInstance, pk = instance_id)
+	instances = instancesAvailableExist(instance.task,request.user, instance.id)
+
+	if instances:
+		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id}))
+	else:
+		return redirect('cafe-task-list')
 	
 @login_required 
 def TaskInstanceComplete(request, instance_id): 
@@ -71,10 +76,9 @@ def TaskInstanceComplete(request, instance_id):
 	new_answer = Answer(taskinstance=taskinstance, executor = request.user, status = 'FN')
 	new_answer.save()
 
-	print request.POST
+
 	for dataitem in taskinstance.dataitems:
 		answer_item_value = {}
-		print dataitem.id
 		for key in request.POST:
 			dataitem_handle = 'dataitem_'+str(dataitem.id)
 			if dataitem_handle in key:
@@ -89,10 +93,10 @@ def TaskInstanceComplete(request, instance_id):
 	return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id}))
 
 
-def instancesAvailableExist(task,user):
+def instancesAvailableExist(task, user, insetance_id = 0):
 	answers = Answer.objects.filter(executor = user, taskinstance__task = task).values('taskinstance')
 	print answers
-	instances = TaskInstance.objects.filter(task = task, status = 'ST').exclude(pk__in = answers)
+	instances = TaskInstance.objects.filter(task = task, status = 'ST',pk__gt = insetance_id).exclude(pk__in = answers)
 	if instances.count()>0:
 		return instances
 	else:

@@ -14,7 +14,7 @@
 <!-- Pages, because we need fixed-through navbar and toolbar, it has additional appropriate classes-->
 <div class="pages navbar-through toolbar-through">
 	<!-- Page, data-page contains page name-->
-	<div data-page="tabs" class="page page-on-center">
+	<div data-page="rewards" class="page page-on-center">
 		<div class="page-content">
 			<div class="tabs">
 				<div id="tab1" class="tab active">
@@ -31,7 +31,7 @@
 					<div class="list-block media-list">
 						<ul>
 							{% for reward in vendor.rewards%}
-							<li><a href="#" class="item-link item-content">
+							<li><a href="#" class="item-link item-content get-reward">
 								{% if reward.image_url%}
 								<div class="item-media"><img src="{{reward.image_url}}" width="80"></div>
 								{% endif%}
@@ -62,13 +62,4 @@
 	</div>
 </div>
 
-{% endblock%}
-{% block scripts%}
-<script>
-$$('.reward').tap(function(){
-	myApp.confirm('Do you really want to buy this reward?',function(){
-		myApp.alert('Great!');
-	});
-});
-</script>
 {% endblock%}
