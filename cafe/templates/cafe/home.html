@@ -24,38 +24,40 @@
       <div class="list-block media-list">
         <ul>
           <li><a href="{% url 'cafe-task-list'%}" class="item-link item-content">
-            <div class="item-media"><img src="{% static 'cafe/img/icons/caffe.jpg' %}" width="80"></div>
+            <div class="item-media"><img src="{% static 'img/logo100_black.png' %}" width="40"></div>
             <div class="item-inner">
               <div class="item-title-row">
                 <div class="item-title">Caffè</div>
                 <div class="item-after">0.03&euro;</div>
               </div>
-              <div class="item-subtitle">less than 10 sec</div>
+              <div class="item-subtitle">about 10 sec</div>
               <div class="item-text">No typing, only clicking and swiping. No learning.</div>
+            </div></a>
+          </li>
+          <li><a href="#" class="item-link item-content">
+            <div class="item-media"><img src="{% static 'cafe/img/coffee-50.png' %}" width="40"></div>
+            <div class="item-inner">
+              <div class="item-title-row">
+                <div class="item-title">Cappuccino <i>(coming soon)</i></div>
+                <div class="item-after">0.35&euro;</div>
+              </div>
+              <div class="item-subtitle">less than 2 min</div>
+              <div class="item-text">Some typing, some learning.</div>
+            </div></a>
+          </li>
+          <li><a href="#" class="item-link item-content">
+            <div class="item-media"><img src="{% static 'cafe/img/wine_bottle-50.png' %}" width="40"></div>
+            <div class="item-inner">
+              <div class="item-title-row">
+                <div class="item-title">Wine <i>(coming soon)</i></div>
+                <div class="item-after">1&euro;</div>
+              </div>
+              <div class="item-subtitle">more than 2 min</div>
+              <div class="item-text">Custom tasks.</div>
             </div></a></li>
-            <!--li><a href="#" class="item-link item-content">
-              <div class="item-media"><img src="{% static 'cafe/img/icons/cappuccino.png' %}" width="80"></div>
-              <div class="item-inner">
-                <div class="item-title-row">
-                  <div class="item-title">Cappuccino <i>(coming soon)</i></div>
-                  <div class="item-after">0.35&euro;</div>
-                </div>
-                <div class="item-subtitle">less than 2 min</div>
-                <div class="item-text">Some typing, some learning.</div>
-              </div></a></li>
-              <li><a href="#" class="item-link item-content">
-                <div class="item-media"><img src="{% static 'cafe/img/icons/wine.png' %}" width="80"></div>
-                <div class="item-inner">
-                  <div class="item-title-row">
-                    <div class="item-title">Wine <i>(coming soon)</i></div>
-                    <div class="item-after">1&euro;</div>
-                  </div>
-                  <div class="item-subtitle">more than 2 min</div>
-                  <div class="item-text">Custom tasks.</div>
-                </div></a></li-->
-              </ul>
-            </div>
-          </div>
+          </ul>
         </div>
       </div>
-      {% endblock%}
+    </div>
+  </div>
+  {% endblock%}

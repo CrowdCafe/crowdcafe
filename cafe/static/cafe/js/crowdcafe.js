@@ -16,7 +16,11 @@ var mainView = crowdcafe.addView('.view-main', {
 var page_scripts = {
 	task: function(){
 		$$('.button-submit').on('click',function(){
+			crowdcafe.showPreloader('We save your results');
 			document.taskForm.submit();
+		});
+		$$('.skip-instance').on('click',function(){
+			crowdcafe.showPreloader('Getting another task instance');
 		});
 		$$('.open-popup').on('click', function(){
 			var button = $$(this);
@@ -31,6 +35,11 @@ var page_scripts = {
 			crowdcafe.confirm('Do you really want to get this reward?', function () {
 				crowdcafe.alert('Great!');
 			});
+		});
+	},
+	tasklist: function(){
+		$$('.task').on('click',function(){
+			crowdcafe.showPreloader()
 		});
 	}
 }

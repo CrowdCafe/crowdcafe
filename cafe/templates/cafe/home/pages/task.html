@@ -8,7 +8,7 @@
 	<div class="navbar-inner">
 		<div class="left"><a href="{% url 'cafe-task-list'%}" class="link">List</a></div>
 		<div class="center sliding task-title">{{taskinstance.task.title}}</div>
-		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external">Skip</a></div>
+		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance">Skip</a></div>
 
 	</div>
 </div>
