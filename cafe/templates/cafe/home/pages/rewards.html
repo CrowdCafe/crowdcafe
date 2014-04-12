@@ -17,47 +17,30 @@
 	<!-- Page, data-page contains page name-->
 	<div data-page="rewards" class="page page-on-center">
 		<div class="page-content">
-			<div class="tabs">
-				<div id="tab1" class="tab active">
-					<div class="content-block-title">
-						<p><i>purchasing will be available soon</i></p>
-					</div>
+			<div class='content-block-title'>Available rewards:</div>
+			<div class="list-block media-list">
+				<ul>
 					{% for vendor in vendors%}
-					<div class="content-block">
-						<h4>{{vendor.title}}</h4>
-						<p>{{vendor.description}}<br/>
-							{{vendor.address}}
-						</p>
-					</div>
-					<div class="list-block media-list">
-						<ul>
-							{% for reward in vendor.rewards%}
-							<li><a href="#" class="item-link item-content get-reward">
-								{% if reward.image_url%}
-								<div class="item-media"><img src="{{reward.image_url}}" width="80"></div>
-								{% endif%}
-								<div class="item-inner reward">
-									<div class="item-title-row">
-										<div class="item-title">{{reward.title}}</div>
-										<div class="item-after">{{reward.cost}}&euro;</div>
-									</div>
-									<div class="item-subtitle">Available: {{reward.amount_available}}</div>
-									<div class="item-text">{{reward.description}}</div>
-								</div></a>
-							</li>
-							{% endfor%}
-						</ul>
-					</div>
-
+					{% for reward in vendor.rewards%}
+					<li><a href="{% url 'cafe-reward-purchase' reward.id%}" class="item-link item-content get-reward">
+						{% if reward.image_url%}
+						<div class="item-media"><img src="{{reward.image_url}}" width="80"></div>
+						{% endif%}
+						<div class="item-inner reward">
+							<div class="item-title-row">
+								<div class="item-title">{{reward.title}}</div>
+								<div class="item-after money">{{reward.cost}}&euro;</div>
+							</div>
+							<div class="item-subtitle">Available: {{reward.amount_available}}</div>
+							<div class="item-text">{{reward.description}}</div>
+							<div class="item-text"><img src="{% static 'cafe/img/icons/home-50.png'%}" width="20">&nbsp;<small>{{vendor.title}}</small></div>
+							<div class="item-text"><img src="{% static 'cafe/img/icons/map_marker-50.png'%}" width="20">&nbsp;<small>{{vendor.address}}</small></div>
+						</div></a>
+					</li>
+					{% endfor%}
+					
 					{%endfor%}
-				</div>
-				<div id="tab2" class="tab">
-					<div class="content-block">
-						<h1>My rewards</h1>
-						<p>No rewards has been purchased so far</p>
-					</div>
-				</div>
-
+				</ul>
 			</div>
 		</div>
 	</div>

@@ -9,7 +9,6 @@ var crowdcafe = new Framework7({
 });
 var $$ = Framework7.$;
 
-
 crowdcafe.swipeoutDelete = function (el) {
             el = $$(el);
             if (el.length === 0) return;
@@ -53,7 +52,6 @@ var page_scripts = {
 				'name':answer_button.attr('answer-to'),
 				'answer': answer_button.attr('answer')
 			};
-			console.log(question);
 			$$(question.name).val(question.answer);	
 			answer_button.parents('.question').removeClass('notanswered').addClass('answered');
 			if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
@@ -62,11 +60,23 @@ var page_scripts = {
 		});
 
 	},
+	index: function(){
+		$$('.tasks-cappuccino,.tasks-wine').on('click',function(){
+			crowdcafe.alert('We do not have any tasks from this category available now. Please try "Caffè" tasks now.');
+		});
+	},
 	rewards: function(){
 		$$('.get-reward').on('click',function(){
-			crowdcafe.confirm('Do you really want to get this reward?', function () {
-				crowdcafe.alert('Great!');
+			var reward = {
+				'title':$$(this).find('.item-title').text(),
+				'cost':$$(this).find('.money').text(),
+				'purchase_url':$$(this).attr('purchase-url')
+			};
+			crowdcafe.confirm('Activate '+reward.title+' for '+reward.cost+' ?', function () {
+				console.log(reward.purchase_url);
+				//window.location = '/'+reward.purchase_url
 			});
+
 		});
 	},
 	tasklist: function(){
@@ -82,8 +92,6 @@ $$(document).on('pageInit', function (e) {
 		page_scripts[page.name]();
 	}
 });
-
-
 
 var page_name = $$('.page').attr('data-page');
 if (page_scripts[page_name]){

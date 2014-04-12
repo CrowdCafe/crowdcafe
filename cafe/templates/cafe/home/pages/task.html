@@ -7,7 +7,7 @@
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="left"><a href="{% url 'cafe-task-list' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
-		<div class="center sliding task-title">{{taskinstance.task.title}}</div>
+		<div class="center sliding task-title">Balance: {{user.profile.account.balance}}&euro;</div>
 		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance">Skip</a><a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a></div>
 	</div>
 </div>
@@ -22,7 +22,7 @@
 		<div class="page-content">
 			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
 				{% csrf_token %}
-				<div class="content-block-title">Instractions</div>
+				<div class="content-block-title">{{taskinstance.task.title}}</div>
 				<div class="content-block">{{taskinstance.task.description}}</div>
 
 				{% for item in taskinstance.dataitems %}

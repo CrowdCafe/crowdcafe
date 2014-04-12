@@ -92,6 +92,11 @@ def TaskInstanceComplete(request, instance_id):
 	return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id}))
 
 
+@login_required 
+def RewardPurchase(request, reward_id):
+	vendors = Vendor.objects.all()
+	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors}, context_instance=RequestContext(request))
+
 def instancesAvailableExist(task, user, insetance_id = 0):
 	answers = Answer.objects.filter(executor = user, taskinstance__task = task).values('taskinstance')
 	print answers

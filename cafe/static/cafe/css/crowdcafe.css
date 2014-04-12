@@ -60,6 +60,13 @@ iframe{
 	max-width: 100%;
 }
 
+
+div.item-after.money {
+	color: #FFCC00;
+}
+div.item-after.amount {
+	color: #4CD964;
+}
 /* flatization */
 
 .navbar{
@@ -75,9 +82,32 @@ iframe{
 /* end flatization */
 
 .panel {
-	background-color: #383838;
+	background-color: #363636;
 }
 .panel h1,.panel h3{
-	color:white;
+	color:#ccc;
 	font-weight: 200;
+}
+
+
+.panel {
+	background: #222;
+	color: #dddddd;
+}
+.panel-left .content-block,
+.panel-left .content-block-title {
+	color: #dddddd;
+}
+.panel-left .list-block ul {
+	background: none;
+}
+.panel-left .list-block ul,
+.panel-left .list-block .item-inner {
+	border-color: rgba(255, 255, 255, 0.1);
+}
+.panel-left .list-block a:not(.button) {
+	color: inherit;
+}
+.panel-left .list-block a:active {
+	background: #000;
 }
