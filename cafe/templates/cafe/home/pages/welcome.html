@@ -1,0 +1,37 @@
+{% extends 'cafe/ios7base.html'%}
+{%load static%}
+{% block navigation%}
+<!-- Top Navbar-->
+
+{% endblock%}
+
+{% block content%}
+<!-- Pages, because we need fixed-through navbar and toolbar, it has additional appropriate classes-->
+<div class="pages navbar-through toolbar-through">
+	<!-- Page, data-page contains page name-->
+	<div data-page="welcome" class="page">
+		<!-- Scrollable page content-->
+		<div class="page-content">
+			<div class="content-block">
+				<h1 class='center'>
+					<img src="https://s3-eu-west-1.amazonaws.com/crowdcafe/img/logo100.png" class="logo" width="60"><br/>CrowdCafe</h1></div>
+			<div class="content-block">
+				<h3 class='center'>
+					You perform simple tasks and earn rewards, such as coffee and deserts in stores around you.
+				</h3>
+			</div>			
+			<div class="list-block inset">
+				<ul>
+					<li><a href="{% url 'socialauth_begin' 'facebook' %}?next=/cafe/" class="link external list-button item-link btn-facebook-inversed"><i class="fa fa-facebook"></i> Connect with Facebook </a></li>
+					<li><a href="{% url 'socialauth_begin' 'google-oauth2' %}?next=/cafe/" class="link external list-button item-link btn-googleplus-inversed"><i class="fa fa-google-plus"></i> Connect with Google+ </a></li>
+					<li><a href="{% url 'socialauth_begin' 'twitter' %}?next=/cafe/" class="link external list-button item-link  btn-twitter-inversed"><i class="fa fa-twitter"></i> Connect with Twitter </a></li>
+					<li><a href="{% url 'socialauth_begin' 'github' %}?next=/cafe/" class="link external list-button item-link  btn-github-inversed"><i class="fa fa-github"></i> Connect with Github </a></li>
+				</ul>
+			</div>
+			<div class="content-block center">We do not post on your timeline.
+			</div>
+
+		</div>
+	</div>
+</div>
+{% endblock%}

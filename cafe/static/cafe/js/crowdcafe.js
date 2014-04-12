@@ -30,6 +30,11 @@ var mainView = crowdcafe.addView('.view-main', {
 });
 
 var page_scripts = {
+	welcome: function(){
+		$$('.external').on('click',function(){
+			crowdcafe.showPreloader('redirecting...');
+		});
+	},
 	task: function(){
 		$$('.button-submit').on('click',function(){
 			crowdcafe.showPreloader('Saving...');
