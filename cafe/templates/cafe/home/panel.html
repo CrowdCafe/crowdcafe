@@ -1,5 +1,5 @@
 {% load static%}
-<div class="content-block-title center">{{user.profile.full_name}}</div>
+<div class="content-block-title center"><h3>{{user.profile.full_name}}</h3></div>
 <div class="content-block ">
 	<h1 class='center'>{{user.profile.account.balance}}&euro;</h1>
 </div>
@@ -9,7 +9,7 @@
 			<div class="item-content">
 				<div class="item-media"><img src="{% static 'cafe/img/icons/work.png' %}" width="20"></div>
 				<div class="item-inner">
-					<div class="item-title">Tasks</div>
+					<div class="item-title">Home</div>
 				</div>
 			</div></a>
 		</li>
@@ -21,14 +21,15 @@
 				</div>
 			</div></a>
 		</li>
-		<li><a href="{% url 'cafe-account'%}" class="close-panel item-link">
+		
+		<!--li><a href="{% url 'cafe-account'%}" class="close-panel item-link">
 			<div class="item-content">
 				<div class="item-media"><img src="{% static 'cafe/img/icons/user_male.png' %}" width="20"></div>
 				<div class="item-inner">
 					<div class="item-title">Account</div>
 				</div>
 			</div></a>
-		</li>
+		</li-->
 		<li><a href="{% url 'cafe-rewards'%}" class="close-panel item-link">
 			<div class="item-content">
 				<div class="item-media"><img src="{% static 'cafe/img/icons/gift.png' %}" width="20"></div>

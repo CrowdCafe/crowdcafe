@@ -65,19 +65,19 @@ iframe{
 .navbar{
 	border-bottom:none;
 }
-*{
-	font-weight: 200 !important;
-}
 
 
 .page{
 	background-color: white;
 }
 .list-block .item-inner{
-	border-bottom:none;
 }
 /* end flatization */
 
 .panel {
-	background: #ddd;
+	background-color: #383838;
+}
+.panel h1,.panel h3{
+	color:white;
+	font-weight: 200;
 }
