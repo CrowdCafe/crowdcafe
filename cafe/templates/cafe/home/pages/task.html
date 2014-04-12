@@ -23,34 +23,10 @@
 		<div class="page-content">
 			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
 				{% csrf_token %}
-				<div class="content-block task-description">{{taskinstance.task.description}}</div>
-				<!-- ------------------------------ -->
-				{% if taskinstance.task.template = 'LT'%}
-				<div class="list-block media-list">
-					<ul class='instance-list'>
-						{% for item in taskinstance.dataitems %}
-						{% include_external taskinstance.task.id %}
-						{% endfor %}
-					</ul>
-				</div>
-				{% endif%}
-				<!-- ------------------------------ -->
-				{% if taskinstance.task.template = 'SF' %}
+				<div class="content-block-title task-description">{{taskinstance.task.description}}</div>
 				{% for item in taskinstance.dataitems %}
 				{% include_external taskinstance.task.id %}
 				{% endfor %}
-				{% endif %}
-				<!-- ------------------------------ -->
-				{% if taskinstance.task.template = 'TL'%}
-				<div class="tiles-block media-list">
-					<ul class='instance-list'>
-						{% for item in taskinstance.dataitems %}
-						{% include_external taskinstance.task.id %}
-						{% endfor %}
-					</ul>
-				</div>
-				{% endif %}
-				<!-- ------------------------------ -->
 				<div class="content-block">
 					<div class="row">
 						<div class="col-100"><a href="#" class="button button-big button-submit">Complete</a></div>

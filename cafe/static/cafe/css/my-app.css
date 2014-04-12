@@ -34,3 +34,6 @@ iframe{
 .content-block-title{
 	white-space:inherit;
 }
+.hidden{
+	display:none;
+}

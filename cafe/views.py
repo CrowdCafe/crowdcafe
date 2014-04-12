@@ -76,7 +76,6 @@ def TaskInstanceComplete(request, instance_id):
 	new_answer = Answer(taskinstance=taskinstance, executor = request.user, status = 'FN')
 	new_answer.save()
 
-
 	for dataitem in taskinstance.dataitems:
 		answer_item_value = {}
 		for key in request.POST:

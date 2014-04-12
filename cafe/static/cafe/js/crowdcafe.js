@@ -7,6 +7,22 @@ var crowdcafe = new Framework7({
 	ajaxLinks:false
 });
 var $$ = Framework7.$;
+
+
+crowdcafe.swipeoutDelete = function (el) {
+            el = $$(el);
+            if (el.length === 0) return;
+            if (el.length > 1) el = $$(el[0]);
+            crowdcafe.swipeoutOpenedEl = undefined;
+            el.trigger('delete');
+            el.css({height: el.outerHeight() + 'px'});
+            var clientLeft = el[0].clientLeft;
+            el.css({height: 0 + 'px'}).addClass('deleting transitioning').transitionEnd(function () {
+                el.trigger('deleted');
+                //el.remove();
+            });
+            el.find('.swipeout-content').transform('translate3d(-100%,0,0)');
+        };
 // Add view
 var mainView = crowdcafe.addView('.view-main', {
     // Because we use fixed-through navbar we can enable dynamic navbar
@@ -16,11 +32,11 @@ var mainView = crowdcafe.addView('.view-main', {
 var page_scripts = {
 	task: function(){
 		$$('.button-submit').on('click',function(){
-			crowdcafe.showPreloader('We save your results');
+			crowdcafe.showPreloader('Saving...');
 			document.taskForm.submit();
 		});
 		$$('.skip-instance').on('click',function(){
-			crowdcafe.showPreloader('Getting another task instance');
+			crowdcafe.showPreloader('Skipping...');
 		});
 		$$('.open-popup').on('click', function(){
 			var button = $$(this);
@@ -29,6 +45,21 @@ var page_scripts = {
 				$$(button.attr('data-popup')+' .content-block').html(content);
 			}
 		});
+
+		$$('[answer-to]').on('click',function(){
+			var answer_button = $$(this);
+			var question = {
+				'name':answer_button.attr('answer-to'),
+				'answer': answer_button.attr('answer')
+			};
+			console.log(question);
+			$$(question.name).val(question.answer);	
+			answer_button.parents('.question').removeClass('notanswered').addClass('answered');
+			if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
+				answer_button.parents('.hide-if-empty').hide();
+			}
+		});
+
 	},
 	rewards: function(){
 		$$('.get-reward').on('click',function(){
