@@ -59,3 +59,21 @@ iframe{
 .tile > img{
 	max-width: 100%;
 }
+
+/* flatization */
+
+.navbar{
+	border-bottom:none;
+}
+*{
+	font-weight: 200 !important;
+}
+
+
+.page{
+	background-color: white;
+}
+.list-block .item-inner{
+	border-bottom:none;
+}
+/* end flatization */

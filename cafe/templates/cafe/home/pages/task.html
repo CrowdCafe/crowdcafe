@@ -23,7 +23,8 @@
 		<div class="page-content">
 			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
 				{% csrf_token %}
-				<div class="content-block-title task-description">{{taskinstance.task.description}}</div>
+				<div class="content-block-title">Instractions</div>
+				<div class="content-block">{{taskinstance.task.description}}</div>
 
 				{% for item in taskinstance.dataitems %}
 				{% include_external taskinstance.task.id %}
