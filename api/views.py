@@ -58,7 +58,6 @@ def readUrl(request):
 
 @api_view(['GET'])
 @login_required
-@renderer_classes((r.CSVRenderer))
 def getCSV(request, task_id):
 	
 	answeritems = []
