@@ -6,10 +6,9 @@
 {% block navigation%}
 <div class="navbar">
 	<div class="navbar-inner">
-		<div class="left"><a href="{% url 'cafe-task-list'%}" class="link">List</a></div>
+		<div class="left"><a href="{% url 'cafe-task-list' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
 		<div class="center sliding task-title">{{taskinstance.task.title}}</div>
-		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance">Skip</a></div>
-
+		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance">Skip</a><a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a></div>
 	</div>
 </div>
 

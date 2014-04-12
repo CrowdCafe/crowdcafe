@@ -1,5 +1,6 @@
 // Initialize your app
 var crowdcafe = new Framework7({
+	dynamicNavbar: true,
 	modalTitle: 'CrowdCafe',
 	swipeBackPage:false,
 	preloadPreviousPage: false,

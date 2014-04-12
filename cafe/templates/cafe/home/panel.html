@@ -1,0 +1,46 @@
+{% load static%}
+<div class="content-block-title center">{{user.profile.full_name}}</div>
+<div class="content-block ">
+	<h1 class='center'>{{user.profile.account.balance}}&euro;</h1>
+</div>
+<div class="list-block">
+	<ul>
+		<li><a href="{% url 'cafe-task-list'%}" class="close-panel item-link">
+			<div class="item-content">
+				<div class="item-media"><img src="{% static 'cafe/img/icons/work.png' %}" width="20"></div>
+				<div class="item-inner">
+					<div class="item-title">Tasks</div>
+				</div>
+			</div></a>
+		</li>
+		<li><a href="{% url 'cafe-about'%}" class="close-panel item-link">
+			<div class="item-content">
+				<div class="item-media"><img src="{% static 'cafe/img/icons/about.png' %}" width="20"></div>
+				<div class="item-inner">
+					<div class="item-title">About</div>
+				</div>
+			</div></a>
+		</li>
+		<li><a href="{% url 'cafe-account'%}" class="close-panel item-link">
+			<div class="item-content">
+				<div class="item-media"><img src="{% static 'cafe/img/icons/user_male.png' %}" width="20"></div>
+				<div class="item-inner">
+					<div class="item-title">Account</div>
+				</div>
+			</div></a>
+		</li>
+		<li><a href="{% url 'cafe-rewards'%}" class="close-panel item-link">
+			<div class="item-content">
+				<div class="item-media"><img src="{% static 'cafe/img/icons/gift.png' %}" width="20"></div>
+				<div class="item-inner">
+					<div class="item-title">Rewards</div>
+				</div>
+			</div></a>
+		</li>
+		
+	</ul>
+	<div class="content-block">
+
+		<p><a href="{% url 'logout' %}" class="button external logout ">Logout</a></p>
+	</div>
+</div>
