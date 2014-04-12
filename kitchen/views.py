@@ -139,7 +139,8 @@ def collectDataFromTwitter(keyword, amount):
 
 def collectDataFromInstagram(keyword, amount):
 
-	apicall = InstagramCall()
+
+	apicall = InstagramCall(settings.INSTAGRAM_CLIENT_ID, settings.INSTAGRAM_SECRET)
 	dataset = apicall.getByKeyword(keyword, amount)
-	print dataset
+
 	return dataset
