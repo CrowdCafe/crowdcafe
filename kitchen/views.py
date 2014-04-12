@@ -17,6 +17,7 @@ import StringIO
 import scraperwiki 
 
 from apiTwitter import TwitterCall
+from apiInstagram import InstagramCall
 #import tasks
 
 def test_celery(request):
@@ -69,14 +70,23 @@ def TaskSave(request):
 	dataset_option = request.POST['dataset_option_selected']
 	if dataset_option == 'survey':
 		dataset = [{'no data':'survey'}]
+	
 	elif dataset_option == 'dataset':
 		if request.FILES:
 			if 'dataset' in request.FILES:
 				new_task.dataset_file.save(str(new_task.id)+request.FILES['dataset'].name, request.FILES['dataset'])
 				new_task.save()
 				dataset = collectDataFromCSV(new_task.dataset_file.url)
+	
 	elif dataset_option == 'feed':	
-		dataset = collectDataFromTwitter(request.POST['feed_handler'], int(request.POST['feed_amount']))	
+		keyword = request.POST['feed_handler']
+		amount = int(request.POST['feed_amount'])
+		feed_type = int(request.POST['feed-type'])
+
+		if feed_type == 0: # Twitter
+			dataset = collectDataFromTwitter(keyword, amount)
+		if feed_type == 2: # Instagram
+			dataset = collectDataFromInstagram(keyword, amount)
 	
 	if len(dataset)>0:
 		createTaskInstances(new_task,dataset)
@@ -110,6 +120,12 @@ def collectDataFromCSV(url):
 		i+=1
 	return dataset
 
+def collectDataFromSocialNetwork(keyword, amount, socialnetwork):
+	if socialnetwork == 0: # Twitter
+		return collectDataFromTwitter(keyword, amount)
+	if socialnetwork == 1: # Instagram
+		return 
+
 def collectDataFromTwitter(keyword, amount):
 	instance = UserSocialAuth.objects.filter(provider='twitter')[0]
 
@@ -119,4 +135,11 @@ def collectDataFromTwitter(keyword, amount):
 	apicall=TwitterCall(client_id=TWITTER_ACCESS_TOKEN,client_secret=TWITTER_ACCESS_TOKEN_SECRET)
 	
 	dataset = apicall.getByKeyword(keyword, amount, False)
+	return dataset
+
+def collectDataFromInstagram(keyword, amount):
+
+	apicall = InstagramCall()
+	dataset = apicall.getByKeyword(keyword, amount)
+	print dataset
 	return dataset

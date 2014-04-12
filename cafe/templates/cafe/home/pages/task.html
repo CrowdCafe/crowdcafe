@@ -24,6 +24,7 @@
 			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
 				{% csrf_token %}
 				<div class="content-block-title task-description">{{taskinstance.task.description}}</div>
+
 				{% for item in taskinstance.dataitems %}
 				{% include_external taskinstance.task.id %}
 				{% endfor %}
@@ -31,6 +32,7 @@
 					<div class="row">
 						<div class="col-100"><a href="#" class="button button-big button-submit">Complete</a></div>
 					</div>
+
 				</div>
 			</form>
 		</div>
