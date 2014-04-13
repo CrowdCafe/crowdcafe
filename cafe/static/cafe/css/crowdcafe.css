@@ -45,19 +45,19 @@
 }
 
 /* end Welcome page */
-.positive{
+.positive, .list-block .swipeout-actions-inner a.positive{
 	background: #4CD964;
 }
-.negative{
+.negative, .list-block .swipeout-actions-inner a.negative{
 	background: #FF3B30;
 }
-.neutral{
+.neutral, .list-block .swipeout-actions-inner a.neutral{
 	background: #D6CEC3;
 }
-.gold {
+.gold, .list-block .swipeout-actions-inner a.gold{
 	background: #FFCC00;
 }
-.dontknow{
+.dontknow, .list-block .swipeout-actions-inner a.dontknow{
 	background: #898C90;
 }
 .list-block .item-text{
