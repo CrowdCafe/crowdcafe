@@ -9,13 +9,19 @@ function getURLParameter(name) {
 		return null;
 	return results[1];
 }
+var page_scripts_activated = {}
+
 var page_scripts = {
 	welcome: function(){
+		page_scripts_activated['welcome']=true;
+
 		$$('.external').on('click',function(){
 			crowdcafe.showPreloader('redirecting...');
 		});
 	},
 	task: function(){
+		page_scripts_activated['task']=true;
+
 		if (getURLParameter('completed_previous') == '0'){
 			$$('.instructions-open').trigger('click');
 		}
@@ -49,11 +55,15 @@ var page_scripts = {
 
 	},
 	index: function(){
+		page_scripts_activated['index']=true;
+
 		$$('.tasks-cappuccino,.tasks-wine').on('click',function(){
 			crowdcafe.alert('We do not have any tasks from this category available now. Please try "Caffè" tasks now.');
 		});
 	},
 	rewards: function(){
+		page_scripts_activated['rewards']=true;
+
 		$$('.get-reward').on('click',function(){
 			var reward = {
 				'title':$$(this).find('.item-title').text(),
@@ -68,6 +78,8 @@ var page_scripts = {
 		});
 	},
 	tasklist: function(){
+		page_scripts_activated['tasklist']=true;
+		
 		$$('.task').on('click',function(){
 			crowdcafe.showPreloader()
 		});
