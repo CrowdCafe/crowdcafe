@@ -47,7 +47,6 @@ def TaskDelete(request, task_id):
 @login_required
 def TaskSave(request):
 
-	print request.FILES
 	template_url = request.POST['userinterface_template']
 	template_html = urllib2.urlopen(template_url).read()
 

@@ -134,7 +134,7 @@ def CouponActivate(request, coupon_id):
 
 def instancesAvailableExist(task, user, insetance_id = 0):
 	answers = Answer.objects.filter(executor = user, taskinstance__task = task).values('taskinstance')
-	print answers
+
 	instances = TaskInstance.objects.filter(task = task, status = 'ST',pk__gt = insetance_id).exclude(pk__in = answers)
 	if instances.count()>0:
 		return instances

@@ -8,6 +8,12 @@
 .coupon a{
 	color:white;
 }
+.white{
+	color:white;
+}
+.transaction{
+	color:white;
+}
 /* Welcome page */
 .page[data-page=welcome]{
 	background: #d6cec3; /* Old browsers */
@@ -39,16 +45,19 @@
 }
 
 /* end Welcome page */
-.list-block .swipeout-actions-inner a.positive{
+.positive{
 	background: #4CD964;
 }
-.list-block .swipeout-actions-inner a.negative{
+.negative{
 	background: #FF3B30;
 }
-.list-block .swipeout-actions-inner a.neutral{
+.neutral{
 	background: #D6CEC3;
 }
-.list-block .swipeout-actions-inner a.dontknow{
+.gold {
+	background: #FFCC00;
+}
+.dontknow{
 	background: #898C90;
 }
 .list-block .item-text{

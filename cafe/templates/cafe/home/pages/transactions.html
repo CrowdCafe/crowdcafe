@@ -4,7 +4,7 @@
 <!-- Top Navbar-->
 <div class="navbar">
 	<div class="navbar-inner">
-		<div class="left"><a href="{% url 'cafe-account' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
+		<div class="left"><a href="{% url 'cafe-home' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
 		<div class="center sliding">Transactions</div>
 		<div class="right"><a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a></div>
 	</div>
@@ -17,19 +17,19 @@
 	<!-- Page, data-page contains page name-->
 	<div data-page="transactions" class="page">
 		<!-- Scrollable page content-->
+
 		<div class="page-content">
-			<div class="content-block">
-				<p>EG - earnings, SG - spendings, DT - deposit</p>
-			</div>
+			<div class="content-block-title">Total earned: <b>{{user.profile.account.total_earning}}&euro;</b></div>
+			<div class="content-block-title">Total spent:  <b>{{user.profile.account.total_spending}}&euro;</b></div>
 			<div class="list-block">
 				<ul>
 					{% for transaction in user.profile.account.transactions%}
-					<li>
+					<li class=" transaction {% if transaction.to_account = user.profile.account%} positive {% else%} negative {% endif %}">
 						<div class="item-content">
 							<div class="item-media">{{transaction.type}}</i></div>
 							<div class="item-inner">
-								<div class="item-title">{{transaction.description}}<br/>{{transaction.date_created|timesince}} ago</div>
-								<div class="item-after"><span class="badge">{{transaction.amount}}&euro;</span></div>
+								<div class="item-title">{{transaction.description}}<br/><small class='muted'>{{transaction.date_created|timesince}} ago</small></div>
+								<div class="item-after"><span class="badge gold white">{{transaction.amount}}&euro;</span></div>
 							</div>
 						</div>
 					</li>
