@@ -45,8 +45,12 @@ def TaskInstanceAssign(request, task_id):
 	task = get_object_or_404(Task, pk = task_id, status = 'ST')
 	instances = instancesAvailableExist(task,request.user)
 
+	completed_previous = '0'
+	if 'completed_previous' in request.GET:
+		completed_previous = str(int(request.GET['completed_previous']))
+
 	if instances:
-		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id}))
+		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id})+'?completed_previous='+completed_previous)
 	else:
 		return redirect('cafe-task-list')
 
@@ -85,7 +89,8 @@ def TaskInstanceComplete(request, instance_id):
 	if len(taskinstance.answers)>taskinstance.task.min_answers_per_item:
 		taskinstance.status = 'FN'
 		taskinstance.save()
-	return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id}))
+
+	return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id})+'?completed_previous=1')
 
 
 @login_required 

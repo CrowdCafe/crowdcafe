@@ -9,7 +9,7 @@
 	<div class="panel-overlay"></div>
 	<!-- Left panel with reveal effect-->
 	<div class="panel panel-left panel-reveal">
-      {% include 'cafe/home/panel.html'%}
+		{% include 'cafe/home/panel.html'%}
 	</div>
 	<!-- Views-->
 	<div class="views">
@@ -25,23 +25,10 @@
 			{% endblock%}
 		</div>
 	</div>
-	<div class="popup iframe" style="display: none;">
-		<div class="view navbar-fixed">
-			<div class="page">
-				<div class="navbar">
-					<div class="navbar-inner">
-						<div class="center" style="left: 583px;">Wikipedia</div>
-						<div class="right"><a href="#" class="link close-popup">Close</a></div>
-					</div>
-				</div>
-				<div class="page-content">
-					<div class="content-block">
+	{% block extra%}
 
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	{% endblock%}
+
 	{% include 'cafe/home/scripts.html'%}
 	{% block scripts%}
 

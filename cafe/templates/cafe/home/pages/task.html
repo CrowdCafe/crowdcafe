@@ -7,8 +7,13 @@
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="left"><a href="{% url 'cafe-task-list' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
-		<div class="center sliding task-title">Balance: {{user.profile.account.balance}}&euro;</div>
-		<div class="right"><a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance">Skip</a><a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a></div>
+		<div class="center sliding task-title">
+			<a href="#" data-popup=".popup" class="open-popup instructions-open">Instructions</a>
+		</div>
+		<div class="right">
+			<a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance"><i class="fa fa-random"></i></a>
+			<a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a>
+		</div>
 	</div>
 </div>
 
@@ -22,8 +27,6 @@
 		<div class="page-content">
 			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
 				{% csrf_token %}
-				<div class="content-block-title">{{taskinstance.task.title}}</div>
-				<div class="content-block">{{taskinstance.task.description}}</div>
 
 				{% for item in taskinstance.dataitems %}
 				{% include_external taskinstance.task.id %}
@@ -35,6 +38,26 @@
 
 				</div>
 			</form>
+		</div>
+	</div>
+</div>
+{% endblock%}
+
+{% block extra%}
+<div class="popup">
+	<div class="view navbar-fixed">
+		<div class="page">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<div class="center popup-title" style="left: 583px;">{{taskinstance.task.title}}</div>
+					<div class="right"><a href="#" class="link close-popup">Close</a></div>
+				</div>
+			</div>
+			<div class="page-content">
+				<div class="content-block popup-content">
+					{{taskinstance.task.description}}
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
