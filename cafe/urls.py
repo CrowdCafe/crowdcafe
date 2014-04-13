@@ -8,8 +8,8 @@ urlpatterns = patterns('',
     #-------------------------------------------------------------------------------
     url(r'^$', views.Home, name='cafe-home'),
     url(r'welcome/$', views.Welcome, name='cafe-welcome'),
+    
     url(r'about/$', views.About, name='cafe-about'),
-    #url(r'account/$', views.Account, name='cafe-account'),
     url(r'rewards/$', views.Rewards, name='cafe-rewards'),
     url(r'transactions/$', views.Transactions, name='cafe-transactions'),
     

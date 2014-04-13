@@ -1,0 +1,36 @@
+.btn{
+	border:2px solid;
+}
+.btn-toolbar .btn-group .btn{
+	border:none;
+}
+label.uploadbutton input {
+	display: none;   
+}
+iframe{
+	border: 1px solid #EEE;
+}
+.logo{
+	width:50px;
+}
+label.radio{
+	text-align: left;
+}
+.row.dataset_options > div{
+	display:none;
+}
+.row.dataset_options > div.active{
+	display:block;
+}
+
+.header-10-sub .background {
+  background-image: url("../img/bg/cafe.jpg");
+  opacity: 0.85;
+  filter: alpha(opacity=85);
+}
+.content-23.custom-bg {
+  background-image: url('../img/bg/trento.jpg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}

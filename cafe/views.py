@@ -16,10 +16,6 @@ def About(request):
 	return render_to_response('cafe/home/pages/about.html', context_instance=RequestContext(request))
 
 @login_required 
-def Account(request):
-	return render_to_response('cafe/home/pages/account.html', context_instance=RequestContext(request))
-
-@login_required 
 def Rewards(request):
 	vendors = Vendor.objects.all()
 	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors}, context_instance=RequestContext(request))
