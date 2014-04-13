@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.conf import settings
 import uuid
-from models import Vendor, Reward, RewardInstance
+from models import Vendor, Reward, Coupon
 
 @login_required
 def VendorNew(request):
@@ -49,19 +49,19 @@ def RewardSave(request, vendor_id):
 	return redirect('rewards-home')
 
 @login_required
-def RewardInstances(request, reward_id):
+def Coupons(request, reward_id):
 	reward = get_object_or_404(Reward, pk = reward_id)
-	instances = RewardInstance.objects.filter(reward = reward).all()
-	return render_to_response('rewards/instances.html', {'reward':reward,'instances':instances}, context_instance=RequestContext(request))
+	coupons = Coupon.objects.filter(reward = reward).all()
+	return render_to_response('rewards/coupons.html', {'reward':reward,'coupons':coupons}, context_instance=RequestContext(request))
 
 @login_required
-def RewardInstancesGenerate(request, reward_id):
+def CouponsGenerate(request, reward_id):
 	amount = 5
 	reward = get_object_or_404(Reward,pk = reward_id)
 	for i in range(amount):
-		instance = RewardInstance(reward= reward)
-		instance.save()
-	return redirect(reverse('rewards-vendor-reward-instances', kwargs={'reward_id': reward_id}))
+		coupon = Coupon(reward = reward)
+		coupon.save()
+	return redirect(reverse('rewards-vendor-coupons', kwargs={'reward_id': reward_id}))
 def Home(request):
 	vendors = Vendor.objects.all()
 

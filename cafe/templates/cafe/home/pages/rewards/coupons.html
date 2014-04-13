@@ -1,9 +1,9 @@
 {%load static%}
-{% if active_rewards.count > 0%}
+{% if coupons.count > 0%}
 
 <div class="list-block ">
 	<ul>
-		{% for coupon in active_rewards%}
+		{% for coupon in coupons%}
 
 		<li class="swipeout ">
 			<div class="swipeout-content item-content coupon">
@@ -11,7 +11,7 @@
 				<div class="item-inner">
 					<div class="item-title-row">
 						<div class="item-title">
-							<a href="#" reward-vendor="{{coupon.reward.vendor.title}}" reward-title = "{{coupon.reward.title}}" reward-index = "{{coupon.id}}" reward-code = "{{coupon.code}}" reward-description="{{coupon.reward.description}}" data-popup=".coupon-popup" class="open-popup">{{coupon.reward.title}}</a>
+							<a href="#" reward-vendor="{{coupon.reward.vendor.title}}" reward-title = "{{coupon.reward.title}}" reward-index = "{{coupon.id}}" reward-code = "{{coupon.code}}" reward-description="{{coupon.reward.description}}" data-popup=".coupon-popup" class="open-popup">{{coupon.reward.title}}<br/> <small>{{coupon.reward.vendor.title}}</small></a>
 						</div>
 					</div>	
 				</div>

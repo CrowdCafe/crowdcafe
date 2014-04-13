@@ -50,7 +50,7 @@
 					<div class="span3">                            
 						<div class="span3 offset1">
 							{% for reward in vendor.rewards%}
-							<h6>{{reward.title}} for {{reward.cost}}&euro; {% if request.user.is_superuser %} <a href = '{% url "rewards-vendor-reward-instances" reward.id %}'>instances</a> {% endif%}</h6>
+							<h6>{{reward.title}} for {{reward.cost}}&euro; {% if request.user.is_superuser %} <a href = '{% url "rewards-vendor-coupons" reward.id %}'>coupons</a> {% endif%}</h6>
 							<p>{{reward.description}}</p>
 							<p>Available: {{reward.amount_available}}</p>
 

@@ -7,7 +7,7 @@ from django.template import RequestContext
 from kitchen.models import Task, TaskInstance, Answer, AnswerItem, DataItem
 from kitchen.models import getPlatformOwner, calculateCommission
 
-from rewards.models import Vendor, Reward, RewardInstance
+from rewards.models import Vendor, Reward, Coupon
 
 from account.models import AccountTransaction
 
@@ -23,10 +23,11 @@ def About(request):
 
 @login_required 
 def Rewards(request):
-	active_rewards = RewardInstance.objects.filter(worker = request.user, status = 'AC').all()
 
+	coupons = Coupon.objects.filter(worker = request.user, status = 'AC').order_by('-date_updated').all()
 	vendors = Vendor.objects.all()
-	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors, 'active_rewards':active_rewards}, context_instance=RequestContext(request))
+	
+	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors, 'coupons':coupons}, context_instance=RequestContext(request))
 
 @login_required 
 def Transactions(request):
@@ -105,26 +106,26 @@ def TaskInstanceComplete(request, instance_id):
 def RewardPurchase(request, reward_id):
 
 	reward = get_object_or_404(Reward,pk = reward_id)
-	rewardinstances = RewardInstance.objects.filter(reward = reward, status = 'NA')
+	coupons = Coupon.objects.filter(reward = reward, status = 'NA')
 	
-	if rewardinstances.count()>0:
+	if coupons.count()>0:
 		
 		transaction = AccountTransaction(currency = 'VM', to_account = reward.owner.profile.account, from_account = request.user.profile.account, amount = reward.cost, description = 'reward '+reward.title)
 		transaction.save()
 		
-		activatedRewardInstance = rewardinstances.all()[0]
-		activatedRewardInstance.status = 'AC'
-		activatedRewardInstance.worker = request.user
-		activatedRewardInstance.transaction = transaction
+		assignedcoupon = coupons.all()[0]
+		assignedcoupon.status = 'AC'
+		assignedcoupon.worker = request.user
+		assignedcoupon.transaction = transaction
 
-		activatedRewardInstance.save()
+		assignedcoupon.save()
 
 	return redirect('cafe-rewards')
 
 @login_required 
 def CouponActivate(request, coupon_id):
 
-	coupon = get_object_or_404(RewardInstance, pk = coupon_id, worker = request.user, status = 'AC')
+	coupon = get_object_or_404(Coupon, pk = coupon_id, worker = request.user, status = 'AC')
 	coupon.status = 'PS'
 	coupon.save()
 

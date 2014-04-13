@@ -45,9 +45,9 @@ class Reward(models.Model):
 	cost = models.FloatField()
 	@property
 	def amount_available(self):
-		return RewardInstance.objects.filter(reward = self, status = 'NA').count()
+		return Coupon.objects.filter(reward = self, status = 'NA').count()
 
-class RewardInstance(models.Model):
+class Coupon(models.Model):
 	reward = models.ForeignKey(Reward)
 	status = models.CharField(max_length=2, choices=REWARD_STATUSES, default='NA')
 	worker = models.ForeignKey(User, null=True, blank=True)
