@@ -82,11 +82,11 @@ class Answer(models.Model):
         if self.pk is None:
 
             # Worker gets money from Requestor
-            transaction = AccountTransaction(currency = 'VL', to_account = self.executor.profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = 0.03, description = 'answer for t.i. ['+str(self.taskinstance.id)+']')
+            transaction = AccountTransaction(currency = 'VM', to_account = self.executor.profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = 0.03, description = 'answer for t.i. ['+str(self.taskinstance.id)+']')
             transaction.save()
 
             # Platform gets comission from Requestor
-            commission = AccountTransaction(currency = 'VL', to_account = getPlatformOwner().profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.taskinstance.id)+']')
+            commission = AccountTransaction(currency = 'VM', to_account = getPlatformOwner().profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.taskinstance.id)+']')
             commission.save()
 
         super(Answer, self).save(*args, **kwargs)

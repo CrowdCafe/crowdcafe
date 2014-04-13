@@ -79,8 +79,19 @@ var page_scripts = {
 	},
 	rewards: function(){
 		page_scripts_activated['rewards']=true;
+		console.log('initiated rewards scripts');
 
-		$$('.get-reward').on('click',function(){
+		$$('.external').on('click',function(){
+			crowdcafe.showPreloader();
+		});
+
+		$$('.coupon a').on('click',function(){
+			var button = $$(this);
+			$$(button.attr('data-popup')+' .popup-title').html(button.attr('reward-title'));
+			var content = '<h1 class="center">Number '+button.attr('reward-index')+'<br/> code: '+button.attr('reward-code')+'</h1><p class="center">'+button.attr('reward-description')+'</p><h4 class="center">'+button.attr('reward-vendor')+'</h4>';
+			$$(button.attr('data-popup')+' .popup-content').html(content);
+		});
+		/*$$('.get-reward').on('click',function(){
 			var reward = {
 				'title':$$(this).find('.item-title').text(),
 				'cost':$$(this).find('.money').text(),
@@ -91,15 +102,15 @@ var page_scripts = {
 				//window.location = '/'+reward.purchase_url
 			});
 
-		});
-	},
-	tasklist: function(){
-		page_scripts_activated['tasklist']=true;
+});*/
+},
+tasklist: function(){
+	page_scripts_activated['tasklist']=true;
 
-		$$('.task').on('click',function(){
-			crowdcafe.showPreloader()
-		});
-	}
+	$$('.task').on('click',function(){
+		crowdcafe.showPreloader()
+	});
+}
 }
 
 

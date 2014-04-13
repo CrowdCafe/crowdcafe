@@ -16,11 +16,11 @@ var mainView = crowdcafe.addView('.view-main', {
 });
 
 
-
-
 $$(document).on('pageInit', function (e) {
 	var page = e.detail.page;
+	console.log(page.name);
 	if (page_scripts[page.name] && !page_scripts_activated[page.name]){
+		console.log('activated');
 		page_scripts[page.name]();
 	}
 });

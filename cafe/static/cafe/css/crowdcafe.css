@@ -1,7 +1,13 @@
 .muted{
 	opacity:0.5;
 }
-
+.coupon {
+	background-color: #FF5B37 !important;
+	color: #FFF;
+}
+.coupon a{
+	color:white;
+}
 /* Welcome page */
 .page[data-page=welcome]{
 	background: #d6cec3; /* Old browsers */

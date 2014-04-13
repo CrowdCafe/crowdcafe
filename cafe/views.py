@@ -3,8 +3,14 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+
 from kitchen.models import Task, TaskInstance, Answer, AnswerItem, DataItem
-from rewards.models import Vendor
+from kitchen.models import getPlatformOwner, calculateCommission
+
+from rewards.models import Vendor, Reward, RewardInstance
+
+from account.models import AccountTransaction
+
 import json
 
 def Welcome(request):
@@ -17,8 +23,10 @@ def About(request):
 
 @login_required 
 def Rewards(request):
+	active_rewards = RewardInstance.objects.filter(worker = request.user, status = 'AC').all()
+
 	vendors = Vendor.objects.all()
-	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors}, context_instance=RequestContext(request))
+	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors, 'active_rewards':active_rewards}, context_instance=RequestContext(request))
 
 @login_required 
 def Transactions(request):
@@ -95,8 +103,33 @@ def TaskInstanceComplete(request, instance_id):
 
 @login_required 
 def RewardPurchase(request, reward_id):
-	vendors = Vendor.objects.all()
-	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors}, context_instance=RequestContext(request))
+
+	reward = get_object_or_404(Reward,pk = reward_id)
+	rewardinstances = RewardInstance.objects.filter(reward = reward, status = 'NA')
+	
+	if rewardinstances.count()>0:
+		
+		transaction = AccountTransaction(currency = 'VM', to_account = reward.owner.profile.account, from_account = request.user.profile.account, amount = reward.cost, description = 'reward '+reward.title)
+		transaction.save()
+		
+		activatedRewardInstance = rewardinstances.all()[0]
+		activatedRewardInstance.status = 'AC'
+		activatedRewardInstance.worker = request.user
+		activatedRewardInstance.transaction = transaction
+
+		activatedRewardInstance.save()
+
+	return redirect('cafe-rewards')
+
+@login_required 
+def CouponActivate(request, coupon_id):
+
+	coupon = get_object_or_404(RewardInstance, pk = coupon_id, worker = request.user, status = 'AC')
+	coupon.status = 'PS'
+	coupon.save()
+
+	return redirect('cafe-rewards')
+
 
 def instancesAvailableExist(task, user, insetance_id = 0):
 	answers = Answer.objects.filter(executor = user, taskinstance__task = task).values('taskinstance')

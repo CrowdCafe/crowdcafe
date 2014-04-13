@@ -8,7 +8,7 @@
 	<div class="navbar-inner">
 		<div class="left"><a href="{% url 'cafe-task-list' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
 		<div class="center sliding task-title">
-			<a href="#" data-popup=".popup" class="open-popup instructions-open">Instructions</a>
+			<a href="#" data-popup=".instructions" class="open-popup instructions-open">Instructions</a>
 		</div>
 		<div class="right">
 			<a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance"><i class="fa fa-random"></i></a>
@@ -44,7 +44,7 @@
 {% endblock%}
 
 {% block extra%}
-<div class="popup">
+<div class="instructions popup">
 	<div class="view navbar-fixed">
 		<div class="page">
 			<div class="navbar">

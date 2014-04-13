@@ -7,13 +7,14 @@
 	<div>
 		<div class="container">
 			<div class="row">
-				<h3><img width="380" height="187" alt="" src="{% static 'img/ticket_coffee.png'%}"/>
+				<h3><img width="380" height="187" alt="" src="{% static 'landing/img/ticket_coffee.png'%}"/>
+					{% if request.user.is_superuser %}
+					<p>
+						<a class='btn btn-clear' href='{% url 'rewards-vendor-new'%}'><i class="fa fa-plus"></i> vendor</a>
+					</p>
+					{% endif%}
 				</h3>
-				{% if request.user.is_superuser %}
-				<p>
-					<a class='btn btn-primary' href='{% url 'rewards-vendor-new'%}'><i class="fa fa-plus"></i> vendor</a>
-				</p>
-				{% endif%}
+				
 			</div>
 		</div>
 
