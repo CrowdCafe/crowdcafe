@@ -18,7 +18,7 @@
 	<div data-page="tasklist" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
-			<div class="content-block-title">Please select a task you want to work on</div>
+			<div class="content-block-title">Select a task to work on:</div>
 			<div class="list-block media-list">
 				<ul>
 					{% for task in tasks%}
@@ -29,7 +29,7 @@
 								<div class="item-title">{{task.title}}</div>
 								<div class="item-after amount">{{task.amount_instances}}</div>
 							</div>
-							<div class="item-text">{{task.description}} <br> <i>Published {{task.date_created|timesince}} ago</i></div>
+							<div class="item-text">{{task.description}} <br> <small class="muted">Published by {{task.owner.profile.full_name}} {{task.date_created|timesince}} ago</small></div>
 						</div></a>
 					</li>
 					{% endfor %}

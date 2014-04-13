@@ -1,3 +1,7 @@
+.muted{
+	opacity:0.5;
+}
+
 /* Welcome page */
 .page[data-page=welcome]{
 	background: #d6cec3; /* Old browsers */
