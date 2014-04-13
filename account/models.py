@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from social_auth.models import UserSocialAuth
 from datetime import datetime 
+from django.db.models import Q
 
 class Profile(models.Model):
     user = models.OneToOneField(User) 
@@ -30,34 +31,45 @@ class Profile(models.Model):
 
 class Account(models.Model):
     profile = models.OneToOneField(Profile)
+
     total_deposit = models.FloatField(default = 0)
     total_earning =  models.FloatField(default = 0)
     total_spending =  models.FloatField(default = 0)
 
     @property
     def balance(self):
+        #return "{0:.2f}".format(self.total_deposit + self.total_earning - self.total_spending)
         return self.total_deposit + self.total_earning - self.total_spending
     @property
     def transactions(self):
-        return AccountTransaction.objects.filter(owner = self).order_by('-date_created').all()
+        return AccountTransaction.objects.filter(Q(from_account=self) | Q(to_account=self)).order_by('-date_created').all()
 
-TRANSACTION_TYPE = (('DT','deposit'),('EG','earning'),('SG','spending'))
-#CURRENCY_TYPE = (('RL','real'),('VL','virtual'))
+CURRENCY_TYPE = (('RM','real'),('VM','virtual'))
 
 class AccountTransaction(models.Model):
 
-    #from_account = models.ForeignKey(Account, related_name = 'from_account', blank = True, null = True)
-    #to_account = models.ForeignKey(Account, related_name = 'to_account', blank = True, null = True)
-    owner = models.ForeignKey(Account)
+    from_account = models.ForeignKey(Account, related_name = 'from_account', blank = True, null = True)
+    to_account = models.ForeignKey(Account, related_name = 'to_account', blank = True, null = True)
+
+    currency = models.CharField(max_length=2, choices=CURRENCY_TYPE)
     amount = models.FloatField(default = 0)
-    type = models.CharField(max_length=2, choices=TRANSACTION_TYPE)
+
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False) 
     description = models.CharField(max_length=1000, blank = True)
+
     def save(self, *args, **kwargs):
-        if self.pk is None:
-            if self.type == 'EG':
-                self.owner.total_earning +=self.amount
-            if self.type == 'SG':
-                self.owner.total_spending -=self.amount
-            self.owner.save()
+        if self.pk is None:    
+
+            if (self.from_account != self.to_account):
+                self.from_account.total_spending += self.amount
+                self.to_account.total_earning += self.amount
+
+                self.to_account.save()
+                self.from_account.save()
+            else:
+                self.to_account.total_spending += self.amount
+                self.to_account.total_earning += self.amount
+                # save only once - otherwise we face a bug
+                self.to_account.save()
+
         super(AccountTransaction, self).save(*args, **kwargs)

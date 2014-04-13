@@ -8,6 +8,7 @@ var crowdcafe = new Framework7({
 	ajaxLinks:false
 });
 
+
 // Add view
 var mainView = crowdcafe.addView('.view-main', {
     // Because we use fixed-through navbar we can enable dynamic navbar

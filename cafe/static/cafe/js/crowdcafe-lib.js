@@ -20,8 +20,24 @@ var page_scripts = {
 		});
 	},
 	task: function(){
+		
 		page_scripts_activated['task']=true;
 
+		crowdcafe.swipeoutDelete = function (el) {
+			el = $$(el);
+			if (el.length === 0) return;
+			if (el.length > 1) el = $$(el[0]);
+			crowdcafe.swipeoutOpenedEl = undefined;
+			el.trigger('delete');
+			el.css({height: el.outerHeight() + 'px'});
+			var clientLeft = el[0].clientLeft;
+			el.css({height: 0 + 'px'}).addClass('deleting transitioning').transitionEnd(function () {
+				el.trigger('deleted');
+                //el.remove();
+            });
+			el.find('.swipeout-content').transform('translate3d(-100%,0,0)');
+		};
+		
 		if (getURLParameter('completed_previous') == '0'){
 			$$('.instructions-open').trigger('click');
 		}
@@ -79,7 +95,7 @@ var page_scripts = {
 	},
 	tasklist: function(){
 		page_scripts_activated['tasklist']=true;
-		
+
 		$$('.task').on('click',function(){
 			crowdcafe.showPreloader()
 		});
@@ -98,20 +114,7 @@ function allFieldsAreFilled(){
 	return correct;
 }
 
-Framework7.swipeoutDelete = function (el) {
-	el = $$(el);
-	if (el.length === 0) return;
-	if (el.length > 1) el = $$(el[0]);
-	Framework7.swipeoutOpenedEl = undefined;
-	el.trigger('delete');
-	el.css({height: el.outerHeight() + 'px'});
-	var clientLeft = el[0].clientLeft;
-	el.css({height: 0 + 'px'}).addClass('deleting transitioning').transitionEnd(function () {
-		el.trigger('deleted');
-                //el.remove();
-            });
-	el.find('.swipeout-content').transform('translate3d(-100%,0,0)');
-};
+
 		/*$$('.open-popup').on('click', function(){
 			var button = $$(this);
 			if (button.attr('iframe')){

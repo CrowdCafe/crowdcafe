@@ -8,11 +8,17 @@ import jsonfield
 from decimal import Decimal
 from datetime import  timedelta
 from account.models import AccountTransaction
+from django.conf import settings
 
 
 STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'),)
 CATEGORY_CHOISE = (('CF', 'Caffè'), ('CP', 'Cappuccino'), ('WN', 'Wine'),)
 TEMPLATE_CHOISE = (('SF', 'Single form'), ('LT', 'List'), ('TL', 'Tiles'),)
+
+def getPlatformOwner():
+    return User.objects.filter(pk = settings.BUSINESS['platform_owner_id']).get()
+def calculateCommission(amount):
+    return amount * settings.BUSINESS['platform_commission']
 
 class Task(models.Model):
     owner = models.ForeignKey(User)
@@ -74,8 +80,15 @@ class Answer(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            transaction = AccountTransaction(owner = self.executor.profile.account,amount = 0.03, type = 'EG', description = 'task_instance ['+str(self.taskinstance.id)+'] completed')
+
+            # Worker gets money from Requestor
+            transaction = AccountTransaction(currency = 'VL', to_account = self.executor.profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = 0.03, description = 'answer for t.i. ['+str(self.taskinstance.id)+']')
             transaction.save()
+
+            # Platform gets comission from Requestor
+            commission = AccountTransaction(currency = 'VL', to_account = getPlatformOwner().profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.taskinstance.id)+']')
+            commission.save()
+
         super(Answer, self).save(*args, **kwargs)
 
 class AnswerItem(models.Model):
