@@ -78,7 +78,6 @@ var page_scripts = {
 	},
 	rewards: function(){
 		page_scripts_activated['rewards']=true;
-		console.log('initiated rewards scripts');
 
 		$$('.external').on('click',function(){
 			crowdcafe.showPreloader();
@@ -100,7 +99,6 @@ var page_scripts = {
 		});
 		$$('[name=contexts]').on('change',function(){
 			var context = $$(this).val();
-			console.log(context);
 
 			crowdcafe.get('/cafe/context/set/?context='+context,function(){
 
