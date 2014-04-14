@@ -11,7 +11,7 @@ from account.models import AccountTransaction
 from django.conf import settings
 
 
-STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'),)
+STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'), ('NP', 'Not published'))
 CATEGORY_CHOISE = (('CF', 'Caffè'), ('CP', 'Cappuccino'), ('WN', 'Wine'),)
 TEMPLATE_CHOISE = (('SF', 'Single form'), ('LT', 'List'), ('TL', 'Tiles'),)
 
@@ -27,7 +27,7 @@ class Task(models.Model):
 
     category = models.CharField(max_length=2, choices=CATEGORY_CHOISE, default='CF', blank=True)
     template = models.CharField(max_length=2, choices=TEMPLATE_CHOISE, default='PR', blank=True)
-    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='ST')
+    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='NP')
 
     dataset_file = models.FileField(upload_to='datasets',blank = True)
     options_file = models.FileField(upload_to='options',blank = True)

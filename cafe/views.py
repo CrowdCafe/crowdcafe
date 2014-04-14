@@ -12,7 +12,7 @@ from rewards.models import Vendor, Reward, Coupon
 from account.models import AccountTransaction
 from events.utils import logEvent
 
-
+from random import randint
 import json
 
 def Welcome(request):
@@ -62,13 +62,17 @@ def TaskInstanceAssign(request, task_id):
 	instances = instancesAvailableExist(task,request.user)
 
 	completed_previous = '0'
+
 	if 'completed_previous' in request.GET:
 		completed_previous = str(int(request.GET['completed_previous']))
 
 	if instances:
-		logEvent(request, 'instance_assigned',task_id, instances.all()[0].id)
-		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id})+'?completed_previous='+completed_previous)
+		assigned_instance = instances.all()[randint(0,instances.count())]
+
+		logEvent(request, 'instance_assigned',assigned_instance.task.id, assigned_instance.id)
+		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': assigned_instance.id})+'?completed_previous='+completed_previous)
 	else:
+		logEvent(request, 'instance_not_assigned',task_id)
 		return redirect('cafe-task-list')
 
 @login_required 
@@ -83,9 +87,11 @@ def TaskInstanceSkip(request, instance_id):
 	instance = get_object_or_404(TaskInstance, pk = instance_id)
 	instances = instancesAvailableExist(instance.task,request.user, instance.id)
 
-	logEvent(request, 'execution_skipped',instance.task.id, instance.id)
+	logEvent(request, 'execution_skipped', instance.task.id, instance.id)
 	if instances:
-		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id}))
+		assigned_instance = instances.all()[randint(0,instances.count())]
+		
+		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': assigned_instance.id}))
 	else:
 		return redirect('cafe-task-list')
 	
@@ -120,7 +126,7 @@ def RewardPurchase(request, reward_id):
 	reward = get_object_or_404(Reward,pk = reward_id)
 	coupons = Coupon.objects.filter(reward = reward, status = 'NA')
 	
-	if coupons.count()>0:
+	if coupons.count()>0 and request.user.profile.account.balance >= reward.cost:
 		
 		transaction = AccountTransaction(currency = 'VM', to_account = reward.owner.profile.account, from_account = request.user.profile.account, amount = reward.cost, description = 'reward '+reward.title)
 		transaction.save()
@@ -131,7 +137,10 @@ def RewardPurchase(request, reward_id):
 		assignedcoupon.transaction = transaction
 
 		assignedcoupon.save()
-	logEvent(request, 'coupon_purchased',assignedcoupon.reward.id, assignedcoupon.id)
+		logEvent(request, 'coupon_purchased',assignedcoupon.reward.id, assignedcoupon.id)
+	else:
+		logEvent(request, 'coupon_not_purchased',assignedcoupon.reward.id, assignedcoupon.id)
+	
 	return redirect('cafe-rewards')
 
 @login_required 
@@ -145,10 +154,10 @@ def CouponActivate(request, coupon_id):
 	return redirect('cafe-rewards')
 
 
-def instancesAvailableExist(task, user, insetance_id = 0):
+def instancesAvailableExist(task, user, instance_id = 0):
 	answers = Answer.objects.filter(executor = user, taskinstance__task = task).values('taskinstance')
 
-	instances = TaskInstance.objects.filter(task = task, status = 'ST',pk__gt = insetance_id).exclude(pk__in = answers)
+	instances = TaskInstance.objects.filter(task = task, status = 'ST',pk__gt = instance_id).exclude(pk__in = answers)
 	if instances.count()>0:
 		return instances
 	else:
