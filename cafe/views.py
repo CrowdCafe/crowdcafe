@@ -73,7 +73,6 @@ def TaskInstanceAssign(request, task_id):
 	task = get_object_or_404(Task, pk = task_id)
 	if task.status == 'ST' or task.owner == request.user: 
 		instances = instancesAvailableExist(task,request.user)
-		print instances
 		completed_previous = '0'
 
 		if 'completed_previous' in request.GET:
