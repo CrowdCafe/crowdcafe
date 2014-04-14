@@ -25,38 +25,40 @@
 							#{{task.id}}
 						</td>
 						<td>
-							<strong>{{task.title}}</strong>
+							<a href="{% url 'cafe-taskinstance-assign' task.id%}" target='_blank'><strong>{{task.title}}</strong></a>
 						</td>
 						<td>
-							<strong>{{task.description}}</strong>
+							{{task.description}}<br>
+							<small>Published {{task.date_created|timesince}} ago</small>
 						</td>
 						<td>
+
 							{% if task.dataset_file%}
-							<a href='{{task.dataset_file.url}}' target='_blank'>dataset</a>
+							<a href='{{task.dataset_file.url}}' target='_blank'>initial dataset</a>
 							{% endif%}
-						</td>
-						<td>
 							{% if task.options_file%}
 							<a href='{{task.options_file.url}}' target='_blank'>options</a>
 							{% endif%}
 						</td>
+
 						<td>
-							{{task.status}}
+							{% if task.status = 'ST'%}
+							<a href='{% url "kitchen-task-status-change" task.id "NP" %}' class='btn' > withdraw</a>
+							{% endif %}
+							{% if task.status = 'NP'%}
+							<a href='{% url "kitchen-task-status-change" task.id "ST" %}' class='btn'> publish</a>
+							{% endif %}
 						</td>
-						<td>
-							{{task.template}}
-						</td>
-						<td>
+						<!--td>
 							{{task.category}}
+						</td-->
+						<td>
+							<a href='{% url "api-task-csv" task.id%}' class="btn" > results.csv</a>
+							
+							<!--a href='{% url "api-task-answers" task.id%}' > JSON</a-->
 						</td>
 						<td>
-							{{task.date_created}}
-						</td>
-						<td>
-							<!--a href='#' ><i class="fa fa-pencil-square-o"></i> Edit</a--> |
-							<a href='{% url "kitchen-task-delete" task.id%}' ><i class="fa fa-trash-o"></i> Delete</a> |
-							<a href='{% url "api-task-answers" task.id%}' ><i class="fa fa-table"></i> JSON</a>
-							<a href='{% url "api-task-csv" task.id%}' ><i class="fa fa-file-text-o"></i> CSV</a>
+							<a href='{% url "kitchen-task-status-change" task.id "DL" %}' class="btn btn-clear">Delete</a>
 						</td>
 					</tr>
 					{% endfor%}

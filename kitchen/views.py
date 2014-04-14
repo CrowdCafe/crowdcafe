@@ -37,13 +37,12 @@ def TaskNew(request):
 	return render_to_response('kitchen/task.html', context_instance=RequestContext(request))
 
 @login_required
-def TaskDelete(request, task_id):
+def TaskStatusChange(request, task_id, status):
 
 	task = get_object_or_404(Task,pk = task_id, owner = request.user)
-	task.status = 'DL'
+	task.status = status
 	task.save()
 	return redirect('kitchen-home')
-
 @login_required
 def TaskSave(request):
 

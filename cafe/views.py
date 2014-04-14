@@ -58,22 +58,23 @@ def TaskList(request):
 
 @login_required 
 def TaskInstanceAssign(request, task_id):
-	task = get_object_or_404(Task, pk = task_id, status = 'ST')
-	instances = instancesAvailableExist(task,request.user)
+	task = get_object_or_404(Task, pk = task_id)
+	if task.status == 'ST' or task.owner == request.user: 
+		instances = instancesAvailableExist(task,request.user)
+		print instances
+		completed_previous = '0'
 
-	completed_previous = '0'
+		if 'completed_previous' in request.GET:
+			completed_previous = str(int(request.GET['completed_previous']))
 
-	if 'completed_previous' in request.GET:
-		completed_previous = str(int(request.GET['completed_previous']))
+		if instances:
+			assigned_instance = instances.all()[randint(0,instances.count()-1)]
 
-	if instances:
-		assigned_instance = instances.all()[randint(0,instances.count())]
+			logEvent(request, 'instance_assigned',assigned_instance.task.id, assigned_instance.id)
+			return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': assigned_instance.id})+'?completed_previous='+completed_previous)
 
-		logEvent(request, 'instance_assigned',assigned_instance.task.id, assigned_instance.id)
-		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': assigned_instance.id})+'?completed_previous='+completed_previous)
-	else:
-		logEvent(request, 'instance_not_assigned',task_id)
-		return redirect('cafe-task-list')
+	logEvent(request, 'instance_not_assigned',task_id)
+	return redirect('cafe-task-list')
 
 @login_required 
 def TaskInstanceExecute(request, instance_id): 
@@ -89,8 +90,8 @@ def TaskInstanceSkip(request, instance_id):
 
 	logEvent(request, 'execution_skipped', instance.task.id, instance.id)
 	if instances:
-		assigned_instance = instances.all()[randint(0,instances.count())]
-		
+		assigned_instance = instances.all()[randint(0,instances.count()-1)]
+
 		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': assigned_instance.id}))
 	else:
 		return redirect('cafe-task-list')
@@ -157,7 +158,7 @@ def CouponActivate(request, coupon_id):
 def instancesAvailableExist(task, user, instance_id = 0):
 	answers = Answer.objects.filter(executor = user, taskinstance__task = task).values('taskinstance')
 
-	instances = TaskInstance.objects.filter(task = task, status = 'ST',pk__gt = instance_id).exclude(pk__in = answers)
+	instances = TaskInstance.objects.filter(task = task, status = 'ST', pk__gt = instance_id).exclude(pk__in = answers)
 	if instances.count()>0:
 		return instances
 	else:
