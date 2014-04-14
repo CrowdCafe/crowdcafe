@@ -19,8 +19,7 @@ class TwitterCall(object):
 			oauth_token_secret=client_secret)
 
 	def getByKeyword(self,hashtag,count=20, max_id = False):
-		print self.call
-		print hashtag
+
 		#hashtag=hashtag
 		search = self.call.search(q=hashtag, count=count)
 		tweets = search['statuses']

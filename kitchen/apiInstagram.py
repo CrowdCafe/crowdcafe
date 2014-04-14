@@ -28,8 +28,6 @@ class InstagramCall:
 		url = self.api_url+self.api_version+call+'&client_id='+self.client_id
 		data = []
 		while len(data) < count:
-			print url
-			print len(data)
 			resp = self.retreiveData(url)
 			data = data + resp['data']
 			url = resp['pagination']['next_url']
