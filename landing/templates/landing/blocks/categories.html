@@ -1,64 +1,32 @@
-  <!-- price-1 -->        
-  <section class="price-1 v-center welcome-block-categories">
+{% load static%}
+<!-- price-1 -->        
+<section class="price-1 v-center welcome-block-categories">
     <div class="container ">
         <h3>Only 3 simple task categories</h3>
         <p class="lead">The wage on CrowdCafe is <b>10&euro;</b>/hour</p>
         <div class="row plans ">
+
+            {% for category in task_categories%}
             <div class="span4 plan ">
-                <div class="title ">Caffè</div>
-                <div class="price ">fixed reward <b>0.03&euro;</b>,<br><b>10 sec</b> execution time</div>
+                <div class="title">{{category.title}}<br/><br/>
+                    <img src="{% static category.icon %}" width="40">
+                </div><br/>
+                <div class="price "><b>{{category.cost}}&euro;</b> fixed reward,<br><b>{{category.time}}</b> execution time</div>
                 <div class="description ">
                     <b>Required actions:</b><br>
-                    clicking only<br>
-                    no typing<br>
-                    no learning
+                    {{category.description}}
                 </div>
-                <div class="description ">
-                   <b>Examples:</b><br>
-                   pair comparison<br>
-                   tag an object on an image<br>
-                   tweets sentiment<br>
-                   other simple tasks...
-               </div>
-               <div class="ribbon ">Most popular</div>
-           </div>
-           <div class="span4 plan ">
-            <div class="title ">Cappuccino</div>
-            <div class="price ">fixed reward <b>0.33&euro;</b>,<br><b>2 min</b> execution time</div>
-            <div class="description ">
-                <b>Required actions:</b><br>
-                clicking<br>
-                some typing<br>
-                some learning
+                 <div class="description ">
+                    <b>Examples</b><br>
+                    {{category.examples}}
+                </div>
+                {% if category.id = "CF" %}
+                <div class="ribbon ">Most popular</div>
+                {% endif %}
             </div>
-            <div class="description ">
-                <b>Examples:</b><br>
-                make a photo of an object<br>
-                short survey<br>
-                receipt transcription<br>
-                other medium-size tasks...
-            </div>
+            {% endfor %}
 
         </div>
-        <div class="span4 plan ">
-            <div class="title ">Wine</div>
-            <div class="price ">fixed reward <b>1&euro;</b>,<br><b>6 min</b> execution time</div>
-            <div class="description ">
-                <b>Required actions:</b><br>
-                any actions
-                <br> <br>
-                <br>
-            </div>
-            <div class="description ">
-                <b>Examples:</b><br>
-                interview record<br>
-                video capturing<br>
-                complex information search<br>
-                other non trivial tasks...
-            </div>
-            
-        </div>
     </div>
-</div>
-<!--/.container-->
+    <!--/.container-->
 </section>

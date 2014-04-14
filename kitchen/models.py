@@ -45,6 +45,9 @@ class Task(models.Model):
     @property
     def amount_instances(self):
         return TaskInstance.objects.filter(task = self).count()
+    @property
+    def category_details(self):
+        return settings.TASK_CATEGORIES[self.category]
 
 class TaskInstance(models.Model):
     task = models.ForeignKey(Task)
@@ -82,7 +85,7 @@ class Answer(models.Model):
         if self.pk is None:
 
             # Worker gets money from Requestor
-            transaction = AccountTransaction(currency = 'VM', to_account = self.executor.profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = 0.03, description = 'answer for t.i. ['+str(self.taskinstance.id)+']')
+            transaction = AccountTransaction(currency = 'VM', to_account = self.executor.profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = self.taskinstance.task.category_details['cost'], description = 'answer for t.i. ['+str(self.taskinstance.id)+']')
             transaction.save()
 
             # Platform gets comission from Requestor

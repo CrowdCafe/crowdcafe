@@ -4,31 +4,36 @@
 # Django settings for CrowdCafe project.
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 
-TASK_CATEGORY_DETAILS = [
-    {
+TASK_CATEGORIES = {
+    'CF':{
         'id':'CF',
         'title':'Caffè',
         'cost':0.03,
-        'icon':'cafe/img/icons/caffe.jpg',
-        'time':'less than 10 sec',
-        'description':'No typing, only clicking and swiping. No learning.'
-    },{
+        'icon':'landing/img/logo100_black.png',
+        'time':'10 sec',
+        'description':'Mostly clicking and swiping. No learning.',
+        'examples': 'pair comparison, tag an object on an image, tweets sentiment, other simple tasks...'
+    },
+    'CP':{
         'id':'CP',
         'title':'Cappuccino',
-        'cost':0.35,
-        'icon':'cafe/img/icons/cappuccino.png',
-        'time':'less than 2 min',
-        'description':'Some typing, some learning.'
+        'cost':0.33,
+        'icon':'libs/icons8/coffee-50.png',
+        'time':'2 min',
+        'description':'Some typing, some learning.',
+        'examples':'make a photo of an object, short survey, receipt transcription, other medium-size tasks...'
         
-    },{   
+    },
+    'WN':{   
         'id':'WN',
         'title':'Wine',
         'cost':1,
-        'icon':'cafe/img/icons/wine.png',
-        'time':'more than 2 min',
-        'description':'Custom tasks.'
+        'icon':'libs/icons8/wine_bottle-50.png',
+        'time':'6 min',
+        'description':'Custom tasks.',
+        'examples':'interview record, video capturing, complex information search, other non trivial tasks...'
     }
-]
+}
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -121,6 +126,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
     'social_auth.context_processors.social_auth_login_redirect',
+    'cafe.context_processors.task_categories'
 )
 
 MIDDLEWARE_CLASSES = (

@@ -27,21 +27,13 @@
 			<div class="content-block ">
 				<div class="content-block-inner">
 					<div class='row center'>
+						{% for category in task_categories%}
 						<div class='col-33'>
-							<img src="{% static 'landing/img/logo100_black.png' %}" width="40">
-							<p>Caffè</p>
-							<small>0.03&euro; / 10 sec</small>
+							<img src="{% static category.icon %}" width="40">
+							<p>{{category.title}}</p>
+							<small>{{category.cost}}&euro; / {{category.time}}</small>
 						</div>
-						<div class='col-33'>
-							<img src="{% static 'libs/icons8/coffee-50.png' %}" width="40">
-							<p>Cappuccino</p>
-							<small>0.33&euro; / 2 min</small>
-						</div>
-						<div class='col-33'>
-							<img src="{% static 'libs/icons8/wine_bottle-50.png' %}" width="40">
-							<p>Wine</p>
-							<small>1&euro; / 6 min</small>
-						</div>
+						{% endfor %}
 					</div>
 				</div>
 			</div>
