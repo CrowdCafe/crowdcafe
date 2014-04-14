@@ -81,6 +81,9 @@ iframe{
 	margin: 0px;
 	padding: 0px;
 }
+.list-block .list-group-title{
+	white-space:inherit;
+}
 .content-block-title{
 	white-space:inherit;
 }
@@ -160,4 +163,11 @@ div.item-after.amount {
 }
 .panel-left .list-block a:active {
 	background: #000;
+}
+
+
+/* task */
+.hide-if-empty{
+	-webkit-transition-duration: 400ms;
+	transition-duration: 400ms;
 }

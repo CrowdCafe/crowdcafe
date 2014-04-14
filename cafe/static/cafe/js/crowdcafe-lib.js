@@ -55,7 +55,6 @@ var page_scripts = {
 
 
 
-
 		$$('[answer-to]').on('click',function(){
 			var answer_button = $$(this);
 			var question = {
@@ -64,9 +63,9 @@ var page_scripts = {
 			};
 			$$(question.name).val(question.answer);	
 			answer_button.parents('.question').removeClass('notanswered').addClass('answered');
-			if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
-				answer_button.parents('.hide-if-empty').hide();
-			}
+			/*if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
+				answer_button.parents('.hide-if-empty').css({display: 'none'}).addClass('transitioning');
+			}*/
 		});
 
 	},
@@ -104,7 +103,7 @@ var page_scripts = {
 			console.log(context);
 
 			crowdcafe.get('/cafe/context/set/?context='+context,function(){
-				
+
 			});
 		});
 	},
