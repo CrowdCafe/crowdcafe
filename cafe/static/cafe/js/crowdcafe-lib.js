@@ -91,26 +91,28 @@ var page_scripts = {
 			var content = '<h1 class="center">Number '+button.attr('reward-index')+'<br/> code: '+button.attr('reward-code')+'</h1><p class="center">'+button.attr('reward-description')+'</p><h4 class="center">'+button.attr('reward-vendor')+'</h4>';
 			$$(button.attr('data-popup')+' .popup-content').html(content);
 		});
-		/*$$('.get-reward').on('click',function(){
-			var reward = {
-				'title':$$(this).find('.item-title').text(),
-				'cost':$$(this).find('.money').text(),
-				'purchase_url':$$(this).attr('purchase-url')
-			};
-			crowdcafe.confirm('Activate '+reward.title+' for '+reward.cost+' ?', function () {
-				console.log(reward.purchase_url);
-				//window.location = '/'+reward.purchase_url
+
+	},
+	tasklist: function(){
+		page_scripts_activated['tasklist']=true;
+		
+		$$('.task').on('click',function(){
+			crowdcafe.showPreloader()
+		});
+		$$('[name=contexts]').on('change',function(){
+			var context = $$(this).val();
+			console.log(context);
+
+			crowdcafe.get('/cafe/context/set/?context='+context,function(){
+				
 			});
-
-});*/
-},
-tasklist: function(){
-	page_scripts_activated['tasklist']=true;
-
-	$$('.task').on('click',function(){
-		crowdcafe.showPreloader()
-	});
-}
+		});
+	},
+	smart_select: function(){
+		$$('option').on('click',function(){
+			console.log($$(this).val());
+		});
+	}
 }
 
 

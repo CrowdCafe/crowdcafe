@@ -13,7 +13,7 @@ class Event(models.Model):
     url = models.URLField(max_length = 256,  null=True, blank=True)
     parent_id = models.IntegerField(null=True, blank=True)
     object_id = models.IntegerField(null=True, blank=True)
-
+    context = models.CharField(max_length = 64,  null=True, blank=True)    
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
 
     def __unicode__(self):

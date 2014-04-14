@@ -23,6 +23,9 @@ $$(document).on('pageInit', function (e) {
 		console.log('activated');
 		page_scripts[page.name]();
 	}
+	if (page.name.indexOf('smart-select-radio') == 0){
+		page_scripts['smart_select']();
+	}
 });
 
 var page_name = $$('.page').attr('data-page');

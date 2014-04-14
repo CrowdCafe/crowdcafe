@@ -12,6 +12,8 @@ urlpatterns = patterns('',
     url(r'about/$', views.About, name='cafe-about'),
     url(r'rewards/$', views.Rewards, name='cafe-rewards'),
     url(r'transactions/$', views.Transactions, name='cafe-transactions'),
+
+    url(r'context/set/$', views.setContext, name='cafe-context-set'),
     
     url(r'tasks/$', views.TaskList, name='cafe-task-list'),
     url(r'tasks/(?P<task_id>\d+)/assign/$', views.TaskInstanceAssign, name='cafe-taskinstance-assign'),

@@ -18,6 +18,30 @@
 	<div data-page="tasklist" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
+			<div class="content-block-title">Make sure that this one is correct:</div>
+			<div class="list-block ">
+				<ul>
+					<li>
+						<a href="#" class="item-link smart-select">
+							<select name="contexts">
+								<option value="not selected" selected="selected" >not selected</option>
+								<option value="in a bus" {% if cafe_context = "in a bus"%}selected="selected"{% endif%}>in a bus</option>
+								<option value="in a train" {% if cafe_context = "in a train"%}selected="selected"{% endif%}>in a train</option>
+								<option value="in a car (not driving)" {% if cafe_context = "in a car (not driving)"%}selected="selected"{% endif%}>in a car (not driving)</option>
+								<option value="on my workplace" {% if cafe_context = "on my workplace"%}selected="selected"{% endif%}>on my workplace</option>
+								<option value="having lunch or dinner" {% if cafe_context = "having lunch or dinner"%}selected="selected"{% endif%}>having lunch/dinner</option>
+								<option value="at home" {% if cafe_context = "at home"%}selected="selected"{% endif%}>at home</option>
+								<option value="outside" {% if cafe_context = "outside"%}selected="selected"{% endif%}>outside</option>
+							</select>
+							<div class="item-content positive">
+								<div class="item-inner">
+									<div class="item-title">I am </div>
+								</div>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
 			<div class="content-block-title">Select a task to work on:</div>
 			<div class="list-block media-list">
 				<ul>

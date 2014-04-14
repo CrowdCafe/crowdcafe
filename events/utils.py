@@ -7,6 +7,8 @@ def logEvent(request, page, parent_id = None, object_id = None):
         url = resolve(request.path_info).url_name
         )
 
+    if 'cafe-context' in request.session:
+        event.context = request.session['cafe-context']
     if request.user.is_authenticated():
         event.user = request.user
 

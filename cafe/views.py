@@ -39,6 +39,18 @@ def Transactions(request):
 	logEvent(request, 'transactions')
 	return render_to_response('cafe/home/pages/transactions.html', context_instance=RequestContext(request))
 
+
+@login_required 
+def setContext(request):
+	if 'context' in request.GET:
+		context = request.GET['context']
+
+	request.session['cafe-context'] = context
+	logEvent(request, 'context_change')
+	return HttpResponse({json.dumps({'context':context})}, content_type="application/json")
+	#return render_to_response('cafe/home/pages/transactions.html', context_instance=RequestContext(request))
+
+
 def Home(request):
 	if request.user.is_authenticated():
 		logEvent(request, 'home')

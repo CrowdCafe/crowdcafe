@@ -126,7 +126,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
     'social_auth.context_processors.social_auth_login_redirect',
-    'cafe.context_processors.task_categories'
+    'cafe.context_processors.task_categories',
+    'cafe.context_processors.cafe_context'
 )
 
 MIDDLEWARE_CLASSES = (
