@@ -72,7 +72,7 @@ var page_scripts = {
 	index: function(){
 		page_scripts_activated['index']=true;
 
-		$$('.tasks-cappuccino,.tasks-wine').on('click',function(){
+		$$('.tasks-Cappuccino,.tasks-Wine').on('click',function(){
 			crowdcafe.alert('We do not have any tasks from this category available now. Please try "Caffè" tasks now.');
 		});
 	},
