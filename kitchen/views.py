@@ -84,7 +84,7 @@ def TaskSave(request):
 		if feed_type == 0: # Twitter
 			dataset = collectDataFromTwitter(keyword, amount)
 		if feed_type == 2: # Instagram
-			dataset = collectDataFromInstagram(keyword, amount)
+			dataset = simplifyInstagramDataset(collectDataFromInstagram(keyword, amount))
 	
 	if len(dataset)>0:
 		createTaskInstances(new_task,dataset)
@@ -135,6 +135,16 @@ def collectDataFromTwitter(keyword, amount):
 	dataset = apicall.getByKeyword(keyword, amount, False)
 	return dataset
 
+def simplifyInstagramDataset(dataset):
+	simplified = []
+	for item in dataset:
+		if item['type']!='video':
+			simplified.append({
+			'id':item['id'],
+			'link':item['link'],
+			'image_url':item['images']['low_resolution']['url']
+			})
+	return simplified
 def collectDataFromInstagram(keyword, amount):
 
 
