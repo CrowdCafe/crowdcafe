@@ -10,20 +10,25 @@ from kitchen.models import getPlatformOwner, calculateCommission
 from rewards.models import Vendor, Reward, Coupon
 
 from account.models import AccountTransaction
+from events.utils import logEvent
+
 
 import json
 
 def Welcome(request):
 	if request.user.is_authenticated():
 		return redirect('cafe-home')
+
+	logEvent(request, 'welcome')
 	return render_to_response('cafe/home/pages/welcome.html', context_instance=RequestContext(request))
 
 def About(request):
+	logEvent(request, 'about')
 	return render_to_response('cafe/home/pages/about.html', context_instance=RequestContext(request))
 
 @login_required 
 def Rewards(request):
-
+	logEvent(request, 'rewards')
 	coupons = Coupon.objects.filter(worker = request.user, status = 'AC').order_by('-date_updated').all()
 	vendors = Vendor.objects.all()
 	
@@ -31,11 +36,13 @@ def Rewards(request):
 
 @login_required 
 def Transactions(request):
+	logEvent(request, 'transactions')
 	return render_to_response('cafe/home/pages/transactions.html', context_instance=RequestContext(request))
 
 def Home(request):
 	if request.user.is_authenticated():
-		return render_to_response('cafe/home.html', context_instance=RequestContext(request))
+		logEvent(request, 'home')
+		return render_to_response('cafe/home/pages/home.html', context_instance=RequestContext(request))
 	else:
 		return redirect('cafe-welcome')
 
@@ -46,7 +53,7 @@ def TaskList(request):
 	for task in tasks:
 		if instancesAvailableExist(task,request.user):
 			tasks_available.append(task)
-
+	logEvent(request, 'tasklist')
 	return render_to_response('cafe/home/pages/tasklist.html', {'tasks':tasks_available}, context_instance=RequestContext(request))
 
 @login_required 
@@ -59,6 +66,7 @@ def TaskInstanceAssign(request, task_id):
 		completed_previous = str(int(request.GET['completed_previous']))
 
 	if instances:
+		logEvent(request, 'instance_assigned',task_id, instances.all()[0].id)
 		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id})+'?completed_previous='+completed_previous)
 	else:
 		return redirect('cafe-task-list')
@@ -66,6 +74,8 @@ def TaskInstanceAssign(request, task_id):
 @login_required 
 def TaskInstanceExecute(request, instance_id): 
 	taskinstance = get_object_or_404(TaskInstance,pk = instance_id)
+
+	logEvent(request, 'execution_started',taskinstance.task.id, taskinstance.id)
 	return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))
 
 @login_required 
@@ -73,6 +83,7 @@ def TaskInstanceSkip(request, instance_id):
 	instance = get_object_or_404(TaskInstance, pk = instance_id)
 	instances = instancesAvailableExist(instance.task,request.user, instance.id)
 
+	logEvent(request, 'execution_skipped',instance.task.id, instance.id)
 	if instances:
 		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': instances.all()[0].id}))
 	else:
@@ -99,6 +110,7 @@ def TaskInstanceComplete(request, instance_id):
 		taskinstance.status = 'FN'
 		taskinstance.save()
 
+	logEvent(request, 'execution_completed',taskinstance.task.id, taskinstance.id)
 	return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id})+'?completed_previous=1')
 
 
@@ -119,7 +131,7 @@ def RewardPurchase(request, reward_id):
 		assignedcoupon.transaction = transaction
 
 		assignedcoupon.save()
-
+	logEvent(request, 'coupon_purchased',assignedcoupon.reward.id, assignedcoupon.id)
 	return redirect('cafe-rewards')
 
 @login_required 
@@ -128,7 +140,8 @@ def CouponActivate(request, coupon_id):
 	coupon = get_object_or_404(Coupon, pk = coupon_id, worker = request.user, status = 'AC')
 	coupon.status = 'PS'
 	coupon.save()
-
+	
+	logEvent(request, 'coupon_activated',coupon.reward.id, coupon.id)
 	return redirect('cafe-rewards')
 
 

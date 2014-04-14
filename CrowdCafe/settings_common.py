@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'api',
     'cafe',
     'rewards',
+    'events',
     'firebase',
     'rest_framework',
     'corsheaders',

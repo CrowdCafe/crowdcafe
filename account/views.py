@@ -5,7 +5,9 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.template import RequestContext
 from django.contrib.auth import logout, authenticate, login
 
+from events.utils import logEvent
 
 def Logout(request):
-    logout(request)
-    return redirect('welcome')
+	logEvent(request, 'logout')
+	logout(request)
+	return redirect('welcome')

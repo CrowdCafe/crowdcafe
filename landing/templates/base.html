@@ -4,21 +4,18 @@
 <head>
 	{% include 'landing/meta/meta.html'%}
 	{% include 'landing/meta/styles.html'%}
-
 </head>
-
 <body>
-
 	{% include 'snippets/navigation.html'%}
 
 	{% block content%}
 	{% endblock%}
 
-
-
 	{% include 'landing/meta/scripts.html'%}
 
 	{% block js%}
 	{% endblock%}
+	
+	{% include 'snippets/analytics.html'%}
 </body>
 </html>
