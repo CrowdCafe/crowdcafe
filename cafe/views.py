@@ -89,7 +89,7 @@ def TaskInstanceAssign(request, task_id):
 
 @login_required 
 def TaskInstanceExecute(request, instance_id): 
-	taskinstance = get_object_or_404(TaskInstance,pk = instance_id)
+	taskinstance = get_object_or_404(TaskInstance, pk = instance_id)
 
 	logEvent(request, 'execution_started',taskinstance.task.id, taskinstance.id)
 	return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))

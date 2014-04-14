@@ -24,7 +24,9 @@
      <div class="list-block media-list">
       <ul>
         {% for category in task_categories%}
-        <li><a href="{% url 'cafe-task-list'%}" class="item-link item-content tasks-caffe">
+        
+        <li>
+          {% if category.id = 'CF' %}<a href="{% url 'cafe-task-list'%}" class="item-link item-content tasks-caffe">{% endif %}
           <div class="item-media"><img src="{% static category.icon %}" width="40"></div>
           <div class="item-inner">
             <div class="item-title-row">
@@ -33,8 +35,10 @@
             </div>
             <div class="item-subtitle">{{category.time}}</div>
             <div class="item-text">{{category.description}}</div>
-          </div></a>
+          </div>
+         {% if category.id = 'CF' %}</a>{% endif %}
         </li>
+        
         {% endfor %}
         
         </ul>
