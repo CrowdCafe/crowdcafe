@@ -44,7 +44,7 @@ class Task(models.Model):
     
     @property
     def amount_instances(self):
-        return TaskInstance.objects.filter(task = self).count()
+        return TaskInstance.objects.filter(task = self, status = 'ST').count()
     @property
     def category_details(self):
         return settings.TASK_CATEGORIES[self.category]

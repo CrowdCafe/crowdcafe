@@ -53,8 +53,8 @@
 							{{task.category}}
 						</td-->
 						<td>
-							<a href='{% url "api-task-csv" task.id%}' class="btn" > results.csv</a>
-							
+							<a href='{% url "api-task-csv" task.id%}' class="btn" > results_all.csv</a>
+							<a href='{% url "api-task-csv" task.id%}?status=FN' class="btn" > results_fn.csv</a>
 							<!--a href='{% url "api-task-answers" task.id%}' > JSON</a-->
 						</td>
 						<td>

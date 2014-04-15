@@ -59,10 +59,11 @@ def readUrl(request):
 @api_view(['GET'])
 @login_required
 def getCSV(request, task_id):
-	
 	answeritems = []
-	
-	taskinstances = TaskInstance.objects.filter(task__id = task_id,task__owner = request.user).all()
+	taskinstances = TaskInstance.objects.filter(task__id = task_id,task__owner = request.user)
+	if 'status' in request.GET:
+		taskinstances.filter(status = request.GET['status'])
+	taskinstances = taskinstances.all()
 	for taskinstance in taskinstances:
 		for answer in taskinstance.answers:
 			for answeritem in answer.answeritems:
