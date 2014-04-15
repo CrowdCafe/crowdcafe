@@ -104,6 +104,9 @@ class AnswerItem(models.Model):
     def question(self):
         return self.dataitem.value
     @property
+    def dataitem_id(self):
+        return self.dataitem.id
+    @property
     def date_created(self):
         return self.answer.date_created
     @property
