@@ -121,9 +121,7 @@ def TaskInstanceComplete(request, instance_id):
 			if dataitem_handle in key:
 				answer_item_value[key.replace(dataitem_handle,'')] = request.POST[key]
 
-		new_answer_item = AnswerItem(answer = new_answer)
-		new_answer_item.dataitem = dataitem
-		new_answer_item.value = answer_item_value
+		new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value)
 		new_answer_item.save()
 	
 	if len(taskinstance.answers) >= taskinstance.task.min_answers_per_item:
