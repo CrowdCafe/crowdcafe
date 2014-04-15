@@ -151,7 +151,7 @@ def RewardPurchase(request, reward_id):
 		assignedcoupon.save()
 		logEvent(request, 'coupon_purchased',assignedcoupon.reward.id, assignedcoupon.id)
 	else:
-		logEvent(request, 'coupon_not_purchased',assignedcoupon.reward.id, assignedcoupon.id)
+		logEvent(request, 'coupon_not_purchased')
 	
 	return redirect('cafe-rewards')
 

@@ -43,7 +43,12 @@
 						</div>
 						<div class="swipeout-actions">
 							<div class="swipeout-actions-inner">
+								{% if user.profile.account.balance < reward.cost%}
+								<a href="#" class="link neutral">You do not </br>have enough money</a>
+								{% else %}
 								<a href="{% url 'cafe-reward-purchase' reward.id%}" class="link external positive">Get coupon </br> for {{reward.cost}}&euro;</a>
+								{% endif %}
+								
 							</div>
 						</div>
 					</li>
