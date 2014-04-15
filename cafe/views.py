@@ -124,7 +124,7 @@ def TaskInstanceComplete(request, instance_id):
 		new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value)
 		new_answer_item.save()
 	
-	if len(taskinstance.answers)>taskinstance.task.min_answers_per_item:
+	if len(taskinstance.answers) >= taskinstance.task.min_answers_per_item:
 		taskinstance.status = 'FN'
 		taskinstance.save()
 
