@@ -112,4 +112,7 @@ class AnswerItem(models.Model):
     @property
     def task_instance_id(self):
         return self.answer.taskinstance.id
+    @property
+    def task_instance_status(self):
+        return self.answer.taskinstance.status
 
