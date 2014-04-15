@@ -52,9 +52,10 @@ class TaskInstanceSerializer(serializers.ModelSerializer):
         fields = ('id','dataitems')
 
 class AnswerDataCSVSerializer(serializers.ModelSerializer):
+    data_created = serializers.CharField(source='date_created', read_only=True)
     question = serializers.CharField(source='question', read_only=True)
     value = serializers.CharField(source='value', read_only=True)
     worker_id = serializers.IntegerField(source='worker_id', read_only=True)
     class Meta:
         model = AnswerItem
-        fields = ('question','worker_id','id','value')
+        fields = ('question','worker_id','id','value','data_created')
