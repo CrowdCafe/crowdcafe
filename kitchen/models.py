@@ -109,4 +109,7 @@ class AnswerItem(models.Model):
     @property
     def worker_id(self):
         return self.answer.executor.id
+    @property
+    def task_instance_id(self):
+        return self.answer.taskinstance.id
 
