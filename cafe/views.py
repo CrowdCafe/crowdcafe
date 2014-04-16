@@ -109,26 +109,29 @@ def TaskInstanceSkip(request, instance_id):
 	
 @login_required 
 def TaskInstanceComplete(request, instance_id): 
-	taskinstance = get_object_or_404(TaskInstance,pk = instance_id)
+	taskinstance = get_object_or_404(TaskInstance, pk = instance_id)
+
+	if Answer.objects.filter(taskinstance = taskinstance, executor = request.user).count() == 0:
+		new_answer = Answer(taskinstance=taskinstance, executor = request.user, status = 'FN')
+		new_answer.save()
+
+		for dataitem in taskinstance.dataitems:
+			answer_item_value = {}
+			for key in request.POST:
+				dataitem_handle = 'dataitem_'+str(dataitem.id)
+				if dataitem_handle in key:
+					answer_item_value[key.replace(dataitem_handle,'')] = request.POST[key]
+
+			new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value)
+			new_answer_item.save()
 	
-	new_answer = Answer(taskinstance=taskinstance, executor = request.user, status = 'FN')
-	new_answer.save()
+		if len(taskinstance.answers) >= taskinstance.task.min_answers_per_item:
+			taskinstance.status = 'FN'
+			taskinstance.save()
 
-	for dataitem in taskinstance.dataitems:
-		answer_item_value = {}
-		for key in request.POST:
-			dataitem_handle = 'dataitem_'+str(dataitem.id)
-			if dataitem_handle in key:
-				answer_item_value[key.replace(dataitem_handle,'')] = request.POST[key]
-
-		new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value)
-		new_answer_item.save()
-	
-	if len(taskinstance.answers) >= taskinstance.task.min_answers_per_item:
-		taskinstance.status = 'FN'
-		taskinstance.save()
-
-	logEvent(request, 'execution_completed',taskinstance.task.id, taskinstance.id)
+		logEvent(request, 'execution_completed',taskinstance.task.id, taskinstance.id)
+	else:
+		logEvent(request, 'execution_completed_withmistake_notsaved',taskinstance.task.id, taskinstance.id)
 	return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id})+'?completed_previous=1')
 
 
