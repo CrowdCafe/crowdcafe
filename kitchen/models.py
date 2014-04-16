@@ -113,7 +113,7 @@ class AnswerItem(models.Model):
         except:
             return 0
     @property
-    def data_created(self):
+    def date_created(self):
         try:
             return self.answer.date_created
         except:

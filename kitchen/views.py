@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.conf import settings
 from models import Task, TaskInstance, DataItem
 from social_auth.models import UserSocialAuth
-
+from django.contrib.auth.decorators import user_passes_test
 from firebase import Firebase
 from django.core.files.storage import default_storage as s3_storage
 
@@ -37,12 +37,14 @@ def TaskNew(request):
 	return render_to_response('kitchen/task.html', context_instance=RequestContext(request))
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def TaskStatusChange(request, task_id, status):
 
 	task = get_object_or_404(Task,pk = task_id, owner = request.user)
 	task.status = status
 	task.save()
 	return redirect('kitchen-home')
+	
 @login_required
 def TaskSave(request):
 
