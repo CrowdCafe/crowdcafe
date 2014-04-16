@@ -102,8 +102,39 @@ class AnswerItem(models.Model):
         return str(self.id)
     @property
     def question(self):
-        return self.dataitem.value
+        try:
+            return self.dataitem.value
+        except:
+            return ''
     @property
     def worker_id(self):
-        return self.answer.executor.id
+        try:
+            return self.answer.executor.id
+        except:
+            return 0
+    @property
+    def data_created(self):
+        try:
+            return self.answer.date_created
+        except:
+            return ''
+    @property
+    def dataitem_id(self):
+        try:
+            return self.dataitem.id
+        except:
+            return 0
+    @property
+    def task_instance_id(self):
+        try:
+            return self.answer.taskinstance.id
+        except:
+            return 0
+    @property
+    def task_instance_status(self):
+        try:
+            return self.answer.taskinstance.status
+        except:
+            return ''
+
 
