@@ -56,9 +56,9 @@ class AnswerDataCSVSerializer(serializers.ModelSerializer):
     question = serializers.CharField(source='question', read_only=True)
     value = serializers.CharField(source='value', read_only=True)
     worker_id = serializers.IntegerField(source='worker_id', read_only=True)
-    dataitem_id = serializers.IntegerField(source='dataitem_id', read_only=True)
+    #dataitem_id = serializers.IntegerField(source='dataitem_id', read_only=True)
     task_instance_id = serializers.IntegerField(source='task_instance_id', read_only=True)
     task_instance_status = serializers.CharField(source='task_instance_status', read_only=True)
     class Meta:
         model = AnswerItem
-        fields = ('question','worker_id','id','dataitem_id','value','date_created','task_instance_id','task_instance_status')
+        fields = ('question','worker_id','id','value','date_created','task_instance_id','task_instance_status')

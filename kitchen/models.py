@@ -118,12 +118,14 @@ class AnswerItem(models.Model):
             return self.answer.date_created
         except:
             return ''
+    '''
     @property
     def dataitem_id(self):
         try:
             return self.dataitem.id
         except:
             return 0
+    '''
     @property
     def task_instance_id(self):
         try:
