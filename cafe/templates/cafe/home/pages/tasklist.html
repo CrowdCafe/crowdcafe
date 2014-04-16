@@ -19,6 +19,7 @@
 		<!-- Scrollable page content-->
 		<div class="page-content">
 			{% include 'cafe/home/pages/snippets/contexts.html' %}
+			{% if tasks.count > 0%}
 			<div class="content-block-title">Select a task to work on:</div>
 			<div class="list-block media-list">
 				<ul>
@@ -36,6 +37,10 @@
 					{% endfor %}
 				</ul>
 			</div>
+			{% else %}
+			<div class="content-block-title">Amazing!</div>
+			<div class="content-block">All the tasks were completed, we will post more tasks soon.</div>
+			{% endif %}
 		</div>
 	</div>
 </div>
