@@ -170,7 +170,6 @@ INSTALLED_APPS = (
     'cafe',
     'rewards',
     'events',
-    'firebase',
     'rest_framework',
     'corsheaders',
     # Uncomment the next line to enable the admin:

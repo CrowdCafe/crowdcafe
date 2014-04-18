@@ -7,7 +7,6 @@ from django.conf import settings
 from models import Task, TaskInstance, DataItem
 from social_auth.models import UserSocialAuth
 from django.contrib.auth.decorators import user_passes_test
-from firebase import Firebase
 from django.core.files.storage import default_storage as s3_storage
 
 import re
