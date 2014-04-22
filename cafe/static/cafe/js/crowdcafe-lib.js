@@ -22,7 +22,13 @@ var page_scripts = {
 	task: function(){
 		
 		page_scripts_activated['task']=true;
+		$$('[name=contexts]').on('change',function(){
+			var context = $$(this).val();
 
+			crowdcafe.get('/cafe/context/set/?context='+context,function(){
+
+			});
+		});
 		$$('[value-to-text]').on('change',function(){
 			var value_button = $$(this);
 			var to_item = {
@@ -109,18 +115,10 @@ var page_scripts = {
 		$$('.task').on('click',function(){
 			crowdcafe.showPreloader()
 		});
-		$$('[name=contexts]').on('change',function(){
-			var context = $$(this).val();
-
-			crowdcafe.get('/cafe/context/set/?context='+context,function(){
-
-			});
-		});
+		
 	},
 	smart_select: function(){
-		$$('option').on('click',function(){
-			console.log($$(this).val());
-		});
+		//to be removed
 	}
 }
 
