@@ -3,11 +3,20 @@
 
 
 {% block kitchen%}
+<style>
+.btn-toolbar{
+	z-index:1;
+	opacity:0.95;
+}
+.create-preselection{
+	margin-top:-10px;
+}
+</style>
 <!-- content-8  -->
 <section class="content-8 v-center">
 	<div>
 		<div class="container">
-			<h1>Create a  task in 5 easy steps:</h1>
+			<h1>Create a task in 6 easy steps:</h1>
 			<form method='POST' action='{% url 'kitchen-task-save' %}' enctype="multipart/form-data">
 				{% csrf_token %}
 
@@ -27,7 +36,7 @@
 					<hr/>
 				</div>
 				<div class='row'>
-					<div class="span6">
+					<div class="span3">
 						<p class='lead'>3. Category</p>
 						<label class="radio">
 							<input type="radio" name="task_category" id="optionsRadios1" value="CF" data-toggle="radio" checked="checked">
@@ -47,27 +56,28 @@
 							<b>Test</b> (0&euro; for testing only)
 						</label>
 					</div>
-					<!--div class="span4">
-						<p class='lead'>4. UI Type</p>
-						<label class="radio">
-							<input type="radio" name="ui_type" id="uitype1" value="SF" data-toggle="radio" checked="checked">
-							<b>Single form</b>
-						</label>
-
-						<label class="radio">
-							<input type="radio" name="ui_type" id="uitype2" value="LT" data-toggle="radio">
-							<b>List</b>
-						</label>
-						<label class="radio">
-							<input type="radio" name="ui_type" id="uitype3" value="TL" data-toggle="radio">
-							<b>Tiles</b>
-						</label>
-					</div-->
-					<div class="span6">
-						<p class='lead'>4. UI Template</p>
-						<span>check existing <a href ="https://github.com/CrowdCafe/crowdcafe-ui-templates" target="_blank" >templates</a> on GitHub.</span>
+					<div class="span6 preselection-block">
+						<p class='lead'>4. Preselection</p>
+						<div >
+							<select class='preselection_new_rule_type'>
+								<option value="WO">worked on a task</option>
+								<option value="NW">did not work on a task</option>
+							</select>
+							<select class='preselection_new_related_task'>
+								<option value="0">select a task</option>
+								{% for task in tasks%}
+								<option value="{{task.id}}">#{{task.id}} {{task.title}}</option>
+								{% endfor%}
+							</select>
+							<input type="button" class="btn btn-primary create-preselection" value="+">
+						</div>
+					</div>
+					<div class="span3">
+						<p class='lead'>5. User Interface</p>
+						
 						<input  class='block'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' value='https://raw.githubusercontent.com/CrowdCafe/crowdcafe-ui-templates/master/entityrelationship_proof.html' placeholder= 'URL leading to raw HTML file' >
-						<span>URL leading to raw HTML file</span>
+						<span>URL leading to raw HTML file.</span><br/>
+						<span>check existing <a href ="https://github.com/CrowdCafe/crowdcafe-ui-templates" target="_blank" >templates</a> on GitHub.</span>
 					</div>
 				</div>
 				<div class='row'>
@@ -75,7 +85,7 @@
 				</div>
 				<div class="row">
 					<div class="span12">
-						<p class='lead'>5. Data <div class="btn-toolbar">
+						<p class='lead'>6. Data <div class="btn-toolbar">
 							<div class="btn-group dataset_options">
 								<a class="btn btn-primary" block-name = "survey" href="#"><i class="fa fa-circle-o"> No data (survey)</i></a>
 								<a class="btn btn-primary" block-name = "dataset" href="#"><i class="fa fa-file-o"> Dataset .CSV</i></a>
@@ -154,6 +164,17 @@ $(document).ready(function(){
 		$('.block-'+block_name).addClass('active');
 
 		return false;
+	});
+	$('.create-preselection').click(function(){
+		if ($('.preselection_new_related_task').val()!=0){
+			var preselection = "<p class='preselection'>"+
+			"<input type='hidden' name='preselection_rule' value = '"+$('.preselection_new_rule_type').val()+"'>"+
+			"<input type='hidden' name='preselection_task' value = '"+$('.preselection_new_related_task').val()+"'>"+
+			"preselection ["+$('.preselection_new_rule_type').val() + "] for task ["+ $('.preselection_new_related_task').val()+"]"+
+			"<input type = 'button' class='btn' value = 'remove' onclick = '$(this).parent().remove();'>"+
+			"</p>";
+			$('.preselection-block').append(preselection);
+		}
 	});
 });
 </script>

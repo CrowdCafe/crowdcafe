@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'landing',
     'account',
     'kitchen',
+    'preselection',
     'api',
     'cafe',
     'rewards',

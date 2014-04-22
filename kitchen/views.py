@@ -8,6 +8,7 @@ from models import Task, TaskInstance, DataItem
 from social_auth.models import UserSocialAuth
 from django.contrib.auth.decorators import user_passes_test
 from django.core.files.storage import default_storage as s3_storage
+from preselection.models import Preselection
 
 import re
 import csv
@@ -33,7 +34,8 @@ def Home(request):
 
 @login_required
 def TaskNew(request):
-	return render_to_response('kitchen/task.html', context_instance=RequestContext(request))
+	tasks = Task.objects.exclude(status = 'DL').all()
+	return render_to_response('kitchen/task.html', {'tasks':tasks}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
@@ -49,7 +51,9 @@ def TaskSave(request):
 
 	template_url = request.POST['userinterface_template']
 	template_html = urllib2.urlopen(template_url).read()
-
+	# -----------------------
+	# Task creation
+	# -----------------------
 	new_task = Task(
 		owner = request.user, 
 		title = request.POST['task_title'],
@@ -63,10 +67,26 @@ def TaskSave(request):
 		template_url = template_url
 	)
 	new_task.save()
+	# -----------------------
+	# Preselection
+	# -----------------------
+	i = 0
+	print request.POST
 
-	dataset = []
+	if 'preselection_rule' in request.POST:
+		for rule in request.POST.getlist('preselection_rule'):
+			related_task = get_object_or_404(Task,pk = request.POST.getlist('preselection_task')[i])
+			rule_type = request.POST.getlist('preselection_rule')[i]
+			new_rule = Preselection(task = new_task, rule_type = rule_type,related_task = related_task)
+			new_rule.save()
+			i+=1
 
 	# -----------------------
+	# Data
+	# -----------------------
+	dataset = []
+
+	
 	dataset_option = request.POST['dataset_option_selected']
 	if dataset_option == 'survey':
 		dataset = [{'no data':'survey'}]
