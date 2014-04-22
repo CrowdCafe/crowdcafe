@@ -23,6 +23,22 @@ var page_scripts = {
 		
 		page_scripts_activated['task']=true;
 
+		$$('[value-to-text]').on('change',function(){
+			var value_button = $$(this);
+			var to_item = {
+				'selector':value_button.attr('value-to-text'),
+				'value': value_button.val()
+			};
+			$$(to_item.selector).text(to_item.value);
+		});
+		$$('[value-to-val]').on('change',function(){
+			var value_button = $$(this);
+			var to_item = {
+				'selector':value_button.attr('value-to-val'),
+				'value': value_button.val()
+			};
+			$$(to_item.selector).val(to_item.value);
+		});
 		crowdcafe.swipeoutDelete = function (el) {
 			el = $$(el);
 			if (el.length === 0) return;
@@ -71,10 +87,6 @@ var page_scripts = {
 	},
 	index: function(){
 		page_scripts_activated['index']=true;
-
-		$$('.tasks-Cappuccino,.tasks-Wine').on('click',function(){
-			crowdcafe.alert('We do not have any tasks from this category available now. Please try "Caffè" tasks now.');
-		});
 	},
 	rewards: function(){
 		page_scripts_activated['rewards']=true;

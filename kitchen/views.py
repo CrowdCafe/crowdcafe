@@ -57,7 +57,8 @@ def TaskSave(request):
 		dataitems_per_instance = int(request.POST['dataitems_per_instance']),
 		min_answers_per_item = int(request.POST['min_answers_per_item']),
 		min_confidence = int(request.POST['min_confidence']),
-		template = request.POST['ui_type'],
+		#template = request.POST['ui_type'],
+		category = request.POST['task_category'],
 		template_html  = template_html,
 		template_url = template_url
 	)

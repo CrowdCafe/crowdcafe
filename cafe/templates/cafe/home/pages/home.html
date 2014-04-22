@@ -25,7 +25,7 @@
       <ul>
         {% for category in task_categories%}
         <li>
-          <a href="{% if category.id = 'CF' %}{% url 'cafe-task-list'%}{% else %}#{% endif %}" class="item-link item-content tasks-{{category.title}}">
+          <a href="{% url 'cafe-task-list'%}?category={{category.id}}" class="item-link item-content tasks-{{category.title}}">
             <div class="item-media"><img src="{% static category.icon %}" width="40"></div>
             <div class="item-inner">
               <div class="item-title-row">

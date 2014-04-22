@@ -60,7 +60,10 @@ def Home(request):
 
 @login_required 
 def TaskList(request):
-	tasks = Task.objects.filter(status = 'ST').order_by('-date_created').all()
+	tasks = Task.objects.filter(status = 'ST')
+	if 'category' in request.GET:
+		tasks = tasks.filter(category = request.GET['category'])
+	tasks = tasks.order_by('-date_created').all()
 	tasks_available = []
 	for task in tasks:
 		if instancesAvailableExist(task,request.user):
