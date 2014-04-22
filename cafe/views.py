@@ -95,10 +95,13 @@ def TaskInstanceAssign(request, task_id):
 
 @login_required 
 def TaskInstanceExecute(request, instance_id): 
-	taskinstance = get_object_or_404(TaskInstance, pk = instance_id)
-
-	logEvent(request, 'execution_started',taskinstance.task.id, taskinstance.id)
-	return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))
+	if TaskInstance.objects.filter(status = 'ST', pk = instance_id).count() >0 and Answer.objects.filter(executor = request.user, taskinstance__id = instance_id).count() == 0:
+		taskinstance = get_object_or_404(TaskInstance, pk = instance_id)
+		logEvent(request, 'execution_started',taskinstance.task.id, taskinstance.id)
+		return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))
+	else:
+		return redirect('cafe-home')
+	
 
 @login_required 
 def TaskInstanceSkip(request, instance_id): 
