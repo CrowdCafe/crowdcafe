@@ -70,9 +70,8 @@ def TaskSave(request):
 	# -----------------------
 	# Preselection
 	# -----------------------
+	
 	i = 0
-	print request.POST
-
 	if 'preselection_rule' in request.POST:
 		for rule in request.POST.getlist('preselection_rule'):
 			related_task = get_object_or_404(Task,pk = request.POST.getlist('preselection_task')[i])
