@@ -11,7 +11,7 @@ from models import Preselection
 # Check whether the user satisfies a particular rule
 def qualifiedPreselection(preselection, user):
 	answers = Answer.objects.filter(executor = user, taskinstance__task = preselection.related_task, status = 'FN')
-	if (preselection.type == 'WO' and answers.count() > 0) or (preselection.type == 'NW' and answers.count() == 0):
+	if (preselection.rule_type == 'WO' and answers.count() > 0) or (preselection.rule_type == 'NW' and answers.count() == 0):
 		return True
 	else:
 		return False
