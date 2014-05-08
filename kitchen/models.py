@@ -82,7 +82,8 @@ class Answer(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if self.pk is None and self.taskinstance.task.category_details['cost']>0:
+        #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
+        if self.pk is None and self.taskinstance.task.category_details['cost']>0 and self.executor.profile.account != self.taskinstance.task.owner.profile.account:
 
             # Worker gets money from Requestor
             transaction = AccountTransaction(currency = 'VM', to_account = self.executor.profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = self.taskinstance.task.category_details['cost'], description = 'answer for t.i. ['+str(self.taskinstance.id)+']')
