@@ -7,11 +7,11 @@ BROKER_URL = "amqp://guest:guest@localhost:5672//"
 TASK_CATEGORIES = {
     'CF':{
         'id':'CF',
-        'title':'Caffè',
+        'title':'Espresso',
         'cost':0.03,
         'icon':'landing/img/logo100_black.png',
         'time':'10 sec',
-        'description':'Mostly clicking and swiping. No learning.',
+        'description':'Mostly clicking and swiping.',
         'examples': 'pair comparison, tag an object on an image, tweets sentiment, other simple tasks...'
     },
     'CP':{
@@ -32,7 +32,16 @@ TASK_CATEGORIES = {
         'time':'6 min',
         'description':'Custom tasks.',
         'examples':'interview record, video capturing, complex information search, other non trivial tasks...'
-    }
+    },
+    'ZT':{
+        'id':'FT',
+        'title':'Free task',
+        'cost':0,
+        'icon':'libs/icons8/like-50.png',
+        'time':'any',
+        'description':'simple',
+        'examples': 'tasks without any reward'
+    },
 }
 
 DEBUG = True

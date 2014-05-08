@@ -3,11 +3,12 @@
 <section class="price-1 v-center welcome-block-categories">
     <div class="container ">
         <h3>Only 3 simple task categories</h3>
-        <p class="lead">The wage on CrowdCafe is <b>10&euro;</b>/hour</p>
+        <br/>
+        <!--p class="lead">The wage on CrowdCafe is <b>10&euro;</b>/hour</p-->
         <div class="row plans ">
 
             {% for category in task_categories%}
-            <div class="span4 plan ">
+            <div class="span3 plan ">
                 <div class="title">{{category.title}}<br/><br/>
                     <img src="{% static category.icon %}" width="40">
                 </div><br/>
@@ -20,9 +21,6 @@
                     <b>Examples</b><br>
                     {{category.examples}}
                 </div>
-                {% if category.id = "CF" %}
-                <div class="ribbon ">Most popular</div>
-                {% endif %}
             </div>
             {% endfor %}
 
