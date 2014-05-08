@@ -82,7 +82,7 @@ class Answer(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
+        if self.pk is None and self.taskinstance.task.category_details['cost']>0:
 
             # Worker gets money from Requestor
             transaction = AccountTransaction(currency = 'VM', to_account = self.executor.profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = self.taskinstance.task.category_details['cost'], description = 'answer for t.i. ['+str(self.taskinstance.id)+']')
