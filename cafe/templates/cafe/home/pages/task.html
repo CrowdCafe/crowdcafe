@@ -6,7 +6,7 @@
 {% block navigation%}
 <div class="navbar">
 	<div class="navbar-inner">
-		<div class="left"><a href="{% url 'cafe-task-list' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
+		<div class="left"><a href="{% url 'cafe-task-list' %}?category={{taskinstance.task.category}}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
 		<div class="center sliding task-title">
 			<a href="#" data-popup=".instructions" class="open-popup instructions-open">Instructions</a>
 		</div>

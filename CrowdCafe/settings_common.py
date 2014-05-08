@@ -34,7 +34,7 @@ TASK_CATEGORIES = {
         'examples':'interview record, video capturing, complex information search, other non trivial tasks...'
     },
     'ZT':{
-        'id':'FT',
+        'id':'ZT',
         'title':'Free task',
         'cost':0,
         'icon':'libs/icons8/like-50.png',

@@ -1,6 +1,6 @@
 /*
- * Framework7 0.7.4
- * Full Featured HTML Framework For Building iOS7 Apps
+ * Framework7 0.8.2
+ * Full Featured HTML Framework For Building iOS 7 Apps
  *
  * http://www.idangero.us/framework7
  *
@@ -10,7 +10,7 @@
  *
  * Licensed under MIT
  *
- * Released on: April 12, 2014
+ * Released on: May 8, 2014
 */
 /*=============
   Framework 7
@@ -570,10 +570,18 @@ html.android .page-from-center-to-right {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 44px;
   -webkit-flex-shrink: 10;
   -ms-flex: 0 10 auto;
   flex-shrink: 10;
-  line-height: 43px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
 }
 .navbar .left,
 .navbar .right {
@@ -1012,6 +1020,7 @@ i.icon.icon-form-url {
   margin: 0;
   border-top: 1px solid #c8c7cc;
   border-bottom: 1px solid #c8c7cc;
+  position: relative;
 }
 .list-block ul ul {
   border-top: none;
@@ -1368,6 +1377,56 @@ i.icon.icon-form-url {
   margin-top: 0;
   border-top: none;
 }
+.list-block .sortable-handler {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: -webkit-calc(100% - 1px);
+  height: -moz-calc(100% - 1px);
+  height: -ms-calc(100% - 1px);
+  height: calc(100% - 1px);
+  z-index: 10;
+  background-repeat: no-repeat;
+  background-size: 18px 12px;
+  background-position: center;
+  width: 35px;
+  background-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12' fill='%23c7c7cc'><path d='M0,2V0h22v2H0z'/><path d='M0,7V5h22v2H0z'/><path d='M0,12v-2h22v2H0z'/></svg>");
+  opacity: 0;
+  visibility: hidden;
+  cursor: pointer;
+  -webkit-transition-duration: 300ms;
+  transition-duration: 300ms;
+}
+.list-block.sortable .item-inner {
+  -webkit-transition-duration: 300ms;
+  transition-duration: 300ms;
+}
+.list-block.sortable-opened .sortable-handler {
+  visibility: visible;
+  opacity: 1;
+}
+.list-block.sortable-opened .item-inner,
+.list-block.sortable-opened .item-link .item-inner {
+  padding-right: 35px;
+}
+.list-block.sortable-opened .item-link .item-inner,
+.list-block.sortable-opened .item-link .item-title-row {
+  background-image: none;
+}
+.list-block.sortable-sorting li {
+  -webkit-transition-duration: 300ms;
+  transition-duration: 300ms;
+}
+.list-block li.sorting {
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.6);
+  -webkit-transition-duration: 0ms;
+  transition-duration: 0ms;
+}
+.list-block li.sorting .item-inner {
+  border-bottom: none;
+}
 /* === Contacts === */
 .contacts-content {
   background: #fff;
@@ -1434,8 +1493,9 @@ i.icon.icon-form-url {
 .list-block textarea {
   height: 100px;
   resize: none;
-  line-height: 1.5;
-  padding-top: 10px;
+  line-height: 1.4;
+  padding-top: 8px;
+  padding-bottom: 7px;
 }
 .label-switch {
   display: inline-block;
@@ -1453,6 +1513,9 @@ i.icon.icon-form-url {
   align-self: center;
 }
 .label-switch input[type="checkbox"] {
+  display: none;
+}
+.label-switch input[type="checkbox"] + .checkbox {
   width: 52px;
   border-radius: 16px;
   -webkit-box-sizing: border-box;
@@ -1473,7 +1536,7 @@ i.icon.icon-form-url {
   -webkit-transition-duration: 300ms;
   transition-duration: 300ms;
 }
-.label-switch input[type="checkbox"]:before {
+.label-switch input[type="checkbox"] + .checkbox:before {
   content: ' ';
   position: absolute;
   left: 2px;
@@ -1492,7 +1555,7 @@ i.icon.icon-form-url {
   -ms-transform: scale(1);
   transform: scale(1);
 }
-.label-switch input[type="checkbox"]:after {
+.label-switch input[type="checkbox"] + .checkbox:after {
   content: ' ';
   height: 28px;
   width: 28px;
@@ -1510,18 +1573,16 @@ i.icon.icon-form-url {
   -webkit-transition-duration: 300ms;
   transition-duration: 300ms;
 }
-.label-switch input[type="checkbox"]:checked {
+.label-switch input[type="checkbox"]:checked + .checkbox {
   background: #4cd964;
 }
-.label-switch input[type="checkbox"]:checked:before {
+.label-switch input[type="checkbox"]:checked + .checkbox:before {
   -webkit-transform: scale(0);
   -ms-transform: scale(0);
   transform: scale(0);
 }
-.label-switch input[type="checkbox"]:checked:after {
-  -webkit-transform: translate3d(20px, 0, 0);
-  -ms-transform: translate3d(20px, 0, 0);
-  transform: translate3d(20px, 0, 0);
+.label-switch input[type="checkbox"]:checked + .checkbox:after {
+  left: 22px;
 }
 .button {
   border: 1px solid #007aff;
@@ -1534,6 +1595,10 @@ i.icon.icon-form-url {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
   padding: 0 10px;
   margin: 0;
   height: 29px;
@@ -2166,6 +2231,15 @@ input.modal-prompt-input {
     transform: translate3d(0, 1024px, 0);
   }
 }
+@media all and (max-width: 629px) and (max-height: 629px) {
+  html.with-statusbar-overlay .popup {
+    height: -webkit-calc(100% - 20px);
+    height: -moz-calc(100% - 20px);
+    height: -ms-calc(100% - 20px);
+    height: calc(100% - 20px);
+    top: 20px;
+  }
+}
 .modal .preloader {
   width: 34px;
   height: 34px;
@@ -2337,6 +2411,9 @@ body.panel-closing .views {
   max-width: 60%;
   border-radius: 16px;
 }
+.message:first-child {
+  margin-top: 10px;
+}
 .message.message-pic {
   padding: 0;
   background: none;
@@ -2383,15 +2460,19 @@ body.panel-closing .views {
   border-radius: 16px 16px 16px 0;
 }
 .message-appear {
-  -webkit-animation: messageAppear 400ms;
-  animation: messageAppear 400ms;
+  -webkit-animation: messageAppearFromBottom 400ms;
+  animation: messageAppearFromBottom 400ms;
+}
+.new-messages-first .message-appear {
+  -webkit-animation: messageAppearFromTop 400ms;
+  animation: messageAppearFromTop 400ms;
 }
 html.ios-6 .message,
 html.ios-6 .message.message-pic img {
   -webkit-mask-box-image: none;
   border-radius: 16px;
 }
-@-webkit-keyframes messageAppear {
+@-webkit-keyframes messageAppearFromBottom {
   from {
     -webkit-transform: translate3d(0, 100%, 0);
   }
@@ -2399,9 +2480,25 @@ html.ios-6 .message.message-pic img {
     -webkit-transform: translate3d(0, 0, 0);
   }
 }
-@keyframes messageAppear {
+@keyframes messageAppearFromBottom {
   from {
     transform: translate3d(0, 100%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@-webkit-keyframes messageAppearFromTop {
+  from {
+    -webkit-transform: translate3d(0, -100%, 0);
+  }
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes messageAppearFromTop {
+  from {
+    transform: translate3d(0, -100%, 0);
   }
   to {
     transform: translate3d(0, 0, 0);
