@@ -1,0 +1,51 @@
+{% extends 'cafe/ios7base.html'%}
+{%load static%}
+{% block navigation%}
+<!-- Top Navbar-->
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="left"><a href="{% url 'cafe-home' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
+		<div class="center sliding">{{profile.profile.full_name}}</div>
+		<div class="right"><a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a></div>
+	</div>
+</div>
+{% endblock%}
+
+{% block content%}
+<!-- Pages, because we need fixed-through navbar and toolbar, it has additional appropriate classes-->
+<div class="pages navbar-through ">
+	<!-- Page, data-page contains page name-->
+	<div data-page="about" class="page">
+		<!-- Scrollable page content-->
+		<div class="page-content">
+			<div class="content-block"><h1 class='center'><img class='avatar' src='{{profile.profile.avatar}}' /></h1></div>
+			<div class="content-block">
+				<h4>completed: {{stats.completed}}</h4>
+				<h4>published: {{stats.published}}</h4>
+			</div>
+
+			{% if user = profile%}
+			<div class="content-block-title "><h3>Connected accounts:</h3></div>
+			<div class="list-block">
+				<ul>
+					{% for socialnetwork in profile.profile.connectedSocialNetworks%}
+					<li class="swipeout transitioning">
+						<div class="item-content swipeout-content" style="-webkit-transform: translate3d(0px, 0px, 0px);">
+							<div class="item-inner">
+								<div class="item-title"><b>{{socialnetwork.provider}}</b> {{socialnetwork.uid}}</div>
+							</div>
+						</div>
+						<div class="swipeout-actions">
+							<div class="swipeout-actions-inner"><a href="#" data-confirm="Are you sure you want to delete this item?" class="swipeout-delete">Unlink</a></div>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+			
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+{% endblock%}

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-
+from django.contrib.auth.models import User
 from kitchen.models import Task, TaskInstance, Answer, AnswerItem, DataItem
 from kitchen.models import getPlatformOwner, calculateCommission
 
@@ -36,6 +36,22 @@ def Rewards(request):
 	vendors = Vendor.objects.all()
 	
 	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors, 'coupons':coupons}, context_instance=RequestContext(request))
+
+@login_required
+def UserProfile(request):
+	profile = {}
+	if 'user' in request.GET:
+		users = User.objects.filter(pk = int(request.GET['user']))
+		if users.count()>0:
+
+			profile = users.get()
+			stats = {}
+			stats['completed'] = Answer.objects.filter(executor = profile).count()
+			stats['published'] = Task.objects.filter(owner = profile).count()
+			#stats['execution'] = 
+
+
+	return render_to_response('cafe/home/pages/profile.html', {'profile':profile, 'stats':stats}, context_instance=RequestContext(request))
 
 @login_required 
 def Transactions(request):

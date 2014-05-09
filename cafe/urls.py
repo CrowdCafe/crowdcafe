@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     
     url(r'about/$', views.About, name='cafe-about'),
     url(r'rewards/$', views.Rewards, name='cafe-rewards'),
+    url(r'profile/$', views.UserProfile, name='cafe-profile'),
     url(r'transactions/$', views.Transactions, name='cafe-transactions'),
 
     url(r'context/set/$', views.setContext, name='cafe-context-set'),

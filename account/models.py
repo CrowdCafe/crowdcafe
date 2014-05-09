@@ -16,18 +16,18 @@ class Profile(models.Model):
         return self.user.first_name.encode('utf-8')+' '+self.user.last_name.encode('utf-8')
 
     @property
-    def logged_in_via_fb(self):
-        if UserSocialAuth.objects.filter(user=self.user,provider='facebook').all().count()>0:
-            return True
-        else:
-            return False 
+    def connectedSocialNetworks(self):
+        return UserSocialAuth.objects.filter(user=self.user).all()
     @property
-    def url(self):
-        if self.logged_in_via_fb:
-            return 'https://facebook.com/'+str(self.user.username.encode('utf-8'))
+    def avatar(self):
+        if len(self.connectedSocialNetworks)>0:
+            return "http://avatars.io/"+self.connectedSocialNetworks.reverse()[0].provider+"/"+str(self.connectedSocialNetworks.reverse()[0].uid)+"?size=medium"    
         else:
             return 'http://www.gravatar.com/' + hashlib.md5(self.user.email.lower()).hexdigest() 
-#------------------------
+        #if self.logged_in_via_fb:
+        #    return 'https://facebook.com/'+str(self.user.username.encode('utf-8'))
+        #else:
+        #    return 'http://www.gravatar.com/' + hashlib.md5(self.user.email.lower()).hexdigest() 
 
 class Account(models.Model):
     profile = models.OneToOneField(Profile)
