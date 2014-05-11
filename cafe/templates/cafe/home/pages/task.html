@@ -6,16 +6,17 @@
 {% block navigation%}
 <div class="navbar">
 	<div class="navbar-inner">
-		<div class="left"><a href="{% url 'cafe-task-list' %}?category={{taskinstance.task.category}}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
+		<div class="left">
+			<a href="{% url 'cafe-task-list' %}?category={{taskinstance.task.category}}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a>
+			<a href="{% url 'cafe-profile' %}?user={{taskinstance.task.owner.id}}" class="link "><i class="fa fa-male"></i>
+			</a>
+		</div>
 		<div class="center sliding task-title">
 			<a href="#" data-popup=".instructions" class="open-popup instructions-open">Instructions</a>
 		</div>
 		<div class="right">
 			<a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance"><i class="fa fa-random"></i>
 			</a>
-			<a href="{% url 'cafe-profile' %}?user={{taskinstance.task.owner.id}}" class="link "><i class="fa fa-male"></i>
-			</a>
-			
 			<a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a>
 		</div>
 	</div>
@@ -65,6 +66,10 @@
 					<h3>Close this window to work on the task, or discuss it with others:</h3>
 				</div>
 				<div class="content-block">
+					<script>
+					var disqus_title = '{{taskinstance.task.title}}';
+					var disqus_identifier = '{{taskinstance.task.id}}'
+					</script>
 					{% include 'snippets/disqus.html'%}
 				</div>
 				
