@@ -35,7 +35,7 @@ TASK_CATEGORIES = {
     },
     'ZT':{
         'id':'ZT',
-        'title':'Free task',
+        'title':'Free',
         'cost':0,
         'icon':'libs/icons8/like-50.png',
         'time':'any',

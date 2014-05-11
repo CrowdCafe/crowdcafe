@@ -8,9 +8,7 @@ def Home(request):
 	if request.user.is_authenticated():
 		if request.mobile:
 			return redirect('cafe-home')
-		return redirect('kitchen-home')
-	else:
-		return redirect('welcome')
+	return redirect('welcome')
 @detect_mobile
 def Welcome(request):
 	if request.mobile:

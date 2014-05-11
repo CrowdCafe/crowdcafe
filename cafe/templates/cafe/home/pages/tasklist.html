@@ -26,7 +26,9 @@
 				<ul>
 					{% for task in tasks%}
 					<li><a href="{% url 'cafe-taskinstance-assign' task.id %}" task-id = "{{task.id}}" class="item-link external item-content task">
-						<div class="item-media"></div>
+						<div class="item-media">
+							<img src='{{task.owner.profile.avatar}}' class='avatar'>
+						</div>
 						<div class="item-inner">
 							<div class="item-title-row">
 								<div class="item-title">{{task.title}}</div>
