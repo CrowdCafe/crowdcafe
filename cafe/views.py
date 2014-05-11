@@ -117,7 +117,11 @@ def TaskInstanceExecute(request, instance_id):
 		return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))
 	else:
 		return redirect('cafe-home')
-	
+
+@login_required 
+def AccountRemove(request, account_id): 
+	request.user.profile.removeConnectedSocialNetwork(account_id)
+	return redirect(reverse('cafe-profile')+'?user='+str(request.user.id))
 
 @login_required 
 def TaskInstanceSkip(request, instance_id): 

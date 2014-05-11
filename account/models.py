@@ -18,6 +18,14 @@ class Profile(models.Model):
     @property
     def connectedSocialNetworks(self):
         return UserSocialAuth.objects.filter(user=self.user).all()
+    def removeConnectedSocialNetwork(self, connectedSocialNetworkid):
+        if len(self.connectedSocialNetworks) > 1:
+            connected = UserSocialAuth.objects.filter(user=self.user, pk = connectedSocialNetworkid)
+            if connected.count() > 0:
+                connected.get().delete()
+                return True
+        return False
+
     @property
     def avatar(self):
         if len(self.connectedSocialNetworks)>0:

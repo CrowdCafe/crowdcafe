@@ -36,7 +36,7 @@
 							</div>
 						</div>
 						<div class="swipeout-actions">
-							<div class="swipeout-actions-inner"><a href="#" data-confirm="Are you sure you want to delete this item?" class="swipeout-delete">Unlink</a></div>
+							<div class="swipeout-actions-inner"><a href="{% url 'cafe-account-remove' socialnetwork.id %}" class="swipeout-delete external">Unlink</a></div>
 						</div>
 					</li>
 					{% endfor %}
