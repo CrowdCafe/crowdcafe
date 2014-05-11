@@ -62,7 +62,7 @@
 }
 .list-block .item-text{
 	height:auto;
-	-webkit-line-clamp: 10;
+	-webkit-line-clamp: 20;
 }
 .avatar{
 	border-radius: 50%;
