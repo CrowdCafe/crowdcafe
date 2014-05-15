@@ -1,12 +1,12 @@
 from django import template
 from django.template import Context, Template
 register = template.Library()
-from kitchen.models import Task
+from kitchen.models import Job
 
-def include_external(context,task_id):
-	task = Task.objects.filter(pk = task_id).get()
+def include_external(context,job_id):
+	job = Job.objects.filter(pk = job_id).get()
 
-	html = task.template_html
+	html = job.template_html
 	t = Template(html)
 	return t.render(context)
 

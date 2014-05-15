@@ -1,4 +1,4 @@
-from kitchen.models import Task, TaskInstance, DataItem, Answer, AnswerItem
+from kitchen.models import Job, Task, DataItem, Answer, AnswerItem
 
 from django.contrib.auth.models import User
 from account.models import Profile
@@ -19,10 +19,10 @@ class UserSerializer(serializers.ModelSerializer):
 		fields = ('id','first_name','last_name','email','profile')
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class JobSerializer(serializers.ModelSerializer):
     owner = UserSerializer(many=False)
     class Meta:
-        model = Task
+        model = Job
         fields = ('id','owner', 'title','description','category','template','status','date_created','date_deadline')
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -45,10 +45,10 @@ class DataItemSerializer(serializers.ModelSerializer):
 
 
 
-class TaskInstanceSerializer(serializers.ModelSerializer):
+class TaskSerializer(serializers.ModelSerializer):
     dataitems = DataItemSerializer(many=True)
     class Meta:
-        model = TaskInstance
+        model = Task
         fields = ('id','dataitems')
 
 class AnswerDataCSVSerializer(serializers.ModelSerializer):
@@ -57,8 +57,8 @@ class AnswerDataCSVSerializer(serializers.ModelSerializer):
     value = serializers.CharField(source='value', read_only=True)
     worker_id = serializers.IntegerField(source='worker_id', read_only=True)
     #dataitem_id = serializers.IntegerField(source='dataitem_id', read_only=True)
-    task_instance_id = serializers.IntegerField(source='task_instance_id', read_only=True)
-    task_instance_status = serializers.CharField(source='task_instance_status', read_only=True)
+    task_id = serializers.IntegerField(source='task_id', read_only=True)
+    task_status = serializers.CharField(source='task_status', read_only=True)
     class Meta:
         model = AnswerItem
-        fields = ('question','worker_id','id','value','date_created','task_instance_id','task_instance_status')
+        fields = ('question','worker_id','id','value','date_created','task_id','task_status')

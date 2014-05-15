@@ -7,8 +7,8 @@ urlpatterns = patterns('',
     # Views
     #-------------------------------------------------------------------------------
     url(r'^$', views.Home, name='kitchen-home'),
-    url(r'task/new/$', views.TaskNew, name='kitchen-task-new'),
-    url(r'task/save/$', views.TaskSave, name='kitchen-task-save'),
-    url(r'task/(?P<task_id>\d+)/status/(?P<status>\w+)/$', views.TaskStatusChange, name='kitchen-task-status-change'),
-    url(r'celery/$', views.test_celery, name='kitchen-test'),
+    url(r'job/new/$', views.JobNew, name='kitchen-job-new'),
+    url(r'job/save/$', views.JobSave, name='kitchen-job-save'),
+    url(r'job/(?P<job_id>\d+)/status/(?P<status>\w+)/$', views.JobStatusChange, name='kitchen-job-status-change'),
+   # url(r'celery/$', views.test_celery, name='kitchen-test'),
 )

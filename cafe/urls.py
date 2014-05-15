@@ -16,15 +16,15 @@ urlpatterns = patterns('',
 
     url(r'context/set/$', views.setContext, name='cafe-context-set'),
     
-    url(r'tasks/$', views.TaskList, name='cafe-task-list'),
-    url(r'tasks/(?P<task_id>\d+)/assign/$', views.TaskInstanceAssign, name='cafe-taskinstance-assign'),
-    url(r'instance/(?P<instance_id>\d+)/$', views.TaskInstanceExecute, name='cafe-taskinstance-execute'),
+    url(r'jobs/$', views.JobList, name='cafe-job-list'),
+    url(r'jobs/(?P<job_id>\d+)/assign/$', views.JobAssign, name='cafe-job-assign'),
+    url(r'task/(?P<task_id>\d+)/$', views.TaskExecute, name='cafe-task-execute'),
 
     url(r'reward/(?P<reward_id>\d+)/purchase/$', views.RewardPurchase, name='cafe-reward-purchase'),
     url(r'coupon/(?P<coupon_id>\d+)/activate/$', views.CouponActivate, name='cafe-coupon-activate'),
 
     url(r'account/(?P<account_id>\d+)/remove/$', views.AccountRemove, name='cafe-account-remove'),
 
-    url(r'instance/(?P<instance_id>\d+)/skip/$', views.TaskInstanceSkip, name='cafe-taskinstance-skip'),
-    url(r'instance/(?P<instance_id>\d+)/complete/$', views.TaskInstanceComplete, name='cafe-taskinstance-complete'),
+    url(r'task/(?P<task_id>\d+)/skip/$', views.TaskSkip, name='cafe-task-skip'),
+    url(r'task/(?P<task_id>\d+)/complete/$', views.TaskComplete, name='cafe-task-complete'),
 )

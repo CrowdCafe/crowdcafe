@@ -6,7 +6,7 @@
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="left"><a href="{% url 'cafe-home' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
-		<div class="center sliding">Available tasks</div>
+		<div class="center sliding">Available jobs</div>
 		<div class="right"><a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a></div>
 	</div>
 </div>
@@ -20,29 +20,30 @@
 		<div class="page-content">
 			
 
-			{% if tasks|length > 0 %}
+			{% if jobs|length > 0 %}
 			<div class="content-block-title">Select a task to work on:</div>
 			<div class="list-block media-list">
 				<ul>
-					{% for task in tasks%}
-					<li><a href="{% url 'cafe-taskinstance-assign' task.id %}" task-id = "{{task.id}}" class="item-link external item-content task">
+					{% for job in jobs%}
+					<li><a href="{% url 'cafe-job-assign' job.id %}" task-id = "{{job.id}}" class="item-link external item-content task">
 						<div class="item-media">
-							<img src='{{task.owner.profile.avatar}}' class='avatar'>
+							<img src='{{job.owner.profile.avatar}}' class='avatar'>
 						</div>
 						<div class="item-inner">
 							<div class="item-title-row">
-								<div class="item-title">{{task.title}}</div>
-								<div class="item-after amount">{{task.amount_instances}}</div>
+								<div class="item-title">{{job.title}}</div>
+								<div class="item-after amount">{{job.amount_instances}}</div>
 							</div>
-							<div class="item-text">{{task.description}} <br> <small class="muted">Published by {{task.owner.profile.full_name}} {{task.date_created|timesince}} ago</small></div>
+							<div class="item-text">{{job.description}} <br> <small class="muted">Published by {{job.owner.profile.full_name}} {{job.date_created|timesince}} ago</small></div>
 						</div></a>
 					</li>
 					{% endfor %}
 				</ul>
 			</div>
 			{% else %}
-			<div class="content-block-title">No available tasks</div>
-			<div class="content-block">Please check other task categories. We will publich new tasks soon.</div>
+			<div class="content-block-title">No available job</div>
+			<div class="content-block">Please check other job categories. We will publich new tasks soon.
+			</div>
 			{% endif %}
 		</div>
 	</div>

@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.conf import settings
-from models import Task, TaskInstance, DataItem
+
+from models import Job, Task, DataItem
 from social_auth.models import UserSocialAuth
 from django.contrib.auth.decorators import user_passes_test
 from django.core.files.storage import default_storage as s3_storage
@@ -16,57 +16,65 @@ import urllib2
 import StringIO
 import scraperwiki 
 
-from apiTwitter import TwitterCall
-from apiInstagram import InstagramCall
-#import tasks
 
-def test_celery(request):
-	result = tasks.sleeptask.delay(10)
-	result_one = tasks.sleeptask.delay(10)
-	result_two = tasks.sleeptask.delay(10)
-	return HttpResponse(result.task_id)
+from utils import getGithubRepositoryFiles, saveDataItems, collectDataFromCSV,collectDataFromSocialNetwork,collectDataFromTwitter,simplifyInstagramDataset,collectDataFromInstagram
+
+#import jobs
+
+#def test_celery(request):
+#	result = jobs.sleepjob.delay(10)
+#	result_one = jobs.sleepjob.delay(10)
+#	result_two = jobs.sleepjob.delay(10)
+#	return HttpResponse(result.job_id)
 
 @login_required
 def Home(request):
 
-	tasks = Task.objects.filter(owner = request.user).exclude(status='DL').order_by('-date_created').all()
-	return render_to_response('kitchen/home.html', {'tasks':tasks}, context_instance=RequestContext(request))
+	jobs = Job.objects.filter(owner = request.user).exclude(status='DL').order_by('-date_created').all()
+	return render_to_response('kitchen/home.html', {'jobs':jobs}, context_instance=RequestContext(request))
 
 @login_required
-def TaskNew(request):
-	tasks = Task.objects.exclude(status = 'DL').all()
-	return render_to_response('kitchen/task.html', {'tasks':tasks}, context_instance=RequestContext(request))
+def JobNew(request):
+	extention = '.html'
+
+	html_templates = getGithubRepositoryFiles(extention)
+	
+	return render_to_response('kitchen/job.html', {'html_templates':html_templates}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
-def TaskStatusChange(request, task_id, status):
+def JobStatusChange(request, job_id, status):
 
-	task = get_object_or_404(Task,pk = task_id, owner = request.user)
-	task.status = status
-	task.save()
+	job = get_object_or_404(Job,pk = job_id, owner = request.user)
+	job.status = status
+	job.save()
 	return redirect('kitchen-home')
 	
 @login_required
-def TaskSave(request):
+def JobSave(request):
 
 	template_url = request.POST['userinterface_template']
 	template_html = urllib2.urlopen(template_url).read()
 	# -----------------------
-	# Task creation
+	# job creation
 	# -----------------------
-	new_task = Task(
+	new_job = Job(
 		owner = request.user, 
-		title = request.POST['task_title'],
-		description = request.POST['task_description'],
-		dataitems_per_instance = int(request.POST['dataitems_per_instance']),
+		title = request.POST['job_title'],
+		description = request.POST['job_description'],
+		dataitems_per_task = int(request.POST['dataitems_per_task']),
 		min_answers_per_item = int(request.POST['min_answers_per_item']),
-		min_confidence = int(request.POST['min_confidence']),
+		#min_confidence = int(request.POST['min_confidence']),
 		#template = request.POST['ui_type'],
-		category = request.POST['task_category'],
+		category = request.POST['job_category'],
 		template_html  = template_html,
 		template_url = template_url
 	)
-	new_task.save()
+	if 'min_confidence' in request.POST:
+		new_job.min_confidence = int(request.POST['min_confidence'])
+	if 'webhook_url' in request.POST:
+		new_job.webhook = request.POST['webhook_url']
+	new_job.save()
 	# -----------------------
 	# Preselection
 	# -----------------------
@@ -74,9 +82,9 @@ def TaskSave(request):
 	i = 0
 	if 'preselection_rule' in request.POST:
 		for rule in request.POST.getlist('preselection_rule'):
-			related_task = get_object_or_404(Task,pk = request.POST.getlist('preselection_task')[i])
+			related_job = get_object_or_404(Job,pk = request.POST.getlist('preselection_job')[i])
 			rule_type = request.POST.getlist('preselection_rule')[i]
-			new_rule = Preselection(task = new_task, rule_type = rule_type,related_task = related_task)
+			new_rule = Preselection(job = new_job, rule_type = rule_type, related_job = related_job)
 			new_rule.save()
 			i+=1
 
@@ -85,7 +93,6 @@ def TaskSave(request):
 	# -----------------------
 	dataset = []
 
-	
 	dataset_option = request.POST['dataset_option_selected']
 	if dataset_option == 'survey':
 		dataset = [{'no data':'survey'}]
@@ -93,9 +100,9 @@ def TaskSave(request):
 	elif dataset_option == 'dataset':
 		if request.FILES:
 			if 'dataset' in request.FILES:
-				new_task.dataset_file.save(str(new_task.id)+request.FILES['dataset'].name, request.FILES['dataset'])
-				new_task.save()
-				dataset = collectDataFromCSV(new_task.dataset_file.url)
+				new_job.dataset_file.save(str(new_job.id)+request.FILES['dataset'].name, request.FILES['dataset'])
+				new_job.save()
+				dataset = collectDataFromCSV(new_job.dataset_file.url)
 	
 	elif dataset_option == 'feed':	
 		keyword = request.POST['feed_handler']
@@ -107,69 +114,5 @@ def TaskSave(request):
 		if feed_type == 2: # Instagram
 			dataset = simplifyInstagramDataset(collectDataFromInstagram(keyword, amount))
 	
-	if len(dataset)>0:
-		createTaskInstances(new_task,dataset)
-
+	saveDataItems(new_job,dataset)
 	return redirect('kitchen-home')
-
-def createTaskInstances(task,dataset):
-	i = 0
-	for item in dataset:
-		if i % task.dataitems_per_instance == 0:
-			taskinstance = TaskInstance(task=task)
-			taskinstance.save()
-		dataitem = DataItem(taskinstance = taskinstance, value = item)
-		dataitem.save()
-		i+=1
-
-def collectDataFromCSV(url):
-	dataset = []
-	pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
-	data = scraperwiki.scrape(url)
-	reader = csv.reader(data.splitlines(), delimiter = ';')
-	i = 0
-	for row in reader:    
-		if i == 0:
-			headers = row
-		else:
-			dataitem = {}
-			for j in range(len(row)):
-				dataitem[headers[j]] = pattern.sub(u'\uFFFD', row[j]).decode('latin-1').encode("utf-8")
-			dataset.append(dataitem)
-		i+=1
-	return dataset
-
-def collectDataFromSocialNetwork(keyword, amount, socialnetwork):
-	if socialnetwork == 0: # Twitter
-		return collectDataFromTwitter(keyword, amount)
-	if socialnetwork == 1: # Instagram
-		return 
-
-def collectDataFromTwitter(keyword, amount):
-	instance = UserSocialAuth.objects.filter(provider='twitter')[0]
-
-	TWITTER_ACCESS_TOKEN = (instance.tokens).get('oauth_token')
-	TWITTER_ACCESS_TOKEN_SECRET = (instance.tokens).get('oauth_token_secret')
-	
-	apicall=TwitterCall(client_id=TWITTER_ACCESS_TOKEN,client_secret=TWITTER_ACCESS_TOKEN_SECRET)
-	
-	dataset = apicall.getByKeyword(keyword, amount, False)
-	return dataset
-
-def simplifyInstagramDataset(dataset):
-	simplified = []
-	for item in dataset:
-		if item['type']!='video':
-			simplified.append({
-			'id':item['id'],
-			'link':item['link'],
-			'image_url':item['images']['low_resolution']['url']
-			})
-	return simplified
-def collectDataFromInstagram(keyword, amount):
-
-
-	apicall = InstagramCall(settings.INSTAGRAM_CLIENT_ID, settings.INSTAGRAM_SECRET)
-	dataset = apicall.getByKeyword(keyword, amount)
-
-	return dataset

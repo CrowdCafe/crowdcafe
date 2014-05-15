@@ -4,11 +4,11 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
-from kitchen.models import Task, TaskInstance, Answer, AnswerItem, DataItem
+from kitchen.models import Job, Task, Answer, AnswerItem, DataItem
 from kitchen.models import getPlatformOwner, calculateCommission
 
 from preselection.models import Preselection
-from preselection.utils import qualifiedTask
+from preselection.utils import qualifiedJob
 
 from rewards.models import Vendor, Reward, Coupon
 
@@ -47,7 +47,7 @@ def UserProfile(request):
 			profile = users.get()
 			stats = {}
 			stats['completed'] = Answer.objects.filter(executor = profile).count()
-			stats['published'] = Task.objects.filter(owner = profile).count()
+			stats['published'] = job.objects.filter(owner = profile).count()
 			#stats['execution'] = 
 
 
@@ -67,8 +67,6 @@ def setContext(request):
 	request.session['cafe-context'] = context
 	logEvent(request, 'context_change')
 	return HttpResponse({json.dumps({'context':context})}, content_type="application/json")
-	#return render_to_response('cafe/home/pages/transactions.html', context_instance=RequestContext(request))
-
 
 def Home(request):
 	if request.user.is_authenticated():
@@ -78,43 +76,43 @@ def Home(request):
 		return redirect('cafe-welcome')
 
 @login_required 
-def TaskList(request):
-	tasks = Task.objects.filter(status = 'ST')
+def JobList(request):
+	jobs = Job.objects.filter(status = 'ST')
 	if 'category' in request.GET:
-		tasks = tasks.filter(category = request.GET['category'])
-	tasks = tasks.order_by('-date_created').all()
-	tasks_available = []
-	for task in tasks:
-		if instancesAvailableExist(task,request.user) and qualifiedTask(task,request.user):
-			tasks_available.append(task)
-	logEvent(request, 'tasklist')
-	return render_to_response('cafe/home/pages/tasklist.html', {'tasks':tasks_available}, context_instance=RequestContext(request))
+		jobs = jobs.filter(category = request.GET['category'])
+	jobs = jobs.order_by('-date_created').all()
+	jobs_available = []
+	for job in jobs:
+		if tasksAvailableExist(job,request.user) and qualifiedJob(job,request.user):
+			jobs_available.append(job)
+	logEvent(request, 'joblist')
+	return render_to_response('cafe/home/pages/joblist.html', {'jobs':jobs_available}, context_instance=RequestContext(request))
 
 @login_required 
-def TaskInstanceAssign(request, task_id):
-	task = get_object_or_404(Task, pk = task_id)
-	if task.status == 'ST' or task.owner == request.user: 
-		instances = instancesAvailableExist(task,request.user)
+def JobAssign(request, job_id):
+	job = get_object_or_404(Job, pk = job_id)
+	if job.status == 'ST' or job.owner == request.user: 
+		tasks = tasksAvailableExist(job,request.user)
 		completed_previous = '0'
 
 		if 'completed_previous' in request.GET:
 			completed_previous = str(int(request.GET['completed_previous']))
 
-		if instances:
-			assigned_instance = instances.all()[randint(0,instances.count()-1)]
+		if tasks:
+			assigned_task = tasks.all()[randint(0,tasks.count()-1)]
 
-			logEvent(request, 'instance_assigned',assigned_instance.task.id, assigned_instance.id)
-			return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': assigned_instance.id})+'?completed_previous='+completed_previous)
+			logEvent(request, 'task_assigned',assigned_task.job.id, assigned_task.id)
+			return redirect(reverse('cafe-task-execute', kwargs={'task_id': assigned_task.id})+'?completed_previous='+completed_previous)
 
-	logEvent(request, 'instance_not_assigned',task_id)
-	return redirect('cafe-task-list')
+	logEvent(request, 'task_not_assigned',job_id)
+	return redirect('cafe-job-list')
 
 @login_required 
-def TaskInstanceExecute(request, instance_id): 
-	if TaskInstance.objects.filter(status = 'ST', pk = instance_id).count() >0 and Answer.objects.filter(executor = request.user, taskinstance__id = instance_id).count() == 0:
-		taskinstance = get_object_or_404(TaskInstance, pk = instance_id)
-		logEvent(request, 'execution_started',taskinstance.task.id, taskinstance.id)
-		return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))
+def TaskExecute(request, task_id): 
+	if Task.objects.filter(status = 'ST', pk = task_id).count() >0 and Answer.objects.filter(executor = request.user, task__id = task_id).count() == 0:
+		task = get_object_or_404(Task, pk = task_id)
+		logEvent(request, 'execution_started',task.job.id, task.id)
+		return render_to_response('cafe/home/pages/job.html', {'task':task}, context_instance=RequestContext(request))
 	else:
 		return redirect('cafe-home')
 
@@ -124,27 +122,27 @@ def AccountRemove(request, account_id):
 	return redirect(reverse('cafe-profile')+'?user='+str(request.user.id))
 
 @login_required 
-def TaskInstanceSkip(request, instance_id): 
-	instance = get_object_or_404(TaskInstance, pk = instance_id)
-	instances = instancesAvailableExist(instance.task,request.user, instance.id)
+def TaskSkip(request, task_id): 
+	task = get_object_or_404(task, pk = task_id)
+	tasks = tasksAvailableExist(task.job,request.user, task.id)
 
-	logEvent(request, 'execution_skipped', instance.task.id, instance.id)
-	if instances:
-		assigned_instance = instances.all()[randint(0,instances.count()-1)]
+	logEvent(request, 'execution_skipped', task.job.id, task.id)
+	if tasks:
+		assigned_task = tasks.all()[randint(0,tasks.count()-1)]
 
-		return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': assigned_instance.id}))
+		return redirect(reverse('cafe-task-execute', kwargs={'task_id': assigned_task.id}))
 	else:
-		return redirect('cafe-task-list')
+		return redirect('cafe-job-list')
 	
 @login_required 
-def TaskInstanceComplete(request, instance_id): 
-	taskinstance = get_object_or_404(TaskInstance, pk = instance_id)
+def TaskComplete(request, task_id): 
+	task = get_object_or_404(Task, pk = task_id)
 
-	if Answer.objects.filter(taskinstance = taskinstance, executor = request.user).count() == 0:
-		new_answer = Answer(taskinstance=taskinstance, executor = request.user, status = 'FN')
+	if Answer.objects.filter(task = task, executor = request.user).count() == 0:
+		new_answer = Answer(task=task, executor = request.user, status = 'FN')
 		new_answer.save()
 
-		for dataitem in taskinstance.dataitems:
+		for dataitem in task.items:
 			answer_item_value = {}
 			for key in request.POST:
 				dataitem_handle = 'dataitem_'+str(dataitem.id)
@@ -154,14 +152,15 @@ def TaskInstanceComplete(request, instance_id):
 			new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value)
 			new_answer_item.save()
 	
-		if len(taskinstance.answers) >= taskinstance.task.min_answers_per_item:
-			taskinstance.status = 'FN'
-			taskinstance.save()
+		if len(task.answers) >= task.job.min_answers_per_item:
+			task.status = 'FN'
+			task.save()
 
-		logEvent(request, 'execution_completed',taskinstance.task.id, taskinstance.id)
+		logEvent(request, 'execution_completed',task.job.id, task.id)
+
 	else:
-		logEvent(request, 'execution_completed_withmistake_notsaved',taskinstance.task.id, taskinstance.id)
-	return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id})+'?completed_previous=1')
+		logEvent(request, 'execution_completed_withmistake_notsaved',task.job.id, task.id)
+	return redirect(reverse('cafe-job-assign', kwargs={'job_id': task.job.id})+'?completed_previous=1')
 
 
 @login_required 
@@ -198,11 +197,11 @@ def CouponActivate(request, coupon_id):
 	return redirect('cafe-rewards')
 
 
-def instancesAvailableExist(task, user, instance_id = 0):
-	answers = Answer.objects.filter(executor = user, taskinstance__task = task).values('taskinstance')
+def tasksAvailableExist(job, user, task_id = 0):
+	answers = Answer.objects.filter(executor = user, task__job = job).values('task')
 
-	instances = TaskInstance.objects.filter(task = task, status = 'ST', pk__gt = instance_id).exclude(pk__in = answers)
-	if instances.count()>0:
-		return instances
+	tasks = Task.objects.filter(job = job, status = 'ST', pk__gt = task_id).exclude(pk__in = answers)
+	if tasks.count()>0:
+		return tasks
 	else:
 		return False

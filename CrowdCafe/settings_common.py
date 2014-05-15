@@ -4,6 +4,11 @@
 # Django settings for CrowdCafe project.
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 
+GITHUB_HTML_TEMPLATES = {
+    'owner':'CrowdCafe',
+    'repository':'crowdcafe-ui-templates'
+}
+
 TASK_CATEGORIES = {
     'CF':{
         'id':'CF',
@@ -181,7 +186,9 @@ INSTALLED_APPS = (
     'rewards',
     'events',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
+    'requests'
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -254,12 +261,17 @@ SOCIAL_AUTH_PIPELINE = (
 REST_FRAMEWORK = {
 # Use hyperlinked styles by default.
 # Only used if the `serializer_class` attribute is not set on a view.
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
     'DEFAULT_MODEL_SERIALIZER_CLASS':
         'rest_framework.serializers.HyperlinkedModelSerializer'
     ,
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework_csv.renderers.CSVRenderer',
-    ),
+    #'DEFAULT_RENDERER_CLASSES': (
+    #    'rest_framework_csv.renderers.CSVRenderer',
+    #),
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     #'DEFAULT_PERMISSION_CLASSES': [

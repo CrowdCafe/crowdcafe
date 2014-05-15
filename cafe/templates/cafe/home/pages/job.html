@@ -7,15 +7,15 @@
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="left">
-			<a href="{% url 'cafe-task-list' %}?category={{taskinstance.task.category}}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a>
-			<a href="{% url 'cafe-profile' %}?user={{taskinstance.task.owner.id}}" class="link "><i class="fa fa-male"></i>
+			<a href="{% url 'cafe-job-list' %}?category={{task.job.category}}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a>
+			<a href="{% url 'cafe-profile' %}?user={{task.job.owner.id}}" class="link "><i class="fa fa-male"></i>
 			</a>
 		</div>
 		<div class="center sliding task-title">
 			<a href="#" data-popup=".instructions" class="open-popup instructions-open">Instructions</a>
 		</div>
 		<div class="right">
-			<a href="{% url 'cafe-taskinstance-skip' taskinstance.id %}" class="link external skip-instance"><i class="fa fa-random"></i>
+			<a href="{% url 'cafe-task-skip' task.id %}" class="link external skip-instance"><i class="fa fa-random"></i>
 			</a>
 			<a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a>
 		</div>
@@ -30,11 +30,11 @@
 	<div data-page="task" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
-			<form method="POST" name='taskForm' action="{% url 'cafe-taskinstance-complete' taskinstance.id%}">
+			<form method="POST" name='taskForm' action="{% url 'cafe-task-complete' task.id%}">
 				{% csrf_token %}
 
-				{% for item in taskinstance.dataitems %}
-				{% include_external taskinstance.task.id %}
+				{% for item in task.items %}
+				{% include_external task.job.id %}
 				{% endfor %}
 				<div class="content-block">
 					<div class="row">
@@ -54,21 +54,21 @@
 		<div class="page">
 			<div class="navbar">
 				<div class="navbar-inner">
-					<div class="center popup-title" style="left: 583px;">{{taskinstance.task.title}}</div>
+					<div class="center popup-title" style="left: 583px;">{{task.job.title}}</div>
 					<div class="right"><a href="#" class="link close-popup">Close</a></div>
 				</div>
 			</div>
 			<div class="page-content">
 				<div class="content-block popup-content">
-					{{taskinstance.task.description}}
+					{{task.job.description}}
 				</div>
 				<div class="content-block">
 					<h3>Close this window to work on the task, or discuss it with others:</h3>
 				</div>
 				<div class="content-block">
 					<script>
-					var disqus_title = '{{taskinstance.task.title}}';
-					var disqus_identifier = '{{taskinstance.task.id}}'
+					var disqus_title = '{{task.job.title}}';
+					var disqus_identifier = '{{task.job.id}}'
 					</script>
 					{% include 'snippets/disqus.html'%}
 				</div>

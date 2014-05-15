@@ -12,53 +12,53 @@
 			<div class="row">
 				<div class="span12">
 					<p class='lead'>Tasks 
-						<a class='btn btn-clear' href='{% url 'kitchen-task-new'%}'><i class="fa fa-plus"></i> Create new</a>
+						<a class='btn btn-clear' href='{% url 'kitchen-job-new'%}'><i class="fa fa-plus"></i> Create new</a>
 						<a class="btn btn-clear" href="mailto:team@crowdcafe.io" target="_blank"><i class="fa fa-envelope"></i> Ask us to design a task for you (free)!</a>
 					</p>
 				</div>
 			</div>
 			<table class='table table-hover'>
 				<tbody>
-					{% for task in tasks%}
+					{% for job in jobs%}
 					<tr>
 						<td>
-							#{{task.id}}
+							#{{job.id}}
 						</td>
 						<td>
-							<a href="{% url 'cafe-taskinstance-assign' task.id%}" target='_blank'><strong>{{task.title}}</strong></a>
+							<a href="{% url 'cafe-job-assign' job.id%}" target='_blank'><strong>{{job.title}}</strong></a>
 						</td>
 						<td>
-							{{task.description}}<br>
-							<small>Published {{task.date_created|timesince}} ago</small>
+							{{job.description}}<br>
+							<small>Published {{job.date_created|timesince}} ago</small>
 						</td>
 						<td>
 
-							{% if task.dataset_file%}
-							<a href='{{task.dataset_file.url}}' target='_blank'>initial dataset</a>
+							{% if job.dataset_file%}
+							<a href='{{job.dataset_file.url}}' target='_blank'>initial dataset</a>
 							{% endif%}
-							{% if task.options_file%}
-							<a href='{{task.options_file.url}}' target='_blank'>options</a>
+							{% if job.options_file%}
+							<a href='{{job.options_file.url}}' target='_blank'>options</a>
 							{% endif%}
 						</td>
 
 						<td>
-							{% if task.status = 'ST'%}
-							<a href='{% url "kitchen-task-status-change" task.id "NP" %}' class='btn' > withdraw</a>
+							{% if job.status = 'ST'%}
+							<a href='{% url "kitchen-job-status-change" job.id "NP" %}' class='btn' > withdraw</a>
 							{% endif %}
-							{% if task.status = 'NP'%}
-							<a href='{% url "kitchen-task-status-change" task.id "ST" %}' class='btn'> publish</a>
+							{% if job.status = 'NP'%}
+							<a href='{% url "kitchen-job-status-change" job.id "ST" %}' class='btn'> publish</a>
 							{% endif %}
 						</td>
 						<!--td>
-							{{task.category}}
+							{{job.category}}
 						</td-->
 						<td>
-							<a href='{% url "api-task-csv" task.id%}' class="btn" > results_all.csv</a>
-							<a href='{% url "api-task-csv" task.id%}?status=FN' class="btn" > results_fn.csv</a>
-							<!--a href='{% url "api-task-answers" task.id%}' > JSON</a-->
+							<a href='{% url "api-job-csv" job.id%}' class="btn" > results_all.csv</a>
+							<a href='{% url "api-job-csv" job.id%}?status=FN' class="btn" > results_fn.csv</a>
+							<!--a href='{% url "api-job-answers" job.id%}' > JSON</a-->
 						</td>
 						<td>
-							<a href='{% url "kitchen-task-status-change" task.id "DL" %}' class="btn btn-clear">Delete</a>
+							<a href='{% url "kitchen-job-status-change" job.id "DL" %}' class="btn btn-clear">Delete</a>
 						</td>
 					</tr>
 					{% endfor%}

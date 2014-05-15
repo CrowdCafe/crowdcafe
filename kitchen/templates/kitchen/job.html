@@ -1,0 +1,179 @@
+{% extends 'kitchen/kitchen.html'%}
+{%load static%}
+
+
+{% block kitchen%}
+<style>
+.btn-toolbar{
+	z-index:1;
+	opacity:0.95;
+}
+.create-preselection{
+	margin-top:-10px;
+}
+</style>
+<!-- content-8  -->
+<section class="content-8 v-center">
+	<div>
+		<div class="container">
+			<h1>Create a job in 6 easy steps:</h1>
+			<form method='POST' action='{% url 'kitchen-job-save' %}' enctype="multipart/form-data">
+				{% csrf_token %}
+
+				<div class="row">
+					<div class="span6">
+						<p class='lead'>1. Title</p>
+						<span>Be specific. 1 - 5 words only. </span>
+						<input type='text' name='job_title' style="width:100%;padding:10px 0px;" placeholder='Sentiment Analysis'>
+					</div>
+					<div class="span6">
+						<p class='lead'>2. Instructions</p>
+						<span>Clear instructions. Not more than 140 characters.</span>
+						<textarea type='text' name='job_description' style="width:100%;padding:10px 0px;"></textarea>
+					</div>
+				</div>
+				<div class='row'>
+					<hr/>
+				</div>
+				<div class='row'>
+					<div class="span3">
+						<p class='lead'>3. Category</p>
+						{% for category in task_categories%}
+						<label class="radio">
+							<input type="radio" name="job_category" id="optionsRadios1" value="{{category.id}}" data-toggle="radio" checked="checked">
+							<b>{{category.title}}</b> ({{category.cost}}&euro; / {{category.time}})
+						</label>
+						{% endfor %}
+					</div>
+					<div class="span6 preselection-block">
+						<p class='lead'>4. Preselection</p>
+						<div >
+							<select class='preselection_new_rule_type'>
+								<option value="WO">worked on a job</option>
+								<option value="NW">did not work on a job</option>
+							</select>
+							<select class='preselection_new_related_task'>
+								<option value="0">select a job</option>
+								{% for job in jobs%}
+								<option value="{{job.id}}">#{{job.id}} {{job.title}}</option>
+								{% endfor%}
+							</select>
+							<input type="button" class="btn btn-primary create-preselection" value="+">
+						</div>
+					</div>
+					<div class="span3">
+						<p class='lead'>5. User Interface</p>
+						
+						<input  class='block'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' placeholder= 'URL leading to raw HTML file' >
+						<select name="template-list" style="width:60%;">
+							{% for html_template in html_templates %}
+							<option value="{{html_template.url}}" >{{html_template.name}}</option>
+							{% endfor %}
+						</select><br/>
+						<span>URL leading to raw HTML file.</span><br/>
+						<span>check existing <a href ="https://github.com/CrowdCafe/crowdcafe-ui-templates" target="_blank" >templates</a> on GitHub.</span>
+					</div>
+				</div>
+				<div class='row'>
+					<hr/>
+				</div>
+				<div class="row">
+					<div class="span12">
+						<p class='lead'>6. Data <div class="btn-toolbar">
+							<div class="btn-group dataset_options">
+								<a class="btn btn-primary" block-name = "survey" href="#"><i class="fa fa-circle-o"> No data (survey)</i></a>
+								<a class="btn btn-primary" block-name = "dataset" href="#"><i class="fa fa-file-o"> Dataset .CSV</i></a>
+								<a class="btn btn-primary" block-name = "feed" href="#"><i class="fa fa-globe"> Social Network</i></a>
+							</div>
+						</div></p>
+
+					</div>
+				</div>
+				<input type = "hidden" id="dataset_option_selected" name="dataset_option_selected" value = "">
+				<div class="row dataset_options">
+					<div class="span12 block-survey">
+						<p>No data (survey)</p>
+					</div>
+					<div class="span12 block-dataset">
+						<label class="uploadbutton">
+							<div class="btn"  style="width:100%;padding:10px 0px;">Upload</div>
+							<p><a href = '{% static "files/dataset_template.csv" %}' target='_blank'>dataset template</a></p>
+							<input type="file" name='dataset' onchange="this.previousSibling.previousSibling.innerHTML = this.value"/>
+						</label>
+					</div>
+					<div class="span12 block-feed">
+						<input  class='block'  type='text' style='float:left;margin-top:2px;width:15%;text-align: center;' name='feed_amount' value='20' >
+						<input type='text' class='block' name='feed_handler' style='float: left;width: 25%;margin-top: 2px;' placeholder='trento'>
+						<select name="feed-type" style="width:60%;">
+							<!--option value="0" selected>Twitter</option>
+							<option value="1" >Facebook</option-->
+								<option value="2" >Instagram</option>
+							</select>
+						</div>
+					</div>
+					<div class='row'>
+						<hr/>
+					</div>
+					<div class="row">
+						<div class="span4">
+							<span>Data items/instance:</span> <input  class='block'  type='text' style='width: 50px;text-align: center;padding-right: 15px;' name='dataitems_per_task' value='5' >
+						</div>
+						<div class="span4">
+							<span>Min answers/data item:</span>
+							<input type='text' style='width: 50px;text-align: center;padding-right: 15px;'  name='min_answers_per_item' value='1' >
+
+						</div>
+						<div class="span4">
+							<span>Webhook URL:</span>
+							<input type='text' style='text-align: center;padding-right: 15px;'   name='webhook_url' >
+						</div>
+					</div>
+
+					<div class='row'>
+						<hr/>
+					</div>
+					<div class='row'>
+						<div class="span12">
+							<p class='center'>
+								<a class="btn btn-clear" href="mailto:team@crowdcafe.io" target="_blank"><i class="fa fa-envelope"></i> Ask us to design a task for you (free)!</a>
+								<input type = 'submit' class='btn btn-clear' value='Save task'>
+							</p>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</section>
+	{% endblock%}
+
+	{% block scripts%}
+	<script>
+	$(document).ready(function(){
+		$('.dataset_options > .btn').click(function(){
+			var block_name = $(this).attr('block-name');
+
+			$('.dataset_options > *').removeClass('active');
+			$(this).addClass('active');
+			$('#dataset_option_selected').val(block_name);
+			$('.block-'+block_name).addClass('active');
+
+			return false;
+		});
+
+		$('[name=template-list]').change(function(){
+			$('[name=userinterface_template]').val($(this).val());
+		});
+		$('.create-preselection').click(function(){
+			if ($('.preselection_new_related_job').val()!=0){
+				var preselection = "<p class='preselection'>"+
+				"<input type='hidden' name='preselection_rule' value = '"+$('.preselection_new_rule_type').val()+"'>"+
+				"<input type='hidden' name='preselection_job' value = '"+$('.preselection_new_related_job').val()+"'>"+
+				"preselection ["+$('.preselection_new_rule_type').val() + "] for job ["+ $('.preselection_new_related_job').val()+"]"+
+				"<input type = 'button' class='btn' value = 'remove' onclick = '$(this).parent().remove();'>"+
+				"</p>";
+				$('.preselection-block').append(preselection);
+			}
+		});
+	});
+</script>
+{% endblock%}
