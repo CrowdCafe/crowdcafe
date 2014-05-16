@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from kitchen.models import Task, TaskInstance, Answer, AnswerItem, DataItem
+from kitchen.models import Task, TaskInstance, Answer, AnswerItem, DataItem, MaxResponses
 from kitchen.models import getPlatformOwner, calculateCommission
 
 from preselection.models import Preselection
@@ -63,15 +63,17 @@ def Home(request):
 
 @login_required 
 def TaskList(request):
-	tasks = Task.objects.filter(status = 'ST')
-	if 'category' in request.GET:
-		tasks = tasks.filter(category = request.GET['category'])
-	tasks = tasks.order_by('-date_created').all()
-	tasks_available = []
-	for task in tasks:
-		if instancesAvailableExist(task,request.user) and qualifiedTask(task,request.user):
-			tasks_available.append(task)
-	logEvent(request, 'tasklist')
+	max = MaxResponses
+	if max > 0:
+		tasks = Task.objects.filter(status = 'ST')
+		if 'category' in request.GET:
+			tasks = tasks.filter(category = request.GET['category'])
+		tasks = tasks.order_by('-date_created').all()
+		tasks_available = []
+		for task in tasks:
+			if instancesAvailableExist(task,request.user) and qualifiedTask(task,request.user):
+				tasks_available.append(task)
+		logEvent(request, 'tasklist')
 	return render_to_response('cafe/home/pages/tasklist.html', {'tasks':tasks_available}, context_instance=RequestContext(request))
 
 @login_required 

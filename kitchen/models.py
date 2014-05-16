@@ -37,6 +37,7 @@ class Task(models.Model):
 
     dataitems_per_instance = models.IntegerField(default = 5)
     min_answers_per_item = models.IntegerField(default = 1)
+	max_answers_per_worker = models.IntegerField(default = 25)
     min_confidence = models.IntegerField(default = 50)
 
     template_url = models.URLField(null = True, blank = True)
@@ -138,5 +139,8 @@ class AnswerItem(models.Model):
             return self.answer.taskinstance.status
         except:
             return ''
-
-
+#MTT
+class MaxResponses(models.Model):
+	userid = models.ForeignKey(User)
+	taskid = models.ForeignKey(Task)
+	maxrepetitions = models.IntegerField(default = 25)
