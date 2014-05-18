@@ -38,9 +38,16 @@ def home(request):
 
 @api_view(['POST'])
 def uploadItems(request, job_id):
+
 	job = get_object_or_404(Job, pk = job_id, owner = request.user)
-	if 'dataset' in request.POST:
-		saveDataItems(job,request.POST['dataset'])
+
+	print job.id
+	print request.POST
+	print request.user.id
+
+	if request.POST:
+		print 'dataset exists'
+		saveDataItems(job,[request.POST])
 		
 	return Response()
 

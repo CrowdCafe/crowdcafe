@@ -123,7 +123,7 @@ def AccountRemove(request, account_id):
 
 @login_required 
 def TaskSkip(request, task_id): 
-	task = get_object_or_404(task, pk = task_id)
+	task = get_object_or_404(Task, pk = task_id)
 	tasks = tasksAvailableExist(task.job,request.user, task.id)
 
 	logEvent(request, 'execution_skipped', task.job.id, task.id)
@@ -151,7 +151,7 @@ def TaskComplete(request, task_id):
 
 			new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value)
 			new_answer_item.save()
-	
+		new_answer.webhook()
 		if len(task.answers) >= task.job.min_answers_per_item:
 			task.status = 'FN'
 			task.save()

@@ -12,8 +12,8 @@
 			<div class="row">
 				<div class="span12">
 					<p class='lead'>Tasks 
-						<a class='btn btn-clear' href='{% url 'kitchen-job-new'%}'><i class="fa fa-plus"></i> Create new</a>
-						<a class="btn btn-clear" href="mailto:team@crowdcafe.io" target="_blank"><i class="fa fa-envelope"></i> Ask us to design a task for you (free)!</a>
+						<a class='btn btn-googleplus' href='{% url 'kitchen-job-new'%}'><i class="fa fa-plus"></i> Create new</a>
+						<a class="btn btn-googleplus" href="mailto:team@crowdcafe.io" target="_blank"><i class="fa fa-envelope"></i> Ask us to design a task for you (free)!</a>
 					</p>
 				</div>
 			</div>
@@ -29,7 +29,9 @@
 						</td>
 						<td>
 							{{job.description}}<br>
-							<small>Published {{job.date_created|timesince}} ago</small>
+							<small>Published {{job.date_created|timesince}} ago
+							{% if job.webhook_url %}<br/>{{job.webhook_url}}{% endif %}
+							</small>
 						</td>
 						<td>
 
@@ -58,7 +60,7 @@
 							<!--a href='{% url "api-job-answers" job.id%}' > JSON</a-->
 						</td>
 						<td>
-							<a href='{% url "kitchen-job-status-change" job.id "DL" %}' class="btn btn-clear">Delete</a>
+							<a href='{% url "kitchen-job-status-change" job.id "DL" %}' class="btn btn-googleplus">Delete</a>
 						</td>
 					</tr>
 					{% endfor%}

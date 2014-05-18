@@ -73,7 +73,7 @@ def JobSave(request):
 	if 'min_confidence' in request.POST:
 		new_job.min_confidence = int(request.POST['min_confidence'])
 	if 'webhook_url' in request.POST:
-		new_job.webhook = request.POST['webhook_url']
+		new_job.webhook_url = request.POST['webhook_url']
 	new_job.save()
 	# -----------------------
 	# Preselection
@@ -94,6 +94,7 @@ def JobSave(request):
 	dataset = []
 
 	dataset_option = request.POST['dataset_option_selected']
+	#if dataset_option == 'api' - do nothing
 	if dataset_option == 'survey':
 		dataset = [{'no data':'survey'}]
 	

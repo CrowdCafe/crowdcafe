@@ -10,6 +10,10 @@ from datetime import  timedelta
 from account.models import AccountTransaction
 from django.conf import settings
 
+import requests
+import json
+import urllib
+
 STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'), ('NP', 'Not published'), ('NR','Not ready'))
 CATEGORY_CHOISE = (('CF', 'Caffè'), ('CP', 'Cappuccino'), ('WN', 'Wine'),)
 TEMPLATE_CHOISE = (('SF', 'Single form'), ('LT', 'List'), ('TL', 'Tiles'),)
@@ -85,15 +89,24 @@ class Answer(models.Model):
     def answeritems(self):
         return AnswerItem.objects.filter(answer = self).all()
     def webhook(self):
+        print 'webhook started'
         if self.task.job.webhook_url:
-            data = []
+            i=0
+            data = {}
             for answeritem in self.answeritem_set.all():
-                data.append(answeritem.value)
-            try:
+                data['data['+str(i)+']'] = json.dumps(answeritem.value)
+                i+=1
+            data['length']=i
+            print data
+            r = requests.post(self.task.job.webhook_url, data = (data))
+            print r.text
+            '''try:
                 r = requests.post(self.task.job.webhook_url, data=json.dumps(data))
-                return True
+                print r.json()
             except: 
+                print 'we experienced a problem'
                 return False
+            '''
         return False
     def save(self, *args, **kwargs):
         #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
@@ -106,7 +119,6 @@ class Answer(models.Model):
             # Platform gets comission from Requestor
             commission = AccountTransaction(currency = 'VM', to_account = getPlatformOwner().profile.account, from_account = self.task.job.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.task.id)+']')
             commission.save()
-        self.webhook()
         super(Answer, self).save(*args, **kwargs)
 
 class AnswerItem(models.Model):
