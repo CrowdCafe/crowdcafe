@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-
+from django.contrib.auth.models import User
 from kitchen.models import Task, TaskInstance, Answer, AnswerItem, DataItem, MaxResponses
 from kitchen.models import getPlatformOwner, calculateCommission
 
@@ -37,6 +37,22 @@ def Rewards(request):
 	
 	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors, 'coupons':coupons}, context_instance=RequestContext(request))
 
+@login_required
+def UserProfile(request):
+	profile = {}
+	if 'user' in request.GET:
+		users = User.objects.filter(pk = int(request.GET['user']))
+		if users.count()>0:
+
+			profile = users.get()
+			stats = {}
+			stats['completed'] = Answer.objects.filter(executor = profile).count()
+			stats['published'] = Task.objects.filter(owner = profile).count()
+			#stats['execution'] = 
+
+
+	return render_to_response('cafe/home/pages/profile.html', {'profile':profile, 'stats':stats}, context_instance=RequestContext(request))
+
 @login_required 
 def Transactions(request):
 	logEvent(request, 'transactions')
@@ -63,17 +79,18 @@ def Home(request):
 
 @login_required 
 def TaskList(request):
-	max = MaxResponses
-	if max > 0:
-		tasks = Task.objects.filter(status = 'ST')
-		if 'category' in request.GET:
-			tasks = tasks.filter(category = request.GET['category'])
-		tasks = tasks.order_by('-date_created').all()
-		tasks_available = []
-		for task in tasks:
-			if instancesAvailableExist(task,request.user) and qualifiedTask(task,request.user):
-				tasks_available.append(task)
-		logEvent(request, 'tasklist')
+	tasks = Task.objects.filter(status = 'ST')
+	if 'category' in request.GET:
+		tasks = tasks.filter(category = request.GET['category'])
+	tasks = tasks.order_by('-date_created').all()
+	tasks_available = []
+	for task in tasks:
+		max_resp = MaxResponses.objects.filter(user = request.user, task = task)
+		for max_r in max_resp:
+			if max_r.max_repetitions > 0:
+				if instancesAvailableExist(task,request.user) and qualifiedTask(task,request.user):
+					tasks_available.append(task)
+	logEvent(request, 'tasklist')
 	return render_to_response('cafe/home/pages/tasklist.html', {'tasks':tasks_available}, context_instance=RequestContext(request))
 
 @login_required 
@@ -88,6 +105,7 @@ def TaskInstanceAssign(request, task_id):
 
 		if instances:
 			assigned_instance = instances.all()[randint(0,instances.count()-1)]
+			
 
 			logEvent(request, 'instance_assigned',assigned_instance.task.id, assigned_instance.id)
 			return redirect(reverse('cafe-taskinstance-execute', kwargs={'instance_id': assigned_instance.id})+'?completed_previous='+completed_previous)
@@ -103,7 +121,11 @@ def TaskInstanceExecute(request, instance_id):
 		return render_to_response('cafe/home/pages/task.html', {'taskinstance':taskinstance}, context_instance=RequestContext(request))
 	else:
 		return redirect('cafe-home')
-	
+
+@login_required 
+def AccountRemove(request, account_id): 
+	request.user.profile.removeConnectedSocialNetwork(account_id)
+	return redirect(reverse('cafe-profile')+'?user='+str(request.user.id))
 
 @login_required 
 def TaskInstanceSkip(request, instance_id): 
@@ -139,6 +161,10 @@ def TaskInstanceComplete(request, instance_id):
 		if len(taskinstance.answers) >= taskinstance.task.min_answers_per_item:
 			taskinstance.status = 'FN'
 			taskinstance.save()
+		max_resp = MaxResponses.objects.filter(user = request.user, task = taskinstance.task)
+		for max_r in max_resp:
+			max_r.max_repetitions = max_r.max_repetitions - 1;
+			max_r.save()
 
 		logEvent(request, 'execution_completed',taskinstance.task.id, taskinstance.id)
 	else:

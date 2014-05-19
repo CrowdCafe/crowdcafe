@@ -37,7 +37,7 @@ class Task(models.Model):
 
     dataitems_per_instance = models.IntegerField(default = 5)
     min_answers_per_item = models.IntegerField(default = 1)
-	max_answers_per_worker = models.IntegerField(default = 25)
+    max_answers_per_worker = models.IntegerField(default = 25)
     min_confidence = models.IntegerField(default = 50)
 
     template_url = models.URLField(null = True, blank = True)
@@ -83,7 +83,8 @@ class Answer(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
+        #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
+        if self.pk is None and self.taskinstance.task.category_details['cost']>0 and self.executor.profile.account != self.taskinstance.task.owner.profile.account:
 
             # Worker gets money from Requestor
             transaction = AccountTransaction(currency = 'VM', to_account = self.executor.profile.account, from_account = self.taskinstance.task.owner.profile.account, amount = self.taskinstance.task.category_details['cost'], description = 'answer for t.i. ['+str(self.taskinstance.id)+']')
@@ -139,8 +140,9 @@ class AnswerItem(models.Model):
             return self.answer.taskinstance.status
         except:
             return ''
+
 #MTT
 class MaxResponses(models.Model):
-	userid = models.ForeignKey(User)
-	taskid = models.ForeignKey(Task)
-	maxrepetitions = models.IntegerField(default = 25)
+	user = models.ForeignKey(User)
+	task = models.ForeignKey(Task)
+	max_repetitions = models.IntegerField(default = 25)

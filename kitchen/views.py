@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.conf import settings
-from models import Task, TaskInstance, DataItem
+from models import Task, TaskInstance, DataItem, MaxResponses
 from social_auth.models import UserSocialAuth
 from django.contrib.auth.decorators import user_passes_test
 from django.core.files.storage import default_storage as s3_storage
@@ -70,6 +70,12 @@ def TaskSave(request):
 		template_url = template_url
 	)
 	new_task.save()
+	maxtasks = MaxResponses(
+		user = request.user,
+		task = new_task,
+		max_repetitions = int(request.POST['max_answers_per_worker'])
+	)
+	maxtasks.save()
 	# -----------------------
 	# Preselection
 	# -----------------------
