@@ -17,6 +17,7 @@ from events.utils import logEvent
 
 from random import randint
 import json
+import random
 
 def Welcome(request):
 	if request.user.is_authenticated():
@@ -92,15 +93,14 @@ def JobList(request):
 def JobAssign(request, job_id):
 	job = get_object_or_404(Job, pk = job_id)
 	if job.status == 'ST' or job.owner == request.user: 
-		tasks = tasksAvailableExist(job,request.user)
+		assigned_task = generateTask(job,request.user)
+
+		#tasks = tasksAvailableExist(job,request.user)
 		completed_previous = '0'
-
-		if 'completed_previous' in request.GET:
-			completed_previous = str(int(request.GET['completed_previous']))
-
-		if tasks:
-			assigned_task = tasks.all()[randint(0,tasks.count()-1)]
-
+		if assigned_task:
+			#assigned_task = tasks.all()[randint(0,tasks.count()-1)]
+			if 'completed_previous' in request.GET:
+				completed_previous = str(int(request.GET['completed_previous']))
 			logEvent(request, 'task_assigned',assigned_task.job.id, assigned_task.id)
 			return redirect(reverse('cafe-task-execute', kwargs={'task_id': assigned_task.id})+'?completed_previous='+completed_previous)
 
@@ -157,10 +157,9 @@ def TaskComplete(request, task_id):
 							score-=1.0
 			new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value, score = score)
 			new_answer_item.save()
-			print 'answer item saved'
-		
+			new_answer_item.dataitem.refreshStatus()
 		new_answer.webhook()
-		if len(task.answers) >= task.job.min_answers_per_item:
+		if len(task.answers) >= task.job.qualitycontrol.min_answers_per_item:
 			task.status = 'FN'
 			task.save()
 
@@ -204,8 +203,52 @@ def CouponActivate(request, coupon_id):
 	logEvent(request, 'coupon_activated',coupon.reward.id, coupon.id)
 	return redirect('cafe-rewards')
 
+def generateTask(job,user):
 
+	score = job.score(user)
+	# if the current score is higher than the allowed in quality control
+	if score >= job.qualitycontrol.score_min:
+		# get a list of available not gold dataitems
+		dataitems_regular = availableDataItems(job, user, False)
+		# get a list of available gold dataitems
+		dataitems_gold = availableDataItems(job, user, True)
+		
+		
+		if score > job.qualitycontrol.gold_max:
+			gold_amount_to_put = 0
+		if score > job.qualitycontrol.gold_min and score <= job.qualitycontrol.gold_max:
+			gold_amount_to_put = max([score - job.qualitycontrol.gold_min,job.qualitycontrol.gold_min])
+		if score <= job.qualitycontrol.gold_min:
+			gold_amount_to_put = job.qualitycontrol.gold_max
+
+		if dataitems_regular:
+			gold_amount_to_put = 0
+			if dataitems_gold:
+				if score > job.qualitycontrol.gold_max:
+					gold_amount_to_put = job.qualitycontrol.gold_min
+				if score > job.qualitycontrol.gold_min and score <= job.qualitycontrol.gold_max:
+					gold_amount_to_put = max([job.qualitycontrol.gold_max - score,job.qualitycontrol.gold_min])
+				if score <= job.qualitycontrol.gold_min:
+					gold_amount_to_put = job.qualitycontrol.gold_max
+			
+			dataitems_to_put = random.sample(dataitems_gold.all(), int(gold_amount_to_put)) + random.sample(dataitems_regular.all(), int(job.qualitycontrol.dataitems_per_task - gold_amount_to_put))
+			task = Task(job=job)
+			task.save()
+			task.dataitems.add(*dataitems_to_put)
+			task.save()
+			return task
+	return False
+
+def availableDataItems(job, user, gold = False):
+	dataitems_already_did = AnswerItem.objects.filter(answer__executor = user, dataitem__job = job).values('dataitem')
+	dataitems_available = DataItem.objects.filter(job = job, status = 'NR', gold = gold).exclude(pk__in = dataitems_already_did)
+
+	if dataitems_available.count()>0:
+		return dataitems_available
+	else:
+		return False
 def tasksAvailableExist(job, user, task_id = 0):
+
 	answers = Answer.objects.filter(executor = user, task__job = job).values('task')
 
 	tasks = Task.objects.filter(job = job, status = 'ST', pk__gt = task_id).exclude(pk__in = answers)

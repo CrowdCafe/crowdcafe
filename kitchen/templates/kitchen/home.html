@@ -25,7 +25,7 @@
 							#{{job.id}}
 						</td>
 						<td>
-							<a href="{% url 'kitchen-job' job.id%}" target='_blank'><strong>{{job.title}}</strong></a>
+							<a href="{% url 'kitchen-job' job.id%}"><strong>{{job.title}}</strong></a>
 						</td>
 						<td>
 							{{job.description}}<br>
@@ -60,7 +60,7 @@
 							<!--a href='{% url "api-job-answers" job.id%}' > JSON</a-->
 						</td>
 						<td>
-							<a href="{% url 'cafe-job-assign' job.id%}" class="btn">Execution</a>
+							<a href="{% url 'cafe-job-assign' job.id%}" target = "_blank" class="btn">Execution</a>
 							<a href='{% url "kitchen-job-status-change" job.id "DL" %}' class="btn btn-googleplus">Delete</a>
 						</td>
 					</tr>

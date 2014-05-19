@@ -120,17 +120,24 @@
 						<hr/>
 					</div>
 					<div class="row">
-						<div class="span3">
-							<span>Data items/instance:</span> <input  class='block'  type='text' style='width: 50px;text-align: center;padding-right: 15px;' name='dataitems_per_task' value='5' >
+						<div class="span1">
+							<input  class='block'  type='text' style='width: 40px;text-align: center;padding-right: 15px;' name='dataitems_per_task' value='5' ><span>Data dataitems / task</span>
 						</div>
-						<div class="span3">
-							<span>Min answers/data item:</span>
-							<input type='text' style='width: 50px;text-align: center;padding-right: 15px;'  name='min_answers_per_item' value='1' >
-
+						<div class="span1">
+							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_answers_per_item' value='1' ><span>Min answers / dataitem</span>
 						</div>
-						<div class="span6">
-							<span>Webhook URL:</span>
+						<div class="span1">
+							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_gold_per_task' value='0' ><span>Min gold / task</span>
+						</div>
+						<div class="span1">
+							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_gold_per_task' value='3' ><span>Max gold / task</span>
+						</div>
+						<div class="span1">
+							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_score' value='0' ><span>Min score</span>
+						</div>
+						<div class="span4 offset3">
 							<input type='text' style='width: 300px;text-align: center;padding-right: 15px;' placeholder = "http://yourApp.com/callback/"  name='webhook_url' >
+							<span>Webhook URL</span>
 						</div>
 					</div>
 

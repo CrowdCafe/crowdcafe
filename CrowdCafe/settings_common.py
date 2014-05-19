@@ -181,6 +181,7 @@ INSTALLED_APPS = (
     'account',
     'kitchen',
     'preselection',
+    'qualitycontrol',
     'api',
     'cafe',
     'rewards',

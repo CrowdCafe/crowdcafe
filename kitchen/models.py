@@ -10,9 +10,11 @@ from datetime import  timedelta
 from account.models import AccountTransaction
 from django.conf import settings
 
+from django.db.models import Sum
+
 import requests
 import json
-import urllib
+import urllib2
 
 STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'), ('NP', 'Not published'), ('NR','Not ready'))
 CATEGORY_CHOISE = (('CF', 'Caffè'), ('CP', 'Cappuccino'), ('WN', 'Wine'),)
@@ -32,19 +34,25 @@ class Job(models.Model):
     template = models.CharField(max_length=2, choices=TEMPLATE_CHOISE, default='PR', blank=True)
     status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='NP')
 
-    dataset_file = models.FileField(upload_to='datasets',blank = True)
-    options_file = models.FileField(upload_to='options',blank = True)
-
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False) 
     date_deadline = models.DateTimeField(default=lambda: (datetime.now() + timedelta(days=7)), auto_now_add=False)
 
-    dataitems_per_task = models.IntegerField(default = 5)
-    min_answers_per_item = models.IntegerField(default = 1)
-    min_confidence = models.IntegerField(default = 50)
     webhook_url = models.URLField(null = True, blank = True)
     template_url = models.URLField(null = True, blank = True)
     template_html = models.TextField(null = True, blank = True)
     
+    def refresh_template(self):
+        try:
+            self.template_html = urllib2.urlopen(self.template_url).read()
+            self.save()
+            return True
+        except:
+            return False
+    def score(self, user):
+        score = 0.0
+        for answer in Answer.objects.filter(task__job = self, executor = user):
+            score+=answer.score
+        return score
     @property
     def amount_tasks(self):
         return Task.objects.filter(job = self, status = 'ST').count()
@@ -52,16 +60,28 @@ class Job(models.Model):
     def category_details(self):
         return settings.TASK_CATEGORIES[self.category]
 
+class Attachment(models.Model):
+    job = models.ForeignKey(Job, null = True, blank = True)
+    file = models.FileField(upload_to='attachments', blank = True)
+
 class DataItem(models.Model):
     job = models.ForeignKey(Job)
     value = jsonfield.JSONField()
     gold = models.BooleanField(default=False)
+    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default = 'NR')
     @property
     def tasks(self):
         return Task.objects.filter(dataitems = self).all()
     @property
     def answeritems(self):
         return AnswerItem.objects.filter(dataitem = self).all()
+    def refreshStatus(self):
+        if not self.gold:
+            print len(self.answeritems)
+            if len(self.answeritems) >= self.job.qualitycontrol.min_answers_per_item:
+                self.status = 'FN'
+                self.save()
+                print 'status changed'
     def __unicode__(self):
         return str(self.id)
 
@@ -85,21 +105,26 @@ class Answer(models.Model):
     def __unicode__(self):
         return str(self.id)
     @property
+    def score(self):
+        score = 0.0
+        for answeritem in self.answeritems:
+            score+=answeritem.score
+        return score
+    
+    @property
     def answeritems(self):
         return AnswerItem.objects.filter(answer = self).all()
     def webhook(self):
-        print 'webhook started'
         if self.task.job.webhook_url:
+            print 'webhook started'
             i=0
             data = {}
             for answeritem in self.answeritem_set.all():
                 data['data['+str(i)+']'] = json.dumps(answeritem.value)
                 i+=1
             data['length']=i
-            print data
             try:
                 r = requests.post(self.task.job.webhook_url, data = (data))
-                print r.text
                 return True
             except:
                 return False
@@ -142,14 +167,6 @@ class AnswerItem(models.Model):
             return self.answer.date_created
         except:
             return ''
-    '''
-    @property
-    def dataitem_id(self):
-        try:
-            return self.dataitem.id
-        except:
-            return 0
-    '''
     @property
     def task_id(self):
         try:

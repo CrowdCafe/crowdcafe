@@ -38,7 +38,7 @@ def saveDataItems(job,dataset):
 					print item
 					dataitem.gold = True
 			dataitem.save()
-		createTasks(job)
+		#createTasks(job)
 
 def createTasks(job):
 	i = 0
@@ -51,8 +51,8 @@ def createTasks(job):
 			items_out_tasks.append(item)
 	
 	for item in items_out_tasks:
-		if i < len(items_out_tasks) - len(items_out_tasks) % job.dataitems_per_task:
-			if i % job.dataitems_per_task == 0:
+		if i < len(items_out_tasks) - len(items_out_tasks) % job.qualitycontrol.dataitems_per_task:
+			if i % job.qualitycontrol.dataitems_per_task == 0:
 				task = Task(job=job)
 				task.save()
 			task.dataitems.add(item)

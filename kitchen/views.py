@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from models import Job, Task, DataItem
+from models import Job, Task, DataItem, Attachment
+from qualitycontrol.models import QualityControl
 from social_auth.models import UserSocialAuth
 from django.contrib.auth.decorators import user_passes_test
 from django.core.files.storage import default_storage as s3_storage
@@ -41,10 +42,10 @@ def JobData(request, job_id):
 @login_required
 def JobNew(request):
 	extention = '.html'
-
+	jobs = Job.objects.filter(owner = request.user).order_by('-date_created').all()
 	html_templates = getGithubRepositoryFiles(extention)
 	
-	return render_to_response('kitchen/newjob.html', {'html_templates':html_templates}, context_instance=RequestContext(request))
+	return render_to_response('kitchen/newjob.html', {'html_templates':html_templates,'jobs':jobs}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
@@ -59,27 +60,37 @@ def JobStatusChange(request, job_id, status):
 def JobSave(request):
 
 	template_url = request.POST['userinterface_template']
-	template_html = urllib2.urlopen(template_url).read()
 	# -----------------------
-	# job creation
+	# Job creation
 	# -----------------------
 	new_job = Job(
 		owner = request.user, 
 		title = request.POST['job_title'],
 		description = request.POST['job_description'],
-		dataitems_per_task = int(request.POST['dataitems_per_task']),
-		min_answers_per_item = int(request.POST['min_answers_per_item']),
-		#min_confidence = int(request.POST['min_confidence']),
-		#template = request.POST['ui_type'],
 		category = request.POST['job_category'],
-		template_html  = template_html,
 		template_url = template_url
 	)
-	if 'min_confidence' in request.POST:
-		new_job.min_confidence = int(request.POST['min_confidence'])
+	
 	if 'webhook_url' in request.POST:
 		new_job.webhook_url = request.POST['webhook_url']
+
 	new_job.save()
+	new_job.refresh_template()
+	# -----------------------
+	# Quality control
+	# -----------------------
+	new_quality_control = QualityControl(
+		job = new_job,
+		gold_min = int(request.POST['min_gold_per_task']),
+		gold_max = int(request.POST['max_gold_per_task']),
+		score_min = float(request.POST['min_score']),
+		dataitems_per_task = int(request.POST['dataitems_per_task']),
+		min_answers_per_item = int(request.POST['min_answers_per_item']),
+		)
+
+	if 'min_confidence' in request.POST:
+		new_quality_control.min_confidence = int(request.POST['min_confidence'])
+	new_quality_control.save()
 	# -----------------------
 	# Preselection
 	# -----------------------
@@ -94,7 +105,7 @@ def JobSave(request):
 			i+=1
 
 	# -----------------------
-	# Data
+	# Input dataset
 	# -----------------------
 	dataset = []
 
@@ -106,9 +117,12 @@ def JobSave(request):
 	elif dataset_option == 'dataset':
 		if request.FILES:
 			if 'dataset' in request.FILES:
-				new_job.dataset_file.save(str(new_job.id)+request.FILES['dataset'].name, request.FILES['dataset'])
-				new_job.save()
-				dataset = collectDataFromCSV(new_job.dataset_file.url)
+				
+				dataset_file = Attachment(job = new_job)
+				dataset_file.file.save(str(new_job.id)+request.FILES['dataset'].name, request.FILES['dataset'])
+				dataset_file.save()
+				
+				dataset = collectDataFromCSV(dataset_file.file.url)
 	
 	elif dataset_option == 'feed':	
 		keyword = request.POST['feed_handler']
