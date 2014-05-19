@@ -97,11 +97,11 @@ var page_scripts = {
 			};
 			$$(question.name).val(question.answer);	
 			answer_button.parents('.question').removeClass('notanswered').addClass('answered');
-			setTimeout(function(){
+			/*setTimeout(function(){
 				if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
 					answer_button.parents('.hide-if-empty').css({display: 'none'}).addClass('transitioning');
 				}
-			}, 350)
+			}, 350)*/
 
 			
 		});
