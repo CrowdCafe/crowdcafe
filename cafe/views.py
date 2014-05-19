@@ -165,11 +165,15 @@ def TaskInstanceComplete(request, instance_id):
 		for max_r in max_resp:
 			max_r.max_repetitions = max_r.max_repetitions - 1;
 			max_r.save()
+			max_reminder=max_r.max_repetitions;
 
 		logEvent(request, 'execution_completed',taskinstance.task.id, taskinstance.id)
 	else:
 		logEvent(request, 'execution_completed_withmistake_notsaved',taskinstance.task.id, taskinstance.id)
-	return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id})+'?completed_previous=1')
+	if max_reminder>0:
+		return redirect(reverse('cafe-taskinstance-assign', kwargs={'task_id': taskinstance.task.id})+'?completed_previous=1')
+	else:
+		return redirect('cafe-task-list')
 
 
 @login_required 
