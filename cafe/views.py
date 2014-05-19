@@ -47,7 +47,7 @@ def UserProfile(request):
 			profile = users.get()
 			stats = {}
 			stats['completed'] = Answer.objects.filter(executor = profile).count()
-			stats['published'] = job.objects.filter(owner = profile).count()
+			stats['published'] = Job.objects.filter(owner = profile).count()
 			#stats['execution'] = 
 
 
@@ -144,13 +144,21 @@ def TaskComplete(request, task_id):
 
 		for dataitem in task.items:
 			answer_item_value = {}
+			score = 0.0
 			for key in request.POST:
 				dataitem_handle = 'dataitem_'+str(dataitem.id)
 				if dataitem_handle in key:
 					answer_item_value[key.replace(dataitem_handle,'')] = request.POST[key]
-
-			new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value)
+					print dataitem.gold
+					if dataitem.gold and 'gold'+key.replace(dataitem_handle,'') in dataitem.value:
+						if request.POST[key] == dataitem.value['gold'+key.replace(dataitem_handle,'')]:
+							score+=1.0
+						else:
+							score-=1.0
+			new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value, score = score)
 			new_answer_item.save()
+			print 'answer item saved'
+		
 		new_answer.webhook()
 		if len(task.answers) >= task.job.min_answers_per_item:
 			task.status = 'FN'

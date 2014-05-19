@@ -1,0 +1,9 @@
+tr.gold {
+	border-left:4px solid #FFDB4C;
+}
+tr.negative {
+	border-left:4px solid #FF3B30;
+}
+tr.positive {
+	border-left:4px solid #5AD427;
+}

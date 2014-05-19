@@ -45,6 +45,18 @@ var page_scripts = {
 			};
 			$$(to_item.selector).val(to_item.value);
 		});
+		$$('[photobrowser-images]').on('click',function(){
+			var images_array_string = $$(this).attr('photobrowser-images');
+			var splitter = $$(this).attr('photobrowser-splitter');
+			var images = images_array_string.split(splitter);
+
+			var photoBrowserPopup = crowdcafe.photoBrowser({
+				photos: images,
+				type: 'popup'
+			});
+			photoBrowserPopup.open();
+			console.log(images_array_string);
+		});
 		crowdcafe.swipeoutDelete = function (el) {
 			el = $$(el);
 			if (el.length === 0) return;
@@ -85,9 +97,13 @@ var page_scripts = {
 			};
 			$$(question.name).val(question.answer);	
 			answer_button.parents('.question').removeClass('notanswered').addClass('answered');
-			/*if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
-				answer_button.parents('.hide-if-empty').css({display: 'none'}).addClass('transitioning');
-			}*/
+			setTimeout(function(){
+				if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
+					answer_button.parents('.hide-if-empty').css({display: 'none'}).addClass('transitioning');
+				}
+			}, 350)
+
+			
 		});
 
 	},

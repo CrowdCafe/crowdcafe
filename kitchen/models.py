@@ -55,6 +55,7 @@ class Job(models.Model):
 class DataItem(models.Model):
     job = models.ForeignKey(Job)
     value = jsonfield.JSONField()
+    gold = models.BooleanField(default=False)
     @property
     def tasks(self):
         return Task.objects.filter(dataitems = self).all()
@@ -74,8 +75,6 @@ class Task(models.Model):
     @property
     def answers(self):
         return Answer.objects.filter(task = self).all()
-
-
 
 class Answer(models.Model):
     task = models.ForeignKey(Task)
@@ -98,15 +97,12 @@ class Answer(models.Model):
                 i+=1
             data['length']=i
             print data
-            r = requests.post(self.task.job.webhook_url, data = (data))
-            print r.text
-            '''try:
-                r = requests.post(self.task.job.webhook_url, data=json.dumps(data))
-                print r.json()
-            except: 
-                print 'we experienced a problem'
+            try:
+                r = requests.post(self.task.job.webhook_url, data = (data))
+                print r.text
+                return True
+            except:
                 return False
-            '''
         return False
     def save(self, *args, **kwargs):
         #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
@@ -125,6 +121,7 @@ class AnswerItem(models.Model):
     answer = models.ForeignKey(Answer, blank = True)
     dataitem = models.ForeignKey(DataItem, blank = True)
     value = jsonfield.JSONField()
+    score = models.FloatField(default = 0.0, null = True, blank = True)
     def __unicode__(self):
         return str(self.id)
     @property

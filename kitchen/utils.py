@@ -4,6 +4,12 @@ from apiInstagram import InstagramCall
 from models import Job, Task, DataItem, Answer
 from django.conf import settings
 
+import re
+import csv
+import urllib2
+import StringIO
+import scraperwiki 
+
 def getGithubRepositoryFiles(extention):
 	repository = settings.GITHUB_HTML_TEMPLATES['repository']
 	owner = settings.GITHUB_HTML_TEMPLATES['owner']
@@ -26,6 +32,11 @@ def saveDataItems(job,dataset):
 	if len(dataset)>0:
 		for item in dataset:
 			dataitem = DataItem(job = job, value = item)
+			if 'gold' in item:
+				if item['gold'] == '1' or item['gold'] == 1:
+					print 'gold'
+					print item
+					dataitem.gold = True
 			dataitem.save()
 		createTasks(job)
 
@@ -47,7 +58,6 @@ def createTasks(job):
 			task.dataitems.add(item)
 			task.save()
 		i+=1
-
 
 def collectDataFromCSV(url):
 	dataset = []

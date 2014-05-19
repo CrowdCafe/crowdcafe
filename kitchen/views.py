@@ -29,9 +29,14 @@ from utils import getGithubRepositoryFiles, saveDataItems, collectDataFromCSV,co
 
 @login_required
 def Home(request):
-
 	jobs = Job.objects.filter(owner = request.user).exclude(status='DL').order_by('-date_created').all()
 	return render_to_response('kitchen/home.html', {'jobs':jobs}, context_instance=RequestContext(request))
+
+@login_required
+def JobData(request, job_id):
+	job = get_object_or_404(Job,pk = job_id, owner = request.user)
+	dataitems = DataItem.objects.filter(job = job)
+	return render_to_response('kitchen/dataitems.html', {'dataitems':dataitems,'job':job}, context_instance=RequestContext(request))
 
 @login_required
 def JobNew(request):
@@ -39,7 +44,7 @@ def JobNew(request):
 
 	html_templates = getGithubRepositoryFiles(extention)
 	
-	return render_to_response('kitchen/job.html', {'html_templates':html_templates}, context_instance=RequestContext(request))
+	return render_to_response('kitchen/newjob.html', {'html_templates':html_templates}, context_instance=RequestContext(request))
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)

@@ -1,0 +1,64 @@
+{% extends 'kitchen/kitchen.html'%}
+{%load static%}
+
+{% block kitchen%}
+<!-- content-8  -->
+<section class="content-8 v-center">
+	<div>
+		<div class="container">
+			<div class="row">
+				<div class="span12">
+					<p class='lead'>{{job.title}} 
+					</p>
+				</div>
+			</div>
+			<table class='table table-hover'>
+				<tbody>
+					{% for dataitem in dataitems%}
+					<tr class='{% if dataitem.gold%}gold{%endif%}'>
+						<td>
+							#{{dataitem.id}}
+						</td>
+						<td>
+							{{dataitem.value}}<br>
+							<table class='table table-hover'>
+								{% for answeritem in dataitem.answeritems%}
+								<tr class="{% if answeritem.score < 0 %}negative{%endif%} {% if answeritem.score > 0%}positive{%endif%}">
+									<td>
+										#{{answeritem.id}}
+									</td>
+									<td>
+										@{{answeritem.answer.executor.id}}
+									</td>
+									<td>
+										{{answeritem.score}}
+									</td>
+									<td>
+										{{answeritem.value}}<br>
+									</td>
+
+								</tr>
+								{% endfor%}
+							</table>
+						</td>
+						<!--td>
+							<a href='{% url "kitchen-job-status-change" job.id "DL" %}' class="btn btn-googleplus">Delete</a>
+						</td-->
+					</tr>
+					{% endfor%}
+				</tbody>
+			</table>
+			<p class='lead'>Job Discussion
+			</p>
+			<div>
+				<script>
+				var disqus_title = '{{job.title}}';
+				var disqus_identifier = '{{job.id}}'
+				</script>
+				{% include 'snippets/disqus.html'%}	
+			</div>
+		</div>
+	</div>
+
+</section>
+{% endblock%}
