@@ -45,14 +45,6 @@ class Job(models.Model):
             return True
         except:
             return False
-    def score(self, user):
-        score = False
-        for answer in Answer.objects.filter(task__job = self, executor = user):
-            if not score:
-                score = answer.score
-            else:
-                score+=answer.score
-        return score
     @property
     def amount_tasks(self):
         return Task.objects.filter(job = self, status = 'ST').count()

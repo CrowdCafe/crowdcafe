@@ -46,19 +46,40 @@
 
 /* end Welcome page */
 .positive, .list-block .swipeout-actions-inner a.positive{
-	background: #4CD964;
+	background: #4CD964 !important;
 }
 .negative, .list-block .swipeout-actions-inner a.negative{
-	background: #FF3B30;
+	background: #FF3B30 !important;
 }
 .neutral, .list-block .swipeout-actions-inner a.neutral{
-	background: #D6CEC3;
+	background: #D6CEC3 !important;
 }
 .gold, .list-block .swipeout-actions-inner a.gold{
-	background: #FFCC00;
+	background: #FFCC00 !important;
 }
 .dontknow, .list-block .swipeout-actions-inner a.dontknow{
-	background: #898C90;
+	background: #898C90 !important;
+}
+/* Borders */
+.border-positive{
+	border-left:4px solid #4CD964 !important;
+	padding-left: 11px !important;
+}
+.border-negative{
+	border-left:4px solid #FF3B30 !important;
+	padding-left: 11px !important;
+}
+.border-neutral{
+	border-left:4px solid #D6CEC3 !important;
+	padding-left: 11px !important;
+}
+.border-gold{
+	border-left:4px solid #FFCC00 !important;
+	padding-left: 11px !important;
+}
+.border-dontknow{
+	border-left:4px solid #898C90 !important;
+	padding-left: 11px !important;
 }
 .list-block .item-text{
 	height:auto;

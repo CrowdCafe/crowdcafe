@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from kitchen.models import Job
+from kitchen.models import Job, Answer, AnswerItem, DataItem
 
 #=========================================================================
 # QUALITY CONTROL
@@ -16,4 +16,23 @@ class QualityControl(models.Model):
     score_min = models.FloatField(default = 0, null = True)
     dataitems_per_task = models.IntegerField(default = 5)
     min_answers_per_item = models.IntegerField(default = 1)
+    max_dataitems_per_worker = models.FloatField(default = 100)    
 
+    def allowed_to_work_more(self, user):
+        
+        performed_items = AnswerItem.objects.filter(answer__task__job = self.job, dataitem__gold = False, answer__executor = user).count()
+        all_items = DataItem.objects.filter(job = self.job, gold = False).count()
+
+        score = self.score(user)
+        if (performed_items/all_items)*100 <= self.max_dataitems_per_worker and ((not score) or (score >= self.score_min)):
+        	return True
+        return False
+
+    def score(self, user):
+        score = False
+        for answer in Answer.objects.filter(task__job = self.job, executor = user):
+            if not score:
+                score = answer.score
+            else:
+                score+=answer.score
+        return score

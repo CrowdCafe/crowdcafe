@@ -85,7 +85,7 @@ def JobList(request):
 	jobs = jobs.order_by('-date_created').all()
 	jobs_available = []
 	for job in jobs:
-		if tasksAvailableExist(job,request.user) and qualifiedJob(job,request.user):
+		if availableDataItems(job, request.user) and job.qualitycontrol.allowed_to_work_more(request.user) and qualifiedJob(job,request.user):
 			jobs_available.append(job)
 	logEvent(request, 'joblist')
 	return render_to_response('cafe/home/pages/joblist.html', {'jobs':jobs_available}, context_instance=RequestContext(request))
@@ -206,9 +206,9 @@ def CouponActivate(request, coupon_id):
 
 def generateTask(job,user):
 
-	score = job.score(user)
+	score = job.qualitycontrol.score(user)
 	# if the current score is not False (did not work on a task yet) or is higher than the allowed in quality control
-	if (not score) or (score >= job.qualitycontrol.score_min):
+	if job.qualitycontrol.allowed_to_work_more(user):
 		# get a list of available not gold dataitems
 		dataitems_regular = availableDataItems(job, user, False)
 		# get a list of available gold dataitems

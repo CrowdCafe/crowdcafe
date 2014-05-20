@@ -1,6 +1,4 @@
-.gold {
-	border-left:4px solid #FFDB4C;
-}
+
 .negative {
 	border-left:4px solid #FF3B30;
 }
@@ -13,4 +11,7 @@
 }
 .info-extra{
 	display:none;
+}
+.gold {
+	border-left:4px solid #FFDB4C;
 }

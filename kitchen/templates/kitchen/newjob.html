@@ -82,10 +82,10 @@
 					<div class="span12">
 						<p class='lead'>6. Data <div class="btn-toolbar">
 							<div class="btn-group dataset_options">
-								<a class="btn btn-primary" block-name = "api" href="#"><i class="fa fa-circle-o"> API use</i></a>
-								<a class="btn btn-primary" block-name = "survey" href="#"><i class="fa fa-circle-o"> Survey</i></a>
-								<a class="btn btn-primary" block-name = "dataset" href="#"><i class="fa fa-file-o"> Dataset .CSV</i></a>
-								<a class="btn btn-primary" block-name = "feed" href="#"><i class="fa fa-globe"> Social Network</i></a>
+								<a class="btn btn-primary" block-name = "api" href="#"><i class="fa fa-circle-o"> none (API)</i></a>
+								<a class="btn btn-primary" block-name = "survey" href="#"><i class="fa fa-circle-o"> none (Survey)</i></a>
+								<a class="btn btn-primary" block-name = "dataset" href="#"><i class="fa fa-file-o"> dataset (.CSV)</i></a>
+								<a class="btn btn-primary" block-name = "feed" href="#"><i class="fa fa-globe"> dataset (Social Network)</i></a>
 							</div>
 						</div></p>
 
@@ -132,10 +132,13 @@
 						<div class="span1">
 							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_gold_per_task' value='3' ><span>Max gold / task</span>
 						</div>
+						<div class="span1">
+							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_dataitems_per_worker' value='100' ><span>Max dataitems / worker, %</span>
+						</div>
 						<div class="span3">
 							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_score' value='0' ><br/><span>Min score (default = 0)<br/><small>when user goes below - he can not work on the job any more and is not paid for the last task</small></span>
 						</div>
-						<div class="span4 offset1">
+						<div class="span4">
 							<input type='text' style='width: 300px;text-align: center;padding-right: 15px;' placeholder = "http://yourApp.com/callback/"  name='webhook_url' >
 							<span>Webhook URL</span>
 						</div>

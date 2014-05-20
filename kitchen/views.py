@@ -16,7 +16,7 @@ import csv
 import urllib2
 import StringIO
 import scraperwiki 
-from random import shuffle
+
 
 from utils import getGithubRepositoryFiles, saveDataItems, collectDataFromCSV,collectDataFromSocialNetwork,collectDataFromTwitter,simplifyInstagramDataset,collectDataFromInstagram
 

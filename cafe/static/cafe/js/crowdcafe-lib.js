@@ -1,4 +1,6 @@
 var $$ = Framework7.$;
+var background_classes = ['positive','negative','neutral','gold','dontknow'];
+
 
 function getURLParameter(name) {
 	var regexS = "[\\?&]" + name + "=([^&#]*)";
@@ -9,6 +11,7 @@ function getURLParameter(name) {
 		return null;
 	return results[1];
 }
+
 var page_scripts_activated = {}
 
 var page_scripts = {
@@ -20,8 +23,24 @@ var page_scripts = {
 		});
 	},
 	task: function(){
-		
 		page_scripts_activated['task']=true;
+		
+		$$('.swipeout-actions a').on('click',function(){
+			var button = $$(this);
+			button.parents('.swipeout').removeClass('swipeout-opened');
+			button.parents('.swipeout').find('.swipeout-content').attr('style','');
+
+			var apply_border_to = button.parents('.swipeout').find('.swipeout-content');
+
+			background_classes.forEach(function(entry){
+				if (button.hasClass(entry)){
+					$$(apply_border_to).addClass('border-'+entry);
+				}else{
+					$$(apply_border_to).removeClass('border-'+entry);
+				}
+			});
+		});
+
 		$$('[name=contexts]').on('change',function(){
 			var context = $$(this).val();
 
@@ -36,6 +55,7 @@ var page_scripts = {
 				'value': value_button.val()
 			};
 			$$(to_item.selector).text(to_item.value);
+
 		});
 		$$('[value-to-val]').on('change',function(){
 			var value_button = $$(this);
@@ -44,7 +64,16 @@ var page_scripts = {
 				'value': value_button.val()
 			};
 			$$(to_item.selector).val(to_item.value);
+			
 		});
+
+		$$('[name]').on('change',function(){
+			console.log('quality check');
+			var field = $$(this);
+			var value = (field.val()) ? (field.val()) : field.text();
+			qualityCheck($$(this),value);
+		});
+
 		$$('[photobrowser-images]').on('click',function(){
 			var images_array_string = $$(this).attr('photobrowser-images');
 			var splitter = $$(this).attr('photobrowser-splitter');
@@ -57,6 +86,7 @@ var page_scripts = {
 			photoBrowserPopup.open();
 			console.log(images_array_string);
 		});
+
 		crowdcafe.swipeoutDelete = function (el) {
 			el = $$(el);
 			if (el.length === 0) return;
@@ -67,11 +97,15 @@ var page_scripts = {
 			var clientLeft = el[0].clientLeft;
 			el.css({height: 0 + 'px'}).addClass('deleting transitioning').transitionEnd(function () {
 				el.trigger('deleted');
-                //el.remove();
-            });
-			el.find('.swipeout-content').transform('translate3d(-100%,0,0)');
+				el.remove();
+			});
+			el.addClass('deleting transitioning');
+			el.find('.swipeout-content').transform('translate3d(0,0,0)');
+
 		};
-		
+
+
+
 		if (getURLParameter('completed_previous') == '0'){
 			$$('.instructions-open').trigger('click');
 		}
@@ -96,14 +130,18 @@ var page_scripts = {
 				'answer': answer_button.attr('answer')
 			};
 			$$(question.name).val(question.answer);	
+
+			qualityCheck($$(question.name),question.answer);
 			answer_button.parents('.question').removeClass('notanswered').addClass('answered');
+			//qualityCheck($$(question.name),question.answer);
+
 			setTimeout(function(){
 				if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
 					answer_button.parents('.hide-if-empty').css({display: 'none'}).addClass('transitioning');
 				}
 			}, 350);
 
-			
+
 		});
 
 	},
@@ -127,18 +165,54 @@ var page_scripts = {
 	},
 	tasklist: function(){
 		page_scripts_activated['tasklist']=true;
-		
+
 		$$('.task').on('click',function(){
 			crowdcafe.showPreloader()
 		});
-		
+
 	},
 	smart_select: function(){
 		//to be removed
 	}
 }
 
+function qualityCheck(element, value){
+	console.log('quality check initiated');
+	var gold = $$(element).attr('gold'),
+	feedback = $$(element).attr('feedback');
+	if (gold){
+		if (!feedback){
+			feedback = 'It should be: '+gold;
+		}
+		if (gold == value){
+			feedback = 'Correct. '+feedback;
+			crowdcafe.alert(feedback);
+		}else{
+			crowdcafe.actions(
+				[
+				{
+					text: '"'+value+'" is incorrect. The right answer is "'+gold+'". '+ feedback,
+					label: true
+				},
 
+				{
+					text: 'Ok, I understand.',
+				},
+
+				{
+					text: 'I dot not agree. Leave comment to requestor.',
+					red: true,
+					onClick: function () {
+						$$('.instructions-open').trigger('click');
+					}
+				},
+				]
+				);
+			feedback = 'It is not correct. '+feedback;
+		}
+
+	}
+}
 function allFieldsAreFilled(){
 	var correct = true; 
 	$$('[name]').each(function(){
