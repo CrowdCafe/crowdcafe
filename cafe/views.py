@@ -87,6 +87,11 @@ def JobList(request):
 	for job in jobs:
 		if availableDataItems(job, request.user) and job.qualitycontrol.allowed_to_work_more(request.user) and qualifiedJob(job,request.user):
 			jobs_available.append(job)
+		else:
+			print job.id
+			print availableDataItems(job, request.user)
+			print job.qualitycontrol.allowed_to_work_more(request.user)
+			print qualifiedJob(job,request.user)
 	logEvent(request, 'joblist')
 	return render_to_response('cafe/home/pages/joblist.html', {'jobs':jobs_available}, context_instance=RequestContext(request))
 
@@ -236,7 +241,7 @@ def generateTask(job,user):
 
 				gold_amount_to_put = min([dataitems_gold.count(), int(gold_amount_to_put)])
 				dataitems_to_put = random.sample(dataitems_gold.all(), gold_amount_to_put) 
-				
+
 			regular_amount_to_put = min([dataitems_regular.count(),int(job.qualitycontrol.dataitems_per_task - gold_amount_to_put)]) 
 			dataitems_to_put += random.sample(dataitems_regular.all(), regular_amount_to_put)
 			shuffle(dataitems_to_put)
