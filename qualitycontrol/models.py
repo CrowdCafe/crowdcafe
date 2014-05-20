@@ -16,3 +16,4 @@ class QualityControl(models.Model):
     score_min = models.FloatField(default = 0, null = True)
     dataitems_per_task = models.IntegerField(default = 5)
     min_answers_per_item = models.IntegerField(default = 1)
+

@@ -1,5 +1,9 @@
+*{
+	font-size: 200;
+}
 .btn{
-	border:2px solid;
+	border:1px solid;
+	font-weight: 200;
 }
 .btn-toolbar .btn-group .btn{
 	border:none;
@@ -28,12 +32,28 @@ label.radio{
 	opacity: 0.85;
 	filter: alpha(opacity=85);
 }
+.header-10-sub h1,.header-10-sub p{
+	font-weight: 100 !important;
+}
+.header-10-sub h1{
+	font-size: 80px !important;
+}
 .content-23.custom-bg {
 	background-image: url('../img/bg/trento.jpg');
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 }
+.navbar a{
+	font-weight: 200 !important;
+}
+.left{
+	text-align: left;
+}
 .right{
 	text-align: right;
+}
+
+h1{
+	font-weight: 100;
 }

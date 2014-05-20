@@ -7,3 +7,6 @@ tr.negative {
 tr.positive {
 	border-left:4px solid #5AD427;
 }
+.info-extra{
+	display:none;
+}

@@ -11,10 +11,11 @@
 
 			<div class="row">
 				<div class="span12">
-					<p class='lead'>Jobs 
-						<a class='btn btn-googleplus' href='{% url 'kitchen-job-new'%}'><i class="fa fa-plus"></i> Create new</a>
+					<p class='lead'>Jobs <br/> 
 						<a class="btn btn-googleplus" href="mailto:team@crowdcafe.io" target="_blank"><i class="fa fa-envelope"></i> Ask us to design a job for you (free)!</a>
+						<a class='btn btn-googleplus-inversed' href='{% url 'kitchen-job-new'%}'><i class="fa fa-plus"></i> Create new</a>
 					</p>
+
 				</div>
 			</div>
 			<table class='table table-hover'>
@@ -25,12 +26,12 @@
 							#{{job.id}}
 						</td>
 						<td>
-							<a href="{% url 'kitchen-job' job.id%}"><strong>{{job.title}}</strong></a>
+							<strong>{{job.title}}</strong>
 						</td>
 						<td>
 							{{job.description}}<br>
 							<small>Published {{job.date_created|timesince}} ago
-							{% if job.webhook_url %}<br/>{{job.webhook_url}}{% endif %}
+								{% if job.webhook_url %}<br/>{{job.webhook_url}}{% endif %}
 							</small>
 						</td>
 						<!--td>
@@ -42,26 +43,31 @@
 							<a href='{{job.options_file.url}}' target='_blank'>options</a>
 							{% endif%}
 						</td-->
-
+						<td>
+							<a href="{% url 'kitchen-job-data' job.id%}"><i class="fa fa-database"></i> dataset</a><br/>
+							<a href="{% url 'kitchen-job-workers' job.id%}"><i class="fa fa-users"></i> workers</a><br/>
+						</td>
 						<td>
 							{% if job.status = 'ST'%}
-							<a href='{% url "kitchen-job-status-change" job.id "NP" %}' class='btn' > withdraw</a>
+							<a href='{% url "kitchen-job-status-change" job.id "NP" %}' > <i class="fa fa-eye"></i> withdraw job</a>
 							{% endif %}
 							{% if job.status = 'NP'%}
-							<a href='{% url "kitchen-job-status-change" job.id "ST" %}' class='btn'> publish</a>
+							<a href='{% url "kitchen-job-status-change" job.id "ST" %}' > <i class="fa fa-eye-slash"></i> publish job</a>
 							{% endif %}
+							<br/>
+							<a href="{% url 'cafe-job-assign' job.id%}" target = "_blank" class=""><i class="fa fa-share"></i> execution page</a>
 						</td>
 						<!--td>
 							{{job.category}}
 						</td-->
 						<td>
-							<a href='{% url "api-job-csv" job.id%}' class="btn" > results_all.csv</a>
-							<a href='{% url "api-job-csv" job.id%}?status=FN' class="btn" > results_fn.csv</a>
+							<a href='{% url "api-job-csv" job.id%}' > <i class="fa fa-file-excel-o"></i> all results</a><br/>
+							<a href='{% url "api-job-csv" job.id%}?status=FN' > <i class="fa fa-file-excel-o"> finished results</i></a>
 							<!--a href='{% url "api-job-answers" job.id%}' > JSON</a-->
 						</td>
 						<td>
-							<a href="{% url 'cafe-job-assign' job.id%}" target = "_blank" class="btn">Execution</a>
-							<a href='{% url "kitchen-job-status-change" job.id "DL" %}' class="btn btn-googleplus">Delete</a>
+							
+							<a href='{% url "kitchen-job-status-change" job.id "DL" %}' class="btn btn-googleplus">delete <i class="fa fa-trash-o"></i></a>
 						</td>
 					</tr>
 					{% endfor%}

@@ -40,7 +40,7 @@ TASK_CATEGORIES = {
     },
     'ZT':{
         'id':'ZT',
-        'title':'Free',
+        'title':'Volunteering',
         'cost':0,
         'icon':'libs/icons8/like-50.png',
         'time':'any',

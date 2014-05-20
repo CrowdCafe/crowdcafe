@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from models import Job, Task, DataItem, Attachment
+from models import Job, Task, DataItem, Attachment, Answer
 from qualitycontrol.models import QualityControl
 from social_auth.models import UserSocialAuth
 from django.contrib.auth.decorators import user_passes_test
@@ -20,14 +20,6 @@ import scraperwiki
 
 from utils import getGithubRepositoryFiles, saveDataItems, collectDataFromCSV,collectDataFromSocialNetwork,collectDataFromTwitter,simplifyInstagramDataset,collectDataFromInstagram
 
-#import jobs
-
-#def test_celery(request):
-#	result = jobs.sleepjob.delay(10)
-#	result_one = jobs.sleepjob.delay(10)
-#	result_two = jobs.sleepjob.delay(10)
-#	return HttpResponse(result.job_id)
-
 @login_required
 def Home(request):
 	jobs = Job.objects.filter(owner = request.user).exclude(status='DL').order_by('-date_created').all()
@@ -38,6 +30,12 @@ def JobData(request, job_id):
 	job = get_object_or_404(Job,pk = job_id, owner = request.user)
 	dataitems = DataItem.objects.filter(job = job)
 	return render_to_response('kitchen/dataitems.html', {'dataitems':dataitems,'job':job}, context_instance=RequestContext(request))
+
+@login_required
+def JobWorkers(request, job_id):
+	job = get_object_or_404(Job,pk = job_id, owner = request.user)
+	answers = Answer.objects.filter(task__job = job, status = 'FN').order_by('executor').order_by('-date_created')
+	return render_to_response('kitchen/answers.html', {'answers':answers,'job':job}, context_instance=RequestContext(request))
 
 @login_required
 def JobNew(request):
