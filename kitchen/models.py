@@ -17,8 +17,6 @@ import json
 import urllib2
 
 STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'), ('NP', 'Not published'), ('NR','Not ready'))
-CATEGORY_CHOISE = (('CF', 'Caffè'), ('CP', 'Cappuccino'), ('WN', 'Wine'),)
-TEMPLATE_CHOISE = (('SF', 'Single form'), ('LT', 'List'), ('TL', 'Tiles'),)
 
 def getPlatformOwner():
     return User.objects.filter(pk = settings.BUSINESS['platform_owner_id']).get()
@@ -30,8 +28,7 @@ class Job(models.Model):
     title = models.CharField(max_length=255, default='New task')
     description = models.CharField(max_length=1024, default='***')
 
-    category = models.CharField(max_length=2, choices=CATEGORY_CHOISE, default='CF', blank=True)
-    template = models.CharField(max_length=2, choices=TEMPLATE_CHOISE, default='PR', blank=True)
+    category = models.CharField(max_length=2, default='CF', blank=True)
     status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='NP')
 
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False) 
@@ -49,9 +46,12 @@ class Job(models.Model):
         except:
             return False
     def score(self, user):
-        score = 0.0
+        score = False
         for answer in Answer.objects.filter(task__job = self, executor = user):
-            score+=answer.score
+            if not score:
+                score = answer.score
+            else:
+                score+=answer.score
         return score
     @property
     def amount_tasks(self):

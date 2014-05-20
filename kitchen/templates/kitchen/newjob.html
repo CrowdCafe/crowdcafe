@@ -46,7 +46,7 @@
 						{% endfor %}
 					</div>
 					<div class="span6 preselection-block">
-						<p class='lead'>4. Preselection</p>
+						<p class='lead'>4. Preselection (optional)</p>
 						<div >
 							<select class='preselection_new_rule_type'>
 								<option value="WO">worked on a job</option>
@@ -64,7 +64,7 @@
 					<div class="span3">
 						<p class='lead'>5. User Interface</p>
 						
-						<input  class='block'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' placeholder= 'URL leading to raw HTML file' >
+						<input  class='block center'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' placeholder= 'URL leading to raw HTML file' >
 						<select name="template-list" style="width:60%;">
 							<option value="" >Select a template</option>
 							{% for html_template in html_templates %}
@@ -132,10 +132,10 @@
 						<div class="span1">
 							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_gold_per_task' value='3' ><span>Max gold / task</span>
 						</div>
-						<div class="span1">
-							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_score' value='0' ><span>Min score</span>
+						<div class="span3">
+							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_score' value='0' ><br/><span>Min score (default = 0)<br/><small>when user goes below - he can not work on the job any more and is not paid for the last task</small></span>
 						</div>
-						<div class="span4 offset3">
+						<div class="span4 offset1">
 							<input type='text' style='width: 300px;text-align: center;padding-right: 15px;' placeholder = "http://yourApp.com/callback/"  name='webhook_url' >
 							<span>Webhook URL</span>
 						</div>

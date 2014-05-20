@@ -18,6 +18,7 @@ from events.utils import logEvent
 from random import randint
 import json
 import random
+from random import shuffle
 
 def Welcome(request):
 	if request.user.is_authenticated():
@@ -206,8 +207,8 @@ def CouponActivate(request, coupon_id):
 def generateTask(job,user):
 
 	score = job.score(user)
-	# if the current score is higher than the allowed in quality control
-	if score >= job.qualitycontrol.score_min:
+	# if the current score is not False (did not work on a task yet) or is higher than the allowed in quality control
+	if (not score) or (score >= job.qualitycontrol.score_min):
 		# get a list of available not gold dataitems
 		dataitems_regular = availableDataItems(job, user, False)
 		# get a list of available gold dataitems
@@ -234,6 +235,8 @@ def generateTask(job,user):
 			
 				dataitems_to_put = random.sample(dataitems_gold.all(), int(gold_amount_to_put)) 
 			dataitems_to_put += random.sample(dataitems_regular.all(), int(job.qualitycontrol.dataitems_per_task - gold_amount_to_put))
+			shuffle(dataitems_to_put)
+			
 			task = Task(job=job)
 			task.save()
 			task.dataitems.add(*dataitems_to_put)
@@ -242,19 +245,11 @@ def generateTask(job,user):
 	return False
 
 def availableDataItems(job, user, gold = False):
+
 	dataitems_already_did = AnswerItem.objects.filter(answer__executor = user, dataitem__job = job).values('dataitem')
 	dataitems_available = DataItem.objects.filter(job = job, status = 'NR', gold = gold).exclude(pk__in = dataitems_already_did)
 
 	if dataitems_available.count()>0:
 		return dataitems_available
-	else:
-		return False
-def tasksAvailableExist(job, user, task_id = 0):
-
-	answers = Answer.objects.filter(executor = user, task__job = job).values('task')
-
-	tasks = Task.objects.filter(job = job, status = 'ST', pk__gt = task_id).exclude(pk__in = answers)
-	if tasks.count()>0:
-		return tasks
 	else:
 		return False
