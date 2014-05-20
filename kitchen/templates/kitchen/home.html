@@ -21,7 +21,7 @@
 			<table class='table table-hover'>
 				<tbody>
 					{% for job in jobs%}
-					<tr>
+					<tr class='{% if job.status = 'ST'%}active{%endif%} {% if job.status = 'FN'%}positive{%endif%}'>
 						<td>
 							#{{job.id}}
 						</td>

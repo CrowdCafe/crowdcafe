@@ -1,11 +1,15 @@
-tr.gold {
+.gold {
 	border-left:4px solid #FFDB4C;
 }
-tr.negative {
+.negative {
 	border-left:4px solid #FF3B30;
 }
-tr.positive {
+.positive {
 	border-left:4px solid #5AD427;
+}
+.active{
+	border-left:4px solid #5AC8FB;
+}
 }
 .info-extra{
 	display:none;

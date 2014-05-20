@@ -1,5 +1,14 @@
-*{
-	font-size: 200;
+div,p{
+	font-weight: 200 !important;
+}
+h3{
+	font-weight: 200 !important;
+}
+p{
+	font-weight: 200 !important;
+}
+b,strong,h4,h5,h6 {
+	font-weight: 500;
 }
 .btn{
 	border:1px solid;
@@ -32,7 +41,7 @@ label.radio{
 	opacity: 0.85;
 	filter: alpha(opacity=85);
 }
-.header-10-sub h1,.header-10-sub p{
+.header-10-sub h1{
 	font-weight: 100 !important;
 }
 .header-10-sub h1{
