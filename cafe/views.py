@@ -221,6 +221,7 @@ def generateTask(job,user):
 		if score <= job.qualitycontrol.gold_min:
 			gold_amount_to_put = job.qualitycontrol.gold_max
 
+		dataitems_to_put = []
 		if dataitems_regular:
 			gold_amount_to_put = 0
 			if dataitems_gold:
@@ -231,7 +232,8 @@ def generateTask(job,user):
 				if score <= job.qualitycontrol.gold_min:
 					gold_amount_to_put = job.qualitycontrol.gold_max
 			
-			dataitems_to_put = random.sample(dataitems_gold.all(), int(gold_amount_to_put)) + random.sample(dataitems_regular.all(), int(job.qualitycontrol.dataitems_per_task - gold_amount_to_put))
+				dataitems_to_put = random.sample(dataitems_gold.all(), int(gold_amount_to_put)) 
+			dataitems_to_put += random.sample(dataitems_regular.all(), int(job.qualitycontrol.dataitems_per_task - gold_amount_to_put))
 			task = Task(job=job)
 			task.save()
 			task.dataitems.add(*dataitems_to_put)
