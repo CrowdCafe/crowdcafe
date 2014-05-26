@@ -23,7 +23,9 @@
 					{% for job in jobs%}
 					<tr class='{% if job.status = 'NP'%}negative{%endif%} {% if job.status = 'ST'%}inwork{%endif%} {% if job.status = 'FN'%}positive{%endif%}'>
 						<td>
-							#{{job.id}}
+							#{{job.id}} 
+							{% if job.qualitycontrol.device_type = 1%}<i class="fa fa-mobile"></i>{% endif%}
+							{% if job.qualitycontrol.device_type = 2%}<i class="fa fa-desktop"></i>{% endif%}
 						</td>
 						<td>
 							<strong>{{job.title}}</strong>

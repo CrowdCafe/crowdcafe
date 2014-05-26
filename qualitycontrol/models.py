@@ -16,7 +16,8 @@ class QualityControl(models.Model):
     score_min = models.FloatField(default = 0, null = True)
     dataitems_per_task = models.IntegerField(default = 5)
     min_answers_per_item = models.IntegerField(default = 1)
-    max_dataitems_per_worker = models.FloatField(default = 100)    
+    max_dataitems_per_worker = models.FloatField(default = 100)
+    device_type = models.IntegerField(default = 0, null = True)
 
     def allowed_to_work_more(self, user):
         
@@ -24,7 +25,7 @@ class QualityControl(models.Model):
         all_items = DataItem.objects.filter(job = self.job, gold = False).count()
 
         score = self.score(user)
-        if (performed_items/all_items)*100 <= self.max_dataitems_per_worker and ((not score) or (score >= self.score_min)):
+        if (all_items >0 and performed_items/all_items)*100 <= self.max_dataitems_per_worker and ((not score) or (score >= self.score_min)):
         	return True
         return False
 

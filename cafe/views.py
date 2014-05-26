@@ -19,6 +19,8 @@ from random import randint
 import json
 import random
 from random import shuffle
+from mobi.decorators import detect_mobile
+
 
 def Welcome(request):
 	if request.user.is_authenticated():
@@ -77,6 +79,7 @@ def Home(request):
 	else:
 		return redirect('cafe-welcome')
 
+@detect_mobile
 @login_required 
 def JobList(request):
 	jobs = Job.objects.filter(status = 'ST')
@@ -85,13 +88,9 @@ def JobList(request):
 	jobs = jobs.order_by('-date_created').all()
 	jobs_available = []
 	for job in jobs:
-		if availableDataItems(job, request.user) and job.qualitycontrol.allowed_to_work_more(request.user) and qualifiedJob(job,request.user):
+		if userIsQualifiedForJob(job, request.user, request.mobile):
 			jobs_available.append(job)
-		else:
-			print job.id
-			print availableDataItems(job, request.user)
-			print job.qualitycontrol.allowed_to_work_more(request.user)
-			print qualifiedJob(job,request.user)
+
 	logEvent(request, 'joblist')
 	return render_to_response('cafe/home/pages/joblist.html', {'jobs':jobs_available}, context_instance=RequestContext(request))
 
@@ -252,6 +251,16 @@ def generateTask(job,user):
 			task.save()
 			return task
 	return False
+
+def userIsQualifiedForJob(job,user, mobile):
+	if availableDataItems(job, user) and job.qualitycontrol.allowed_to_work_more(user) and qualifiedJob(job,user) and (job.qualitycontrol.device_type == 0 or (mobile and job.qualitycontrol.device_type == 1) or (not mobile and job.qualitycontrol.device_type == 2)):
+		return True
+	else:
+		print job.id
+		print availableDataItems(job, user)
+		print job.qualitycontrol.allowed_to_work_more(user)
+		print qualifiedJob(job,user)
+		return False
 
 def availableDataItems(job, user, gold = False):
 

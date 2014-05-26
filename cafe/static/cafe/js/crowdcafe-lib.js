@@ -41,11 +41,10 @@ var page_scripts = {
 			});
 		});
 
-		$$('[name=contexts]').on('change',function(){
+		$$('.contexts').on('change',function(){
 			var context = $$(this).val();
-
-			crowdcafe.get('/cafe/context/set/?context='+context,function(){
-
+			crowdcafe.get('/cafe/context/set/?context='+context,function(data){
+				console.log(data);
 			});
 		});
 		$$('[value-to-text]').on('change',function(){
@@ -147,6 +146,12 @@ var page_scripts = {
 	},
 	index: function(){
 		page_scripts_activated['index']=true;
+		$$('.contexts').on('change',function(){
+			var context = $$(this).val();
+			crowdcafe.get('/cafe/context/set/?context='+context,function(data){
+				console.log(data)
+			});
+		});
 	},
 	rewards: function(){
 		page_scripts_activated['rewards']=true;

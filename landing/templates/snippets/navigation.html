@@ -9,8 +9,9 @@
 				<div class="nav-collapse collapse pull-right">
 					<ul class="nav">
 						{% if user.is_authenticated %}
+						<li><a href="{% url 'cafe-home'%}">Execute Jobs</a></li>
+						<li><a href="{% url 'kitchen-home'%}">Post Jobs</a></li>
 						<li><a href="{% url 'api-home' %}">API</a></li>
-						<li><a href="{% url 'kitchen-home'%}">My Jobs</a></li>
 						<li><a href="{% url 'kitchen-home'%}">{{user.profile.short_name}}</a></li>
 						<li><a class='muted' href="{% url 'logout'%}">Logout <i class="fa fa-arrow-circle-o-right"></i></a></li>
 						{% endif %}

@@ -135,11 +135,19 @@
 						<div class="span1">
 							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_dataitems_per_worker' value='100' ><span>Max dataitems / worker, %</span>
 						</div>
-						<div class="span3">
+						<div class="span2">
 							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_score' value='0' ><br/><span>Min score (default = 0)<br/><small>when user goes below - he can not work on the job any more and is not paid for the last task</small></span>
 						</div>
-						<div class="span4">
-							<input type='text' style='width: 300px;text-align: center;padding-right: 15px;' placeholder = "http://yourApp.com/callback/"  name='webhook_url' >
+						<div class="span3">
+							<select name="device_type" style="width:60%;">
+								<option value="0" >Any device</option>
+								<option value="1" >Mobile Only</option>
+								<option value="2" >Desktop Only</option>
+							</select><br/>
+							<span>To be executed on</span>
+						</div>
+						<div class="span2">
+							<input type='text' style='width: 150px;text-align: center;padding-right: 15px;' placeholder = "http://yourApp.com/callback/"  name='webhook_url' >
 							<span>Webhook URL</span>
 						</div>
 					</div>
@@ -150,8 +158,8 @@
 					<div class='row'>
 						<div class="span12">
 							<p class='center'>
-								<a class="btn btn-googleplus" href="mailto:team@crowdcafe.io" target="_blank"><i class="fa fa-envelope"></i> Ask us to design a task for you (free)!</a>
-								<input type = 'submit' class='btn btn-googleplus-inversed' value='Save task'>
+								<a class="btn btn-googleplus" href="mailto:team@crowdcafe.io" target="_blank"><i class="fa fa-envelope"></i> Ask us to design a job for you (free)!</a>
+								<input type = 'submit' class='btn btn-googleplus-inversed' value='Save job'>
 							</p>
 						</div>
 					</div>
@@ -164,6 +172,28 @@
 	{% block scripts%}
 	<script>
 	$(document).ready(function(){
+		$('form').submit(function(){
+			var issue = false;
+
+			if ($('.dataset_options .active').length == 0){
+				issue = 'define your dataset';
+			}
+			if (!$('[name=userinterface_template]').val() || $('[name=userinterface_template]').val()==''){
+				issue = 'please select the user interface template';
+			}
+			if (!$('[name=job_description]').val() || $('[name=job_description]').val() == ''){
+				issue = 'please define a description for your job';
+			}
+			if (!$('[name=job_title]').val() || $('[name=job_title]').val() ==''){
+				issue = 'please define a title for your job';
+			}
+			
+			if (issue){
+				alert(issue);
+				return false;
+			}
+
+		});
 		$('.dataset_options > .btn').click(function(){
 			var block_name = $(this).attr('block-name');
 

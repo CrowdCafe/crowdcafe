@@ -35,11 +35,14 @@
 				{% for item in task.items %}
 				{% include_external task.job.id %}
 				{% endfor %}
+				
 				<div class="content-block">
 					<div class="row">
+
 						<div class="col-100"><a href="#" class="button button-big button-submit">Complete</a></div>
 					</div>
 				</div>
+				{% include 'cafe/home/pages/snippets/contexts.html' %}
 			</form>
 		</div>
 	</div>
@@ -57,12 +60,17 @@
 				</div>
 			</div>
 			<div class="page-content">
+				<div class="content-block-title">
+					<h3>Task instructions:</h3>
+				</div>
 				<div class="content-block popup-content">
 					{{task.job.description}}
 				</div>
+
 				<div class="content-block">
-					<h3>Close this window to work on the task, or discuss it with others:</h3>
+					<h3>Read instructions carefully, define where you are (for statistics). Close this window to work on the task, or leave comments below.</h3>
 				</div>
+
 				<div class="content-block">
 					<script>
 					var disqus_title = '{{task.job.title}}';
@@ -70,7 +78,7 @@
 					</script>
 					{% include 'snippets/disqus.html'%}
 				</div>
-				
+
 			</div>
 		</div>
 	</div>

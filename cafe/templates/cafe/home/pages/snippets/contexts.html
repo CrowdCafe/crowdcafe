@@ -1,9 +1,9 @@
-<div class="content-block-title">Where are you?</div>
+<div class="content-block-title">Please define where you are:</div>
 <div class="list-block ">
 	<ul>
 		<li>
 			<a href="#" class="item-link smart-select">
-				<select name="contexts">
+				<select class="contexts">
 					<option value="not selected" selected="selected" >not selected</option>
 					<option value="in a bus" {% if cafe_context = "in a bus"%}selected="selected"{% endif%}>in a bus</option>
 					<option value="in a train" {% if cafe_context = "in a train"%}selected="selected"{% endif%}>in a train</option>
@@ -14,7 +14,7 @@
 					<option value="at home" {% if cafe_context = "at home"%}selected="selected"{% endif%}>at home</option>
 					<option value="outside" {% if cafe_context = "outside"%}selected="selected"{% endif%}>outside</option>
 				</select>
-				<div class="item-content positive">
+				<div class="item-content">
 					<div class="item-inner">
 						<div class="item-title">I am </div>
 					</div>

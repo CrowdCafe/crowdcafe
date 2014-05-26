@@ -84,6 +84,7 @@ def JobSave(request):
 		score_min = float(request.POST['min_score']),
 		dataitems_per_task = int(request.POST['dataitems_per_task']),
 		min_answers_per_item = int(request.POST['min_answers_per_item']),
+		device_type = int(request.POST['device_type'])
 		)
 
 	if 'min_confidence' in request.POST:
