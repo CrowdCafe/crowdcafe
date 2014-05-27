@@ -25,7 +25,7 @@ class QualityControl(models.Model):
         all_items = DataItem.objects.filter(job = self.job, gold = False).count()
 
         score = self.score(user)
-        if (all_items >0 and performed_items/all_items)*100 <= self.max_dataitems_per_worker and ((not score) or (score >= self.score_min)):
+        if (all_items >0 and (performed_items/all_items)*100 <= self.max_dataitems_per_worker and ((not score) or (score >= self.score_min))):
         	return True
         return False
 
