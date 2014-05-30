@@ -21,7 +21,7 @@ label.uploadbutton input {
 	display: none;   
 }
 iframe{
-	border: 1px solid #EEE;
+	border: none;
 }
 .logo{
 	width:50px;

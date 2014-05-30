@@ -3,6 +3,7 @@ from django.conf.urls import patterns, include, url
 import views
 
 urlpatterns = patterns('',
+    url(r'^$', views.home, name='api-home'),
 	url(r'token/$', views.home, name='api-home'),
     #===============================================================================
     # Views
