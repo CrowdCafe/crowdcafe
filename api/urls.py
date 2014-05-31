@@ -14,7 +14,6 @@ urlpatterns = patterns('',
 
     url(r'jobs/(?P<job_id>\d+)/items/upload/$', views.uploadItems, name='api-job-upload-items'),
     
-
     url(r'jobs/(?P<job_id>\d+)/answers/$', views.getAnswers, name='api-job-answers'),
     url(r'jobs/(?P<job_id>\d+)/csv/$', views.getCSV, name='api-job-csv'),
     url(r'wikipedia/read/$', views.readUrl, name='api-url-read'),
