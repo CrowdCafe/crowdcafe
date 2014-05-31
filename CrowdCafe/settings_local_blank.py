@@ -2,6 +2,10 @@ from os.path import join, normpath
 from settings_common import *
 from settings_sensitive import *
 
+ALLOWED_HOSTS = ['localhost','crowdcafe.io']
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
