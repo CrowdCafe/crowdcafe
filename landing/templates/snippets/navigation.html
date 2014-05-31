@@ -1,4 +1,12 @@
 {%load static%}
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) return;
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=619917494764007&version=v2.0";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 <!-- header-10 -->
 <header class="header-10">
 	<div class="container">
@@ -6,6 +14,13 @@
 			<div class="navbar-inner">
 				<button type="button" class="btn btn-navbar"> </button>
 				<a class="brand" href="{% url 'welcome' %}"><img src="{% static 'landing/img/logo100.png'%}" class='logo'></a>
+				<div class="nav-collapse collapse pull-left">
+					<ul class='nav'>
+						<li>
+							<div class="fb-like" data-href="https://www.facebook.com/crowdcafe.io" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+						</li>
+					</ul>
+				</div>
 				<div class="nav-collapse collapse pull-right">
 					<ul class="nav">
 						{% if user.is_authenticated %}

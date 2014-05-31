@@ -57,11 +57,8 @@ label.radio{
 	opacity:0.5;
 	margin: 0 0 100px;
 }
-.header-10-sub .hero-unit .fb-like{
-	opacity:0.7;
-}
-.header-10-sub .hero-unit .fb-like:hover{
-	opacity:1;
+.fb-like{
+	margin-top:30px;
 }
 .block-error .hero-unit h1{
 	font-size: 150px;
