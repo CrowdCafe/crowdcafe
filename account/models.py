@@ -1,3 +1,4 @@
+from rest_framework.authtoken.models import Token
 from django.db import models
 from django.contrib.auth.models import User
 from social_auth.models import UserSocialAuth
@@ -25,7 +26,13 @@ class Profile(models.Model):
                 connected.get().delete()
                 return True
         return False
-
+    @property
+    def token(self):
+        if Token.objects.filter(user=self.user).count() == 0:
+            token = Token.objects.create(user=self.user)
+        else:
+            token = Token.objects.filter(user=self.user).all()[0]
+        return token
     @property
     def avatar(self):
         if len(self.connectedSocialNetworks)>0:

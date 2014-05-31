@@ -20,8 +20,6 @@ from rest_framework.settings import api_settings
 from kitchen.models import Job, Task, DataItem
 from serializers import JobSerializer,TaskSerializer, UserSerializer,AnswerDataCSVSerializer
 
-from rest_framework.authtoken.models import Token
-
 from kitchen.utils import saveDataItems
 
 
@@ -29,12 +27,7 @@ import requests
 
 @login_required
 def home(request):
-	if Token.objects.filter(user=request.user).count() == 0:
-		token = Token.objects.create(user=request.user)
-	else:
-		token = Token.objects.filter(user=request.user).all()[0]
-
-	return render_to_response('api/home.html',{'token':token}, context_instance=RequestContext(request))
+	return render_to_response('api/home.html', context_instance=RequestContext(request))
 
 @api_view(['POST'])
 def uploadItems(request, job_id):

@@ -37,21 +37,36 @@ label.radio{
 }
 
 .header-10-sub .background {
-	background-image: url("../img/bg/cafe.jpg");
+	background-image: url("../img/bg/cafe_m.jpg");
 	opacity: 0.85;
 	filter: alpha(opacity=85);
+	padding:0px;
 }
 .block-error .background{
 	background-image: url("../img/bg/error.jpg");
 }
-.header-10-sub h1{
-	font-weight: 100 !important;
-	font-size: 80px !important;
+.header-10-sub .hero-unit{
+	margin-top:50px;
+}
+.header-10-sub .hero-unit h1{
+	font-weight: 100;
+	font-size: 100px;
+	margin: 0px;
+}
+.header-10-sub .hero-unit p.subtitle{
+	opacity:0.5;
+	margin: 0 0 100px;
+}
+.header-10-sub .hero-unit .fb-like{
+	opacity:0.7;
+}
+.header-10-sub .hero-unit .fb-like:hover{
+	opacity:1;
+}
+.block-error .hero-unit h1{
+	font-size: 150px;
 }
 
-.block-error h1{
-	font-size: 150px !important;
-}
 .content-23.custom-bg {
 	background-image: url('../img/bg/trento.jpg');
 	background-position: 50% 50%;
