@@ -55,7 +55,10 @@ label.radio{
 }
 .header-10-sub .hero-unit p.subtitle{
 	opacity:0.5;
-	margin: 0 0 100px;
+	margin: 0 0 60px;
+}
+.login-buttons{
+	margin-top:50px;
 }
 .fb-like{
 	margin-top:30px;
