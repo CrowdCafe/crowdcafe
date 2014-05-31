@@ -1,0 +1,28 @@
+{% extends 'base.html'%}
+{%load static%}
+
+{% block js%}
+<script src="{% static 'landing/js/welcome.js'%}"></script>
+{% endblock%}
+
+{% block content%}
+
+<section class="header-10-sub v-center bg-midnight-blue block-error">
+    <div class="background">&nbsp;</div>
+    <div>
+        <div class="container">
+            <div class="hero-unit">
+                <h1>{% block error%}{%endblock%}</h1>
+                <br/><br/><br/><br/><br/>
+                <p>
+                    <a href="javascript:history.back()" class="btn btn-googleplus-inversed btn-lg"> go back</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>      
+
+{% include 'snippets/footer.html'%}
+{% endblock%}
+
+

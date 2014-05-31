@@ -14,3 +14,6 @@ def Welcome(request):
 	if request.mobile:
 		return redirect('cafe-welcome')
 	return render_to_response('landing/welcome.html', context_instance=RequestContext(request))
+
+def Error(request):
+	return render_to_response('404.html', context_instance=RequestContext(request))

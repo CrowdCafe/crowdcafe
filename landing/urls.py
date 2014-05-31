@@ -7,5 +7,6 @@ urlpatterns = patterns('',
     # Views
     #-------------------------------------------------------------------------------
     url(r'^$', views.Home, name='home'),
-    url(r'^welcome/$', views.Welcome, name='welcome')
+    url(r'^welcome/$', views.Welcome, name='welcome'),
+    url(r'^error/$', views.Error, name='error'),
 )

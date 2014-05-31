@@ -41,11 +41,16 @@ label.radio{
 	opacity: 0.85;
 	filter: alpha(opacity=85);
 }
-.header-10-sub h1{
-	font-weight: 100 !important;
+.block-error .background{
+	background-image: url("../img/bg/error.jpg");
 }
 .header-10-sub h1{
+	font-weight: 100 !important;
 	font-size: 80px !important;
+}
+
+.block-error h1{
+	font-size: 150px !important;
 }
 .content-23.custom-bg {
 	background-image: url('../img/bg/trento.jpg');
