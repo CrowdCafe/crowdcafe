@@ -1,7 +1,7 @@
 function Dot(shape,position){
 	this.shape = shape;
 	this.shape.dots.push(this);
-	var radius = 8;
+	var radius = 4;
 	var stroke = 2;
 	this.radius = radius;
 	this.stroke = stroke;

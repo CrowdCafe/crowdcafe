@@ -4,6 +4,13 @@
 {% load customtags %}
 
 {% block navigation%}
+<style>
+canvas{
+	border:1px solid red;
+	position:absolute;
+}
+
+</style>
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="left">
@@ -35,14 +42,14 @@
 				{% for item in task.items %}
 				{% include_external task.job.id %}
 				{% endfor %}
-				
+				{% include 'cafe/home/pages/snippets/contexts.html' %}
 				<div class="content-block">
 					<div class="row">
 
 						<div class="col-100"><a href="#" class="button button-big button-submit">Complete</a></div>
 					</div>
 				</div>
-				{% include 'cafe/home/pages/snippets/contexts.html' %}
+				
 			</form>
 		</div>
 	</div>

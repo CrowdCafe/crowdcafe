@@ -1,3 +1,7 @@
+scraperwiki.sqlite
+components/bower_components
+.bowerrc
+bower.json
 .DS_Store
 */.DS_Store
 CrowdCafe/settings_local.py
