@@ -1,7 +1,6 @@
 var $$ = Framework7.$;
 var background_classes = ['positive','negative','neutral','gold','dontknow'];
 
-
 function getURLParameter(name) {
 	var regexS = "[\\?&]" + name + "=([^&#]*)";
 	var regex = new RegExp(regexS);
@@ -40,7 +39,24 @@ var page_scripts = {
 				}
 			});
 		});
+		$$('[annotation-type=shapes]').each(function(){
+			var image = $$(this);
+			console.log(image.height());
+			
+			if (image.height() > 10){
+				console.log('image already loaded');
+				prepareCanvas(image);
+			}else{
+				image[0].onload = function(){
+					console.log('image loaded');
+					prepareCanvas(image);
+				};
+			}
+			
+			
 
+
+		});
 		$$('.contexts').on('change',function(){
 			var context = $$(this).val();
 			crowdcafe.get('/cafe/context/set/?context='+context,function(data){
