@@ -6,11 +6,12 @@
 	{% include 'landing/meta/styles.html'%}
 </head>
 <body>
-	{% include 'snippets/navigation.html'%}
+	<div class='page-wrapper'>
+		{% include 'snippets/navigation.html'%}
 
-	{% block content%}
-	{% endblock%}
-
+		{% block content%}
+		{% endblock%}
+	</div>
 	{% include 'landing/meta/scripts.html'%}
 
 	{% block js%}

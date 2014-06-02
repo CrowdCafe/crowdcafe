@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 #coding: utf8 
 
+import os
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), ".."),
+)
 # Django settings for CrowdCafe project.
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 
@@ -104,6 +108,16 @@ STATIC_ROOT = ''
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
+BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
+
+BOWER_INSTALLED_APPS = (
+    'minimal-devices',
+    'fontawesome',
+    'BrandButtons',
+    'framework7',
+    'startup-demo'
+)
+
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -116,6 +130,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
@@ -188,7 +203,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'requests'
+    'requests',
+    'djangobower'
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -301,6 +317,7 @@ CORS_ALLOW_HEADERS = (
         'authorization',
         'x-csrftoken'
     )
+
 
 
 # -----------------------------------------------------------------------------

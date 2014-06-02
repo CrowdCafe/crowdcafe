@@ -1,11 +1,8 @@
-div,p{
-	font-weight: 200 !important;
+.row div,.row p{
+	font-weight: 200;
 }
-h3{
-	font-weight: 200 !important;
-}
-p{
-	font-weight: 200 !important;
+.container h3{
+	font-weight: 200;
 }
 b,strong,h4,h5,h6 {
 	font-weight: 500;
@@ -14,8 +11,14 @@ b,strong,h4,h5,h6 {
 	border:1px solid;
 	font-weight: 200;
 }
-.btn-toolbar .btn-group .btn{
+.btn-toolbar .btn-group{
+	float:none;
+}
+.btn-toolbar .btn-group .btn,.btn.dropdown-toggle{
 	border:none;
+}
+.btn.dropdown-toggle .filter-option{
+	color:white;
 }
 label.uploadbutton input {
 	display: none;   
@@ -46,7 +49,7 @@ label.radio{
 	background-image: url("../img/bg/error.jpg");
 }
 .header-10-sub .hero-unit{
-	margin-top:50px;
+	margin-top:100px;
 }
 .header-10-sub .hero-unit h1{
 	font-weight: 100;
@@ -67,6 +70,10 @@ label.radio{
 	font-size: 150px;
 }
 
+.image-container{
+	height: 250px;
+	width: 100%;
+}
 .content-23.custom-bg {
 	background-image: url('../img/bg/trento.jpg');
 	background-position: 50% 50%;
@@ -81,6 +88,9 @@ label.radio{
 }
 .right{
 	text-align: right;
+}
+.center{
+	text-align: center;
 }
 
 h1{

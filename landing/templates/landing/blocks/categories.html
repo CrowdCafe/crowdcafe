@@ -1,6 +1,6 @@
 {% load static%}
 <!-- price-1 -->        
-<section class="price-1 v-center welcome-block-categories">
+<section class="price-1 welcome-block-categories">
     <div class="container ">
         <h3>Simple task categories</h3>
         <br/>
@@ -8,18 +8,20 @@
         <div class="row plans ">
 
             {% for category in task_categories%}
-            <div class="span3 plan ">
-                <div class="title">{{category.title}}<br/><br/>
-                    <img src="{% static category.icon %}" width="40">
-                </div><br/>
-                <div class="price "><b>{{category.cost}}&euro;</b> fixed reward,<br><b>{{category.time}}</b> execution time</div>
-                <div class="description ">
-                    <b>Required actions:</b><br>
-                    {{category.description}}
-                </div>
-                 <div class="description ">
-                    <b>Examples</b><br>
-                    {{category.examples}}
+            <div class="col-sm-3">
+                <div class='plan'>
+                    <div class="title">{{category.title}}<br/><br/>
+                        <img src="{% static category.icon %}" width="40">
+                    </div><br/>
+                    <div class="price "><b>{{category.cost}}&euro;</b> fixed reward,<br><b>{{category.time}}</b> execution time</div>
+                    <div class="description ">
+                        <b>Required actions:</b><br>
+                        {{category.description}}
+                    </div>
+                    <div class="description ">
+                        <b>Examples</b><br>
+                        {{category.examples}}
+                    </div>
                 </div>
             </div>
             {% endfor %}

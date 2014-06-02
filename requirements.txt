@@ -26,3 +26,4 @@ djangorestframework-csv
 six==1.4
 python-instagram
 python-requests
+django-bower

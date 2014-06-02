@@ -13,39 +13,39 @@
 }
 </style>
 <!-- content-8  -->
-<section class="content-8 v-center">
+<section class="">
 	<div>
-		<div class="container">
-			<h1>Create a job in 6 easy steps:</h1>
+		<div class="container center">
+			<h1 class='center'>Create a job in 6 easy steps:</h1>
 			<form method='POST' action='{% url 'kitchen-job-save' %}' enctype="multipart/form-data">
 				{% csrf_token %}
 
 				<div class="row">
-					<div class="span6">
+					<div class="col-sm-6 form-group">
 						<p class='lead'>1. Title</p>
 						<span>Be specific. 1 - 5 words only. </span>
-						<input type='text' name='job_title' style="width:100%;padding:10px 0px;" placeholder='Sentiment Analysis'>
+						<input type='text' name='job_title' class="form-control" style="width:100%;padding:10px 0px;" placeholder='Sentiment Analysis'>
 					</div>
-					<div class="span6">
+					<div class="col-sm-6">
 						<p class='lead'>2. Instructions</p>
 						<span>Clear instructions. Not more than 140 characters.</span>
-						<textarea type='text' name='job_description' style="width:100%;padding:10px 0px;"></textarea>
+						<textarea type='text' name='job_description' class="form-control" style="width:100%;padding:10px 0px;"></textarea>
 					</div>
 				</div>
 				<div class='row'>
 					<hr/>
 				</div>
 				<div class='row'>
-					<div class="span3">
+					<div class="col-sm-3">
 						<p class='lead'>3. Category</p>
 						{% for category in task_categories%}
 						<label class="radio">
-							<input type="radio" name="job_category" id="optionsRadios1" value="{{category.id}}" data-toggle="radio" checked="checked">
+							<input type="radio" name="job_category" class="form-control" id="optionsRadios1" value="{{category.id}}" data-toggle="radio" checked="checked">
 							<b>{{category.title}}</b> ({{category.cost}}&euro; / {{category.time}})
 						</label>
 						{% endfor %}
 					</div>
-					<div class="span6 preselection-block">
+					<div class="col-sm-6 preselection-block">
 						<p class='lead'>4. Preselection (optional)</p>
 						<div >
 							<select class='preselection_new_rule_type'>
@@ -58,13 +58,13 @@
 								<option value="{{job.id}}">#{{job.id}} {{job.title}}</option>
 								{% endfor%}
 							</select>
-							<input type="button" class="btn btn-primary create-preselection" value="+">
+							<input type="button"  class="btn btn-primary create-preselection" value="+">
 						</div>
 					</div>
-					<div class="span3">
+					<div class="col-sm-3">
 						<p class='lead'>5. User Interface</p>
 						
-						<input  class='block center'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' placeholder= 'URL leading to raw HTML file' >
+						<input  class='block center form-control'  type='text' style='width:100%;padding:10px 0px;' name='userinterface_template' placeholder= 'URL leading to raw HTML file' >
 						<select name="template-list" style="width:60%;">
 							<option value="" >Select a template</option>
 							{% for html_template in html_templates %}
@@ -79,8 +79,8 @@
 					<hr/>
 				</div>
 				<div class="row">
-					<div class="span12">
-						<p class='lead'>6. Data <div class="btn-toolbar">
+					<div class="col-sm-12">
+						<p class='lead'>6. Data <div class="btn-toolbar center">
 							<div class="btn-group dataset_options">
 								<a class="btn btn-primary" block-name = "api" href="#"><i class="fa fa-circle-o"> none (API)</i></a>
 								<a class="btn btn-primary" block-name = "survey" href="#"><i class="fa fa-circle-o"> none (Survey)</i></a>
@@ -93,10 +93,10 @@
 				</div>
 				<input type = "hidden" id="dataset_option_selected" name="dataset_option_selected" value = "">
 				<div class="row dataset_options">
-					<div class="span12 block-api">
+					<div class="col-sm-12 block-api">
 						<p>No data (dataitems will be uploaded via API)</p>
 					</div>
-					<div class="span12 block-survey">
+					<div class="col-sm-12 block-survey">
 						<p>Survey. Only one dataitem will be created (questions are defined in a UI template). </p>
 					</div>
 					<div class="span12 block-dataset">
@@ -106,9 +106,9 @@
 							<input type="file" name='dataset' onchange="this.previousSibling.previousSibling.innerHTML = this.value"/>
 						</label>
 					</div>
-					<div class="span12 block-feed">
-						<input  class='block'  type='text' style='float:left;margin-top:2px;width:15%;text-align: center;' name='feed_amount' value='20' >
-						<input type='text' class='block' name='feed_handler' style='float: left;width: 25%;margin-top: 2px;' placeholder='trento'>
+					<div class="col-sm-12 block-feed">
+						<input  class='block form-control'   type='text' style='float:left;margin-top:2px;width:15%;text-align: center;' name='feed_amount' value='20' >
+						<input type='text form-control' class='block' name='feed_handler' style='float: left;width: 25%;margin-top: 2px;' placeholder='trento'>
 						<select name="feed-type" style="width:60%;">
 							<!--option value="0" selected>Twitter</option>
 							<option value="1" >Facebook</option-->
@@ -120,25 +120,25 @@
 						<hr/>
 					</div>
 					<div class="row">
-						<div class="span1">
-							<input  class='block'  type='text' style='width: 40px;text-align: center;padding-right: 15px;' name='dataitems_per_task' value='5' ><span>Data dataitems / task</span>
+						<div class="col-sm-1">
+							<input  class='block form-control'  type='text' style='width: 40px;text-align: center;padding-right: 15px;' name='dataitems_per_task' value='5' ><span>Data dataitems / task</span>
 						</div>
-						<div class="span1">
-							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_answers_per_item' value='1' ><span>Min answers / dataitem</span>
+						<div class="col-sm-1">
+							<input type='text' class='form-control' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_answers_per_item' value='1' ><span>Min answers / dataitem</span>
 						</div>
-						<div class="span1">
-							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_gold_per_task' value='0' ><span>Min gold / task</span>
+						<div class="col-sm-1">
+							<input type='text' class='form-control' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_gold_per_task' value='0' ><span>Min gold / task</span>
 						</div>
-						<div class="span1">
-							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_gold_per_task' value='3' ><span>Max gold / task</span>
+						<div class="col-sm-1">
+							<input type='text' class='form-control' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_gold_per_task' value='3' ><span>Max gold / task</span>
 						</div>
-						<div class="span1">
-							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_dataitems_per_worker' value='100' ><span>Max dataitems / worker, %</span>
+						<div class="col-sm-1">
+							<input type='text' class='form-control' style='width: 40px;text-align: center;padding-right: 15px;'  name='max_dataitems_per_worker' value='100' ><span>Max dataitems / worker, %</span>
 						</div>
-						<div class="span2">
-							<input type='text' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_score' value='0' ><br/><span>Min score (default = 0)<br/><small>when user goes below - he can not work on the job any more and is not paid for the last task</small></span>
+						<div class="col-sm-2">
+							<input type='text'  class='form-control' style='width: 40px;text-align: center;padding-right: 15px;'  name='min_score' value='0' ><br/><span>Min score (default = 0)<br/><small>when user goes below - he can not work on the job any more and is not paid for the last task</small></span>
 						</div>
-						<div class="span3">
+						<div class="col-sm-3">
 							<select name="device_type" style="width:60%;">
 								<option value="0" >Any device</option>
 								<option value="1" >Mobile Only</option>
@@ -146,8 +146,8 @@
 							</select><br/>
 							<span>To be executed on</span>
 						</div>
-						<div class="span2">
-							<input type='text' style='width: 150px;text-align: center;padding-right: 15px;' placeholder = "http://yourApp.com/callback/"  name='webhook_url' >
+						<div class="col-sm-2">
+							<input type='text'  class='form-control' style='width: 150px;text-align: center;padding-right: 15px;' placeholder = "http://yourApp.com/callback/"  name='webhook_url' >
 							<span>Webhook URL</span>
 						</div>
 					</div>
@@ -156,7 +156,7 @@
 						<hr/>
 					</div>
 					<div class='row'>
-						<div class="span12">
+						<div class="col-sm-12">
 							<p class='center'>
 								<a class="btn btn-googleplus" href="mailto:team@crowdcafe.io" target="_blank"><i class="fa fa-envelope"></i> Ask us to design a job for you (free)!</a>
 								<input type = 'submit' class='btn btn-googleplus-inversed' value='Save job'>
