@@ -40,8 +40,9 @@ function prepareRaphaelPaper(image){
 }
 function initEllipseDrawing(canvas,paper){
 	var mousedown = false,lastX, lastY, path, pathString, ellipse;
-/*
+
 	$$(canvas).on('mousedown',function (e) {
+		$$('.page-content').prepend('<span>mousedown</span><br/>');
 		e.preventDefault();
 		mousedown = true;
 
@@ -55,6 +56,7 @@ function initEllipseDrawing(canvas,paper){
 	});
 
 	$$(canvas).on('mousemove',function (e) {
+		$$('.page-content').prepend('<span>mousemove</span>');
 		e.preventDefault();
 		if (!mousedown) {
 			return;
@@ -69,10 +71,12 @@ function initEllipseDrawing(canvas,paper){
 	});
 
 	$$(canvas).on('mouseup',function () {
+		$$('.page-content').prepend('<br/><br/><span>mouseup</span>');
 		mousedown = false;
 	});
-*/
+
 	canvas.addEventListener('touchstart', function(event) {
+		$$('.page-content').prepend('<span>touchstart</span><br/>');
 		mousedown = true;
 
 		var x = e.offsetX,
@@ -85,6 +89,7 @@ function initEllipseDrawing(canvas,paper){
 	}, false);
 
 	canvas.addEventListener('touchmove', function(event) {
+		$$('.page-content').prepend('<span>touchmove</span>');
 		if (!mousedown) {
 			return;
 		}
@@ -98,6 +103,7 @@ function initEllipseDrawing(canvas,paper){
 	}, false);
 
 	canvas.addEventListener('touchend', function(event) {
+		$$('.page-content').prepend('<br/><br/><span>touchend</span>');
 		mousedown = false;
 	}, false);
 
