@@ -42,8 +42,6 @@ function initEllipseDrawing(canvas,paper){
 	var mousedown = false,lastX, lastY, path, pathString, ellipse;
 
 	$$(canvas).on('mousedown',function (e) {
-		$$('.page-content').prepend('<span>mousedown</span><br/>');
-		e.preventDefault();
 		mousedown = true;
 
 		var x = e.offsetX,
@@ -56,8 +54,6 @@ function initEllipseDrawing(canvas,paper){
 	});
 
 	$$(canvas).on('mousemove',function (e) {
-		$$('.page-content').prepend('<span>mousemove</span>');
-		e.preventDefault();
 		if (!mousedown) {
 			return;
 		}
@@ -71,7 +67,6 @@ function initEllipseDrawing(canvas,paper){
 	});
 
 	$$(canvas).on('mouseup',function (e) {
-		$$('.page-content').prepend('<br/><br/><span>mouseup</span>');
 		mousedown = false;
 	});
 
@@ -80,8 +75,8 @@ function initEllipseDrawing(canvas,paper){
 		$$('.page-content').prepend('<span>touchstart</span><br/>');
 		mousedown = true;
 
-		var x = e.offsetX,
-		y = e.offsetY;
+		var x = e.touches[0].pageX,
+		y = e.touches[0].pageY;
 		var color = getRandomColor();
 		ellipse = paper.ellipse(x, y, 10,10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });
 
@@ -96,8 +91,8 @@ function initEllipseDrawing(canvas,paper){
 			return;
 		}
 		console.log(e);
-		var x = e.targetTouches[0].clientX,
-		y = e.targetTouches[0].clientY;
+		var x = e.touches[0].pageX,
+		y = e.touches[0].pageY;
 		var radius_x = Math.abs(x-lastX);
 		var radius_y = Math.abs(y-lastY);
 
