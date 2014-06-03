@@ -23,7 +23,7 @@ var page_scripts = {
 	},
 	task: function(){
 		page_scripts_activated['task']=true;
-		
+
 		$$('.swipeout-actions a').on('click',function(){
 			var button = $$(this);
 			button.parents('.swipeout').removeClass('swipeout-opened');
@@ -42,20 +42,16 @@ var page_scripts = {
 		$$('[annotation-type=shapes]').each(function(){
 			var image = $$(this);
 			console.log(image.height());
-			
 			if (image.height() > 10){
 				console.log('image already loaded');
-				prepareCanvas(image);
-			}else{
+				prepareRaphaelPaper(image);
+			}
+			else{
 				image[0].onload = function(){
 					console.log('image loaded');
-					prepareCanvas(image);
+					prepareRaphaelPaper(image);
 				};
 			}
-			
-			
-
-
 		});
 		$$('.contexts').on('change',function(){
 			var context = $$(this).val();
@@ -79,7 +75,7 @@ var page_scripts = {
 				'value': value_button.val()
 			};
 			$$(to_item.selector).val(to_item.value);
-			
+
 		});
 
 		$$('[name]').on('change',function(){

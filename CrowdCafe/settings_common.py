@@ -115,7 +115,8 @@ BOWER_INSTALLED_APPS = (
     'fontawesome',
     'BrandButtons',
     'framework7',
-    'startup-demo'
+    'startup-demo',
+    'raphael'
 )
 
 # Additional locations of static files
