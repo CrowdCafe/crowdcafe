@@ -73,23 +73,34 @@ function initEllipseDrawing(canvas,paper){
 	});
 
 	$$(canvas)[0].addEventListener('touchstart', function(event) {
-		event.preventDefault();
-		block1.className = 'touched';
-		block1.innerHTML = 'touched';
+		e.preventDefault();
+		mousedown = true;
+
+		var x = e.offsetX,
+		y = e.offsetY;
+		var color = getRandomColor();
+		ellipse = paper.ellipse(x, y, 10,10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });
+
+		lastX = x;
+		lastY = y;
 	}, false);
 
 	$$(canvas)[0].addEventListener('touchmove', function(event) {
-		var x = event.touches[0].pageX;
-		var y = event.touches[0].pageY;
-		block1.style.left = x - 100;
-		block1.style.top = y - 50;
-		block1.innerHTML = 'touchmove' + x + '=' + y;
+		e.preventDefault();
+		if (!mousedown) {
+			return;
+		}
+
+		var x = e.offsetX,
+		y = e.offsetY;
+		var radius_x = Math.abs(x-lastX);
+		var radius_y = Math.abs(y-lastY);
+
+		ellipse.attr({'rx':radius_x,'ry':radius_y});
 	}, false);
 
 	$$(canvas)[0].addEventListener('touchend', function(event) {
-		event.preventDefault();
-		block1.className = '';
-		block1.innerHTML = 'dropped';
+		mousedown = false;
 	}, false);
 
 
