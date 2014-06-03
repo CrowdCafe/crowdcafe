@@ -70,12 +70,12 @@ function initEllipseDrawing(canvas,paper){
 		ellipse.attr({'rx':radius_x,'ry':radius_y});
 	});
 
-	$$(canvas).on('mouseup',function () {
+	$$(canvas).on('mouseup',function (e) {
 		$$('.page-content').prepend('<br/><br/><span>mouseup</span>');
 		mousedown = false;
 	});
 
-	canvas.addEventListener('touchstart', function(event) {
+	$$(canvas)[0].addEventListener('touchstart', function(e) {
 		$$('.page-content').prepend('<span>touchstart</span><br/>');
 		mousedown = true;
 
@@ -88,21 +88,21 @@ function initEllipseDrawing(canvas,paper){
 		lastY = y;
 	}, false);
 
-	canvas.addEventListener('touchmove', function(event) {
+	$$(canvas)[0].addEventListener('touchmove', function(e) {
 		$$('.page-content').prepend('<span>touchmove</span>');
 		if (!mousedown) {
 			return;
 		}
-
-		var x = e.offsetX,
-		y = e.offsetY;
+		console.log(e);
+		var x = e.targetTouches[0].clientX,
+		y = e.targetTouches[0].clientY;
 		var radius_x = Math.abs(x-lastX);
 		var radius_y = Math.abs(y-lastY);
 
 		ellipse.attr({'rx':radius_x,'ry':radius_y});
 	}, false);
 
-	canvas.addEventListener('touchend', function(event) {
+	$$(canvas)[0].addEventListener('touchend', function(e) {
 		$$('.page-content').prepend('<br/><br/><span>touchend</span>');
 		mousedown = false;
 	}, false);
