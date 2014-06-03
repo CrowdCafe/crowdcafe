@@ -54,10 +54,6 @@ function initEllipseDrawing(canvas,paper){
 		lastY = y;
 	});
 
-	$$(document).on('mouseup',function () {
-		mousedown = false;
-	});
-
 	$$(canvas).on('mousemove',function (e) {
 		e.preventDefault();
 		if (!mousedown) {
@@ -71,6 +67,32 @@ function initEllipseDrawing(canvas,paper){
 
 		ellipse.attr({'rx':radius_x,'ry':radius_y});
 	});
+
+	$$(canvas).on('mouseup',function () {
+		mousedown = false;
+	});
+
+	$$(canvas)[0].addEventListener('touchstart', function(event) {
+		event.preventDefault();
+		block1.className = 'touched';
+		block1.innerHTML = 'touched';
+	}, false);
+
+	$$(canvas)[0].addEventListener('touchmove', function(event) {
+		var x = event.touches[0].pageX;
+		var y = event.touches[0].pageY;
+		block1.style.left = x - 100;
+		block1.style.top = y - 50;
+		block1.innerHTML = 'touchmove' + x + '=' + y;
+	}, false);
+
+	$$(canvas)[0].addEventListener('touchend', function(event) {
+		event.preventDefault();
+		block1.className = '';
+		block1.innerHTML = 'dropped';
+	}, false);
+
+
 }
 
 
