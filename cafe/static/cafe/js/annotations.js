@@ -86,7 +86,6 @@ function initEllipseDrawing(canvas,paper){
 
 	$$(canvas)[0].addEventListener('touchmove', function(e) {
 		e.preventDefault();
-		$$('.page-content').prepend(radius_y+ ' ');
 		if (!mousedown) {
 			return;
 		}
