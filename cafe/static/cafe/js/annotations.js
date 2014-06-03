@@ -35,30 +35,29 @@ function prepareRaphaelPaper(image){
 	$$(image).parent().find('.button-cancel').on('click',function(){
 		paper.top.remove();
 	});
+
 	initEllipseDrawing(canvas,paper);
 }
 function initEllipseDrawing(canvas,paper){
 	var mousedown = false,lastX, lastY, path, pathString, ellipse;
 
-	$$(canvas).on('mousedown',function (e) {
+	$$(canvas).on('touchstart',function (e) {
 		mousedown = true;
 
 		var x = e.offsetX,
 		y = e.offsetY;
 		var color = getRandomColor();
-		console.log(color);
 		ellipse = paper.ellipse(x, y, 10,10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });
-		//pathString = 'M' + x + ' ' + y + 'l0 0';
-		//path = paper.path(pathString);
 
 		lastX = x;
 		lastY = y;
 	});
-	$$(document).mouseup(function () {
+
+	$$(document).on('touchend',function () {
 		mousedown = false;
 	});
 
-	$$(canvas).mousemove(function (e) {
+	$$(canvas).on('touchmove',function (e) {
 		if (!mousedown) {
 			return;
 		}
