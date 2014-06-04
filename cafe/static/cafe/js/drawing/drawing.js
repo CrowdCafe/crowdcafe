@@ -1,5 +1,6 @@
+var drawings = []
 function Drawing(image){
-
+	drawings.push(this);
 	this.image = image;
 	this.container = $$(image).parent();
 	this.canvas = this.container.children('.raphael');
@@ -65,20 +66,26 @@ Drawing.prototype = {
 		drawing.container.find('.button-cancel').on('click',function(){
 			drawing.paper.top.remove();
 		});
-		
+
 		drawing.svg.addEventListener('touchstart',function(e){
+			console.log('started '+drawings.indexOf(drawing));
 			drawing.scroll.active = true;
-			drawing.scroll.start = Tactile.getTouchPosition(e, drawing.canvas);
+			drawing.scroll.start = Tactile.getTouchPosition(e, $$(drawing.svg).offset());
+			console.log($$(drawing.svg).offset());
 			drawing.scroll.top = $$('.page-content')[0].scrollTop;
 		}, false);
 		drawing.svg.addEventListener('touchmove',function(e){
 			if (!drawing.inprocess) {
-				drawing.scrolling(Tactile.getTouchPosition(e, drawing.canvas));
+				console.log('moving '+drawings.indexOf(drawing));
+				drawing.scrolling(Tactile.getTouchPosition(e, $$(drawing.svg).offset()));
 			}
 		}, false);
 		drawing.svg.addEventListener('touchend',function(e){
-			drawing.scroll.active = false;
-			drawing.display();
+			drawings.forEach(function(entry){
+				console.log('cancelled');
+				entry.scroll.active = false;
+				entry.display();
+			});
 		}, false);
 	}
 }

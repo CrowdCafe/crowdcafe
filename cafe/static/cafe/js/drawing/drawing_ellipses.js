@@ -30,10 +30,10 @@ DrawingEllipse.prototype = {
 		// ------------------------------------------------------------------
 		// Touch events
 		drawingEllipse.drawing.svg.addEventListener('touchstart', function(e){
-			drawingEllipse.start(Tactile.getTouchPosition(e, drawingEllipse.drawing.canvas));
+			drawingEllipse.start(Tactile.getTouchPosition(e, drawingEllipse.drawing.canvas.offset()));
 		}, false);
 		drawingEllipse.drawing.svg.addEventListener('touchmove',function(e){
-			drawingEllipse.draw(Tactile.getTouchPosition(e, drawingEllipse.drawing.canvas));
+			drawingEllipse.draw(Tactile.getTouchPosition(e, drawingEllipse.drawing.canvas.offset()));
 		}, false);
 		drawingEllipse.drawing.svg.addEventListener('touchend', function(e){
 			drawingEllipse.finish();

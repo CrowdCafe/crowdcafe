@@ -110,7 +110,8 @@ def JobAssign(request, job_id):
 			return redirect(reverse('cafe-task-execute', kwargs={'task_id': assigned_task.id})+'?completed_previous='+completed_previous)
 
 	logEvent(request, 'task_not_assigned',job_id)
-	return redirect('cafe-job-list')
+	return redirect(reverse('cafe-job-list')+'?category='+job.category)
+	#return redirect('cafe-job-list')
 
 @login_required 
 def TaskExecute(request, task_id): 
@@ -137,7 +138,8 @@ def TaskSkip(request, task_id):
 
 		return redirect(reverse('cafe-task-execute', kwargs={'task_id': assigned_task.id}))
 	else:
-		return redirect('cafe-job-list')
+		return redirect(reverse('cafe-job-list')+'?category='+task.job.category)
+		#return redirect('cafe-job-list')
 	
 @login_required 
 def TaskComplete(request, task_id): 

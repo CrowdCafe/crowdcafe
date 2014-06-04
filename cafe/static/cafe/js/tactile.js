@@ -1,16 +1,21 @@
 var Tactile = {
-	getMousePosition: function(e,container){
+	getMousePosition: function(e,offset){
 		return {
 			'x':e.offsetX,
 			'y':e.offsetY
 		}
 	},
-	getTouchPosition: function(e,container){
+	getTouchPosition: function(e, offset){
 		e.preventDefault();
-		var offset = container.offset();
-		return {
-			'x' : e.touches[0].pageX - offset.left,
-			'y' : e.touches[0].pageY - offset.top
+		var position = {
+			'x' : e.touches[0].pageX,
+			'y' : e.touches[0].pageY
 		}
+
+		if (offset){
+			position.x -= offset.left;
+			position.y -= offset.top;
+		}
+		return position;
 	}	
 }
