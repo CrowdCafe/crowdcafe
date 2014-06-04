@@ -6,6 +6,5 @@ function getRandomNumberFromRange(min, max) {
 
 function getRandomColor(){
 	var index = getRandomNumberFromRange(0,ios7colors.length-1);
-	console.log(index);
 	return ios7colors[index];
 }

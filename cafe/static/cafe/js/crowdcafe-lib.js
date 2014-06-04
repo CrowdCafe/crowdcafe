@@ -41,15 +41,18 @@ var page_scripts = {
 		});
 		$$('[annotation-type=shapes]').each(function(){
 			var image = $$(this);
-			console.log(image.height());
 			if (image.height() > 10){
-				console.log('image already loaded');
-				prepareRaphaelPaper(image);
+				var drawing = new Drawing(image);
+				drawing.init();
+				var drawingellipse = new DrawingEllipse(drawing);
+				drawingellipse.init();
 			}
 			else{
 				image[0].onload = function(){
-					console.log('image loaded');
-					prepareRaphaelPaper(image);
+					var drawing = new Drawing(image);
+					drawing.init();
+					var drawingellipse = new DrawingEllipse(drawing);
+					drawingellipse.init();
 				};
 			}
 		});
