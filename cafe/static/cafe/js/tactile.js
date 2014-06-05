@@ -13,15 +13,18 @@ var Tactile = {
 	},
 	getTouchPosition: function(e, offset){
 		e.preventDefault();
-		var position = {
-			'x' : e.touches[0].pageX,
-			'y' : e.touches[0].pageY
-		}
-		if (offset){
-			position.x -= offset.left;
-			position.y -= offset.top;
-		}
+		if (e.touches && e.touches.length>0){
+			var position = {
+				'x' : e.touches[0].pageX,
+				'y' : e.touches[0].pageY
+			}
+			if (offset){
+				position.x -= offset.left;
+				position.y -= offset.top;
+			}
 
-		return position;
-	}	
+			return position;
+		}
+		return false
+	}
 }

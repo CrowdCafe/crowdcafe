@@ -1,10 +1,12 @@
 var drawings = []
 function Drawing(image){
 	drawings.push(this);
+
+	this.shapes = [];
 	this.image = image;
 	this.container = $$(image).parent();
 	this.canvas = this.container.children('.raphael');
-	this.svg = this.canvas.children('svg');
+	this.svg = this.canvas.children();
 	this.paper = false;
 	this.scroll = {
 		'active':false,
@@ -41,6 +43,7 @@ Drawing.prototype = {
 		var drawing = this, mousedown = false;
 
 		drawing.paper = new Raphael(this.canvas[0]);
+
 		drawing.paper.setViewBox(0,0,this.image.width(),this.image.height(),true);
 		drawing.paper.setSize('100%', '100%');
 		

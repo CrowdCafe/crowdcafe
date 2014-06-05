@@ -1,5 +1,7 @@
 function DrawingEllipse(drawing){
+	
 	this.drawing = drawing;
+	this.drawing.shapes.push(this);
 	this.mousedown = false;
 	this.startPosition = {
 		'x':0,
@@ -43,30 +45,36 @@ DrawingEllipse.prototype = {
 	},
 	
 	start: function(position){
-		var now = new Date().getTime();
-		var timesince = now - this.mylatesttap;
+		if (position){
+			var now = new Date().getTime();
+			var timesince = now - this.mylatesttap;
 
-		this.startPosition = position;
-		this.mylatesttap = now;
+			this.startPosition = position;
+			this.mylatesttap = now;
 
-		if((timesince < 400) && (timesince > 0)){
-			this.drawing.inprocess = true;
-			this.mousedown = true;
-			var color = getRandomColor();
-			this.ellipse = this.drawing.paper.ellipse(position.x, position.y, 10,10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });
-		}else{
-			this.mousedown = false;
-			
+			if((timesince < 400) && (timesince > 0)){
+				this.drawing.inprocess = true;
+				this.mousedown = true;
+				var color = getRandomColor();
+
+				this.ellipse = this.drawing.paper.ellipse(position.x, position.y, 10,10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });	
+			}else{
+				this.mousedown = false;
+
+			}
 		}
+		
 	},
 	draw: function(position){
-		if (!this.mousedown) {
-			return false;
-		}else{
-			
-			var radius_x = Math.abs(position.x-this.startPosition.x);
-			var radius_y = Math.abs(position.y-this.startPosition.y);
-			this.ellipse.attr({'rx':radius_x,'ry':radius_y});
+		if (position){
+			if (!this.mousedown) {
+				return false;
+			}else{
+
+				var radius_x = Math.abs(position.x-this.startPosition.x);
+				var radius_y = Math.abs(position.y-this.startPosition.y);
+				this.ellipse.attr({'rx':radius_x,'ry':radius_y});
+			}
 		}
 	},
 	finish: function(){
