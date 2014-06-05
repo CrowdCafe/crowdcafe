@@ -43,7 +43,6 @@ DrawingEllipse.prototype = {
 		}, false);
 		// ------------------------------------------------------------------
 	},
-	
 	start: function(position){
 		if (position){
 			var now = new Date().getTime();
@@ -61,10 +60,8 @@ DrawingEllipse.prototype = {
 				this.drawing.paper.safari();
 			}else{
 				this.mousedown = false;
-
 			}
 		}
-		
 	},
 	draw: function(position){
 		if (position){
