@@ -58,6 +58,7 @@ DrawingEllipse.prototype = {
 				var color = getRandomColor();
 
 				this.ellipse = this.drawing.paper.ellipse(position.x, position.y, 10,10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });	
+				this.drawing.paper.safari();
 			}else{
 				this.mousedown = false;
 
@@ -74,6 +75,7 @@ DrawingEllipse.prototype = {
 				var radius_x = Math.abs(position.x-this.startPosition.x);
 				var radius_y = Math.abs(position.y-this.startPosition.y);
 				this.ellipse.attr({'rx':radius_x,'ry':radius_y});
+				this.drawing.paper.safari();
 			}
 		}
 	},
