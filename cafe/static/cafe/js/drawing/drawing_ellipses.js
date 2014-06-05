@@ -15,28 +15,29 @@ DrawingEllipse.prototype = {
 	
 	init: function(){
 
-		var drawingEllipse = this;
+		var dE = this, 
+		canvas = this.drawing.canvas;
 		// ------------------------------------------------------------------
 		// Mouse clicking events
-		/*drawingEllipse.drawing.canvas.on('mousedown',function(e){
-			drawingEllipse.start(drawingEllipse.calculateMousePosition(e))
-		});
-		drawingEllipse.drawing.canvas.on('mousemove',function(e){
-			drawingEllipse.draw(drawingEllipse.calculateMousePosition(e));
-		});
-		drawingEllipse.drawing.canvas.on('mouseup',function(e){
-			drawingEllipse.finish()
-		});*/
+		canvas[0].addEventListener('mousedown', function(e){
+			dE.start(Tactile.getPosition(e, canvas.offset()));
+		}, false);
+		canvas[0].addEventListener('mousemove',function(e){
+			dE.draw(Tactile.getPosition(e, canvas.offset()));
+		}, false);
+		canvas[0].addEventListener('mouseup', function(e){
+			dE.finish();
+		}, false);
 		// ------------------------------------------------------------------
 		// Touch events
-		drawingEllipse.drawing.svg.addEventListener('touchstart', function(e){
-			drawingEllipse.start(Tactile.getTouchPosition(e, drawingEllipse.drawing.canvas.offset()));
+		canvas[0].addEventListener('touchstart', function(e){
+			dE.start(Tactile.getPosition(e, canvas.offset()));
 		}, false);
-		drawingEllipse.drawing.svg.addEventListener('touchmove',function(e){
-			drawingEllipse.draw(Tactile.getTouchPosition(e, drawingEllipse.drawing.canvas.offset()));
+		canvas[0].addEventListener('touchmove',function(e){
+			dE.draw(Tactile.getPosition(e, canvas.offset()));
 		}, false);
-		drawingEllipse.drawing.svg.addEventListener('touchend', function(e){
-			drawingEllipse.finish();
+		canvas[0].addEventListener('touchend', function(e){
+			dE.finish();
 		}, false);
 		// ------------------------------------------------------------------
 	},
@@ -47,7 +48,7 @@ DrawingEllipse.prototype = {
 
 		this.startPosition = position;
 		this.mylatesttap = now;
-	
+
 		if((timesince < 400) && (timesince > 0)){
 			this.drawing.inprocess = true;
 			this.mousedown = true;
@@ -57,10 +58,8 @@ DrawingEllipse.prototype = {
 			this.mousedown = false;
 			
 		}
-
 	},
 	draw: function(position){
-	
 		if (!this.mousedown) {
 			return false;
 		}else{

@@ -4,7 +4,7 @@ function Drawing(image){
 	this.image = image;
 	this.container = $$(image).parent();
 	this.canvas = this.container.children('.raphael');
-	this.svg = this.canvas[0];
+	this.svg = this.canvas.children('svg');
 	this.paper = false;
 	this.scroll = {
 		'active':false,
@@ -26,14 +26,8 @@ Drawing.prototype = {
 		this.canvas.css('top',(offset.top)+'px');
 	},
 	display: function(){
-
-		if (!this.scroll.active){
-			this.correctPosition();
-			this.correctSize();
-			this.canvas.show();
-		}else{
-			this.canvas.hide();
-		}
+		this.correctPosition();
+		this.correctSize();
 	},
 	scrolling: function(position){
 
@@ -44,19 +38,20 @@ Drawing.prototype = {
 		return false;
 	},
 	init : function(){
-		var drawing = this;
+		var drawing = this, mousedown = false;
 
-		drawing.paper = new Raphael(this.svg, this.image.width(), this.image.height()), mousedown = false;
+		drawing.paper = new Raphael(this.canvas[0]);
+		drawing.paper.setViewBox(0,0,this.image.width(),this.image.height(),true);
+		drawing.paper.setSize('100%', '100%');
 		
 		drawing.display();
 		// Correct position of the SVG canvas as the position is absolute
 		$$('.page-content').on('scroll',function(){
-			
 			drawing.display();
 		});
 		// Correct the size of the SVG canvas
 		$$(window).on('resize',function(){
-			drawing.correctSize();
+			drawing.display();
 		});
 		drawing.initScrolling();
 	},
@@ -67,20 +62,22 @@ Drawing.prototype = {
 			drawing.paper.top.remove();
 		});
 
-		drawing.svg.addEventListener('touchstart',function(e){
+		drawing.canvas[0].addEventListener('touchstart',function(e){
 			console.log('started '+drawings.indexOf(drawing));
-			drawing.scroll.active = true;
-			drawing.scroll.start = Tactile.getTouchPosition(e, $$(drawing.svg).offset());
-			console.log($$(drawing.svg).offset());
+
+			drawing.scroll.start = Tactile.getPosition(e);
+
+			console.log($$(drawing.canvas[0]).offset());
 			drawing.scroll.top = $$('.page-content')[0].scrollTop;
+			drawing.scroll.active = true;
 		}, false);
-		drawing.svg.addEventListener('touchmove',function(e){
+		drawing.canvas[0].addEventListener('touchmove',function(e){
 			if (!drawing.inprocess) {
 				console.log('moving '+drawings.indexOf(drawing));
-				drawing.scrolling(Tactile.getTouchPosition(e, $$(drawing.svg).offset()));
+				drawing.scrolling(Tactile.getPosition(e));
 			}
 		}, false);
-		drawing.svg.addEventListener('touchend',function(e){
+		drawing.canvas[0].addEventListener('touchend',function(e){
 			drawings.forEach(function(entry){
 				console.log('cancelled');
 				entry.scroll.active = false;
