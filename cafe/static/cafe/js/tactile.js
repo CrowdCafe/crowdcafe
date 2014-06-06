@@ -1,4 +1,7 @@
 var Tactile = {
+	
+	latesttap : new Date().getTime(),
+
 	getPosition : function(e, offset){
 		if (e.offsetY)
 			return Tactile.getMousePosition(e,offset);
@@ -26,5 +29,14 @@ var Tactile = {
 			return position;
 		}
 		return false
+	},
+	checkDouble: function(){
+		var now = new Date().getTime();
+		var timesince = now - Tactile.latesttap;
+		Tactile.latesttap = now;
+		if((timesince < 400) && (timesince > 0))
+			return true;
+		else
+			return false;
 	}
 }

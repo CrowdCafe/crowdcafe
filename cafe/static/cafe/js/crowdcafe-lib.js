@@ -39,22 +39,22 @@ var page_scripts = {
 				}
 			});
 		});
-		$$('[annotation-type=shapes]').each(function(){
+		$$('[annotation=shapes]').each(function(){
 			var image = $$(this);
-			if (image.height() > 10){
-				var drawing = new Drawing(image);
-				drawing.init();
-				var drawingellipse = new DrawingEllipse(drawing);
-				drawingellipse.init();
-			}
-			else{
-				image[0].onload = function(){
-					var drawing = new Drawing(image);
-					drawing.init();
-					var drawingellipse = new DrawingEllipse(drawing);
-					drawingellipse.init();
-				};
-			}
+			var namespace = $$(this).attr('annotation-name');
+			document.addEventListener('DOMContentLoaded', function(){
+				if (image.height() > 10){
+					var easel = new Easel(image,namespace);
+					easel.init(image.attr('annotation-type'));
+				}
+				else{
+					image[0].onload = function(){
+						var easel = new Easel(image);
+						easel.init(image.attr('annotation-type'));
+					};
+				}
+			});
+			
 		});
 		$$('.contexts').on('change',function(){
 			var context = $$(this).val();

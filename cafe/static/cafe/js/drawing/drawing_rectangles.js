@@ -1,4 +1,4 @@
-function DrawingEllipse(drawing){
+function DrawingRectangle(drawing){
 	
 	this.drawing = drawing;
 	this.drawing.shapes.push(this);
@@ -8,12 +8,12 @@ function DrawingEllipse(drawing){
 		'y':0
 	};
 
-	this.ellipse = false;
+	this.shape = false;
 	this.latesttap = new Date().getTime();
 	this.even = true;
 }
 
-DrawingEllipse.prototype = {
+DrawingRectangle.prototype = {
 	
 	init: function(){
 
@@ -44,19 +44,17 @@ DrawingEllipse.prototype = {
 		// ------------------------------------------------------------------
 	},
 	start: function(position){
+		var doubleclick = Tactile.checkDouble();
 		if (position){
-			var now = new Date().getTime();
-			var timesince = now - this.mylatesttap;
-
 			this.startPosition = position;
-			this.mylatesttap = now;
 
-			if((timesince < 400) && (timesince > 0)){
+			if(doubleclick){
 				this.drawing.inprocess = true;
 				this.mousedown = true;
 				var color = getRandomColor();
 
-				this.ellipse = this.drawing.paper.ellipse(position.x, position.y, 10,10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });	
+				//this.ellipse = this.drawing.paper.ellipse(position.x, position.y, 10,10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });	
+				this.shape = this.drawing.paper.rect(position.x, position.y, 10, 10).attr({ stroke: color,'stroke-width':5,fill:color,'fill-opacity':0.5 });	;
 				this.drawing.paper.safari();
 			}else{
 				this.mousedown = false;
@@ -71,7 +69,8 @@ DrawingEllipse.prototype = {
 
 				var radius_x = Math.abs(position.x-this.startPosition.x);
 				var radius_y = Math.abs(position.y-this.startPosition.y);
-				this.ellipse.attr({'rx':radius_x,'ry':radius_y});
+				//this.shape.attr({'rx':radius_x,'ry':radius_y});
+				this.shape.attr({'width':radius_x,'height':radius_y});
 				this.drawing.paper.safari();
 			}
 		}
