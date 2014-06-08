@@ -23,7 +23,7 @@ var page_scripts = {
 	},
 	task: function(){
 		page_scripts_activated['task']=true;
-
+		
 		$$('.swipeout-actions a').on('click',function(){
 			var button = $$(this);
 			button.parents('.swipeout').removeClass('swipeout-opened');
@@ -54,7 +54,7 @@ var page_scripts = {
 					};
 				}
 			});
-			
+
 		});
 		$$('.contexts').on('change',function(){
 			var context = $$(this).val();
@@ -82,10 +82,12 @@ var page_scripts = {
 		});
 
 		$$('[name]').on('change',function(){
-			console.log('quality check');
-			var field = $$(this);
-			var value = (field.val()) ? (field.val()) : field.text();
-			qualityCheck($$(this),value);
+			if ($$(this).attr('name').indexOf('dataitem')>=0){
+				console.log('quality check');
+				var field = $$(this);
+				var value = (field.val()) ? (field.val()) : field.text();
+				qualityCheck($$(this),value);
+			}
 		});
 
 		$$('[photobrowser-images]').on('click',function(){
@@ -119,18 +121,23 @@ var page_scripts = {
 		};
 
 
-
 		if (getURLParameter('completed_previous') == '0'){
 			$$('.instructions-open').trigger('click');
 		}
-		$$('.button-submit').on('click',function(){
+
+		document.taskForm.onsubmit=function() {
+			$$('.shape_data').remove();
+			easels.forEach(function(easel){
+				easel.drawing.createInputHidden('[name=taskForm]');
+			});
 			if (allFieldsAreFilled()){
 				crowdcafe.showPreloader('Saving...');
 				document.taskForm.submit();
 			}else{
 				crowdcafe.alert('Not all fields are filled. Check carefully.');
+				return false;
 			}
-		});
+		}
 		$$('.skip-instance').on('click',function(){
 			crowdcafe.showPreloader('shuffle...');
 		});

@@ -56,6 +56,7 @@
 							{% endif %}
 							<br/>
 							<a href="{% url 'cafe-job-assign' job.id%}" target = "_blank" class=""><i class="fa fa-share"></i> execution page</a>
+							<a href="{% url 'kitchen-job-ui-refresh' job.id%}" class="">refresh UI</a>
 						</td>
 						<!--td>
 							{{job.category}}

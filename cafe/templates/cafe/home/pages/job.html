@@ -44,7 +44,7 @@ svg{
 	<div data-page="task" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
-			<form method="POST" name='taskForm' action="{% url 'cafe-task-complete' task.id%}">
+			<form method="POST" name='taskForm' id = "taskForm" action="{% url 'cafe-task-complete' task.id%}">
 				{% csrf_token %}
 				{% for item in task.items %}
 				{% include_external task.job.id %}
@@ -52,8 +52,10 @@ svg{
 				{% include 'cafe/home/pages/snippets/contexts.html' %}
 				<div class="content-block">
 					<div class="row">
-
-						<div class="col-100"><a href="#" class="button button-big button-submit">Complete</a></div>
+						<div class="col-100">
+							<input type="submit" class="button button-big button-submit" value="Complete"/>
+							<!--a href="#" class="button button-big button-submit">Complete</a-->
+						</div>
 					</div>
 				</div>
 				

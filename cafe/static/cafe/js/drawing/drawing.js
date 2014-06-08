@@ -1,6 +1,7 @@
 function Drawing(easel){
 	
 	this.easel = easel;
+	this.easel.drawing = this;
 	this.shapes = [];
 	this.mousedown = false;
 	this.currentType = false;
@@ -15,10 +16,16 @@ function Drawing(easel){
 }
 
 Drawing.prototype = {
+	createInputHidden : function(form){
+		this.shapes.forEach(function(shape){
+			shape.createInputHidden(form);
+		});
+	},
 	init: function(shapeType){
 		var dE = this, 
 		canvas = this.easel.canvas;
 		this.currentType = shapeType;
+
 		// ------------------------------------------------------------------
 		// Mouse clicking events
 		canvas[0].addEventListener('mousedown', function(e){
@@ -30,6 +37,7 @@ Drawing.prototype = {
 		canvas[0].addEventListener('mouseup', function(e){
 			dE.finish();
 		}, false);
+		
 		// ------------------------------------------------------------------
 		// Touch events
 		canvas[0].addEventListener('touchstart', function(e){

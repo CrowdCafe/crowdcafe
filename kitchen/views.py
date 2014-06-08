@@ -52,6 +52,15 @@ def JobStatusChange(request, job_id, status):
 	job = get_object_or_404(Job,pk = job_id, owner = request.user)
 	job.status = status
 	job.save()
+
+	return redirect('kitchen-home')
+
+@login_required
+def JobUIrefresh(request, job_id):
+
+	job = get_object_or_404(Job,pk = job_id, owner = request.user)
+	job.refresh_template()
+
 	return redirect('kitchen-home')
 	
 @login_required

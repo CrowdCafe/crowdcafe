@@ -42,24 +42,31 @@ Shape.prototype = {
 	},
 	createInputHidden : function(form){
 		var data = '';
+		console.log(this);
 		switch (this.type) {
+			
 			case 'ellipse':
-			data = this.element.attr('x')+';';
-			data += +this.element.attr('y')+';';
-			data += +this.element.attr('rx')+';';
-			data += +this.element.attr('ry')+';';
+			data = (this.element.attr('x')/this.drawing.easel.canvas.width()).toFixed(4)+';';
+			data += (this.element.attr('y')/this.drawing.easel.canvas.height()).toFixed(4)+';';
+			data += (this.element.attr('rx')/this.drawing.easel.canvas.width()).toFixed(4)+';';
+			data += (this.element.attr('ry')/this.drawing.easel.canvas.height()).toFixed(4)+';';
 			break;
+
 			case 'rectangle':
-			data = this.element.attr('x')+';';
-			data += +this.element.attr('y')+';';
-			data += +this.element.attr('width')+';';
-			data += +this.element.attr('height')+';';
+			data = (this.element.attr('x')/this.drawing.easel.canvas.width()).toFixed(4)+';';
+			data += (this.element.attr('y')/this.drawing.easel.canvas.height()).toFixed(4)+';';
+			data += (this.element.attr('width')/this.drawing.easel.canvas.width()).toFixed(4)+';';
+			data += (this.element.attr('height')/this.drawing.easel.canvas.height()).toFixed(4)+';';
 			break;
+			
 			default:
 			console.log('shape create error - incorrect type');
 			break;
 		}
-		var input_hidden = "<input type='hidden' name='"+this.drawing.easel.namespace+"_"+this.i+"_"+this.type+"' value='"+data+"'>";
+
+		var input_hidden = "<input type='hidden' class='shape_data' name='"+this.drawing.easel.namespace+"_"+this.i+"_"+this.type+"' value='"+data+"' />";
+		console.log(input_hidden);
+		console.log($$(form));
 		$$(form).append(input_hidden);
 	}
 }
