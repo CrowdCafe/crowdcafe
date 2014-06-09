@@ -127,15 +127,28 @@ var page_scripts = {
 
 		document.taskForm.onsubmit=function() {
 			$$('.shape_data').remove();
+			var error = false;
+			var message = false;
 			easels.forEach(function(easel){
-				easel.drawing.createInputHidden('[name=taskForm]');
+				var result = easel.qualityCheck();
+				if (!result.correct){
+					message = result.description;
+					
+					error = true;
+				}
 			});
-			if (allFieldsAreFilled()){
-				crowdcafe.showPreloader('Saving...');
-				document.taskForm.submit();
-			}else{
-				crowdcafe.alert('Not all fields are filled. Check carefully.');
+			
+			if (!allFieldsAreFilled()){
+				error = true;
+				message = 'Not all fields are filled. Check carefully.';
+			}
+
+			if (error){
+				crowdcafe.alert(message);
 				return false;
+			}else{
+				crowdcafe.showPreloader('saving...');
+				document.taskForm.submit();
 			}
 		}
 		$$('.skip-instance').on('click',function(){

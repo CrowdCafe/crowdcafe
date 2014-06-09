@@ -10,6 +10,12 @@ function Easel(image,namespace){
 	this.svg = this.canvas.children();
 	this.paper = false;
 	this.inprocess = false;
+	this.control = {}
+	if ($$(image).attr('min-shapes'))
+		this.control.min_shapes = parseInt($$(image).attr('min-shapes'));
+	if ($$(image).attr('max-shapes'))
+		this.control.max_shapes = parseInt($$(image).attr('max-shapes'));
+	
 	this.scroll = {
 		'active':false,
 		'top':0,
@@ -27,6 +33,25 @@ Easel.prototype = {
 
 		this.canvas.css('left',(offset.left)+'px');
 		this.canvas.css('top',(offset.top)+'px');
+	},
+	qualityCheck : function(){
+		var response = {'correct':true};
+
+		this.drawing.createInputHidden('[name=taskForm]');
+		var shapes_amount = 0;
+		if (this.drawing.shapes){
+			shapes_amount=this.drawing.shapes.length;
+		}
+		if (this.control.min_shapes && shapes_amount < this.control.min_shapes){
+			response.correct = false;
+			response.description = 'the min amount of shapes should be '+this.control.min_shapes;
+		}
+		if (this.control.max_shapes && shapes_amount > this.control.max_shapes){
+			response.correct = false;
+			response.description = 'the max amount of shapes should be '+this.control.max_shapes;
+		}
+		return response;
+		
 	},
 	display: function(){
 		this.correctPosition();
@@ -67,7 +92,10 @@ Easel.prototype = {
 		var easel = this;
 
 		easel.container.find('.button-cancel').on('click',function(){
-			easel.paper.top.remove();
+			var thelastshape = easel.drawing.getLastShape();
+			if (thelastshape){
+				thelastshape.remove();
+			}
 		});
 
 		easel.canvas[0].addEventListener('touchstart',function(e){

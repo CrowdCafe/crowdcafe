@@ -40,6 +40,12 @@ Shape.prototype = {
 		}
 		this.drawing.easel.paper.safari();
 	},
+	remove: function(){
+		if (this.element)
+			this.element.remove();
+		this.drawing.shapes.splice(this.i,1);
+		delete this;
+	},
 	createInputHidden : function(form){
 		var data = '';
 		console.log(this);

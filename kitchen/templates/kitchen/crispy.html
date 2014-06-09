@@ -1,0 +1,23 @@
+{% extends 'kitchen/kitchen.html'%}
+{% load crispy_forms_tags %}
+{%load static%}
+
+
+{% block kitchen%}
+<style>
+.btn-toolbar{
+	z-index:1;
+	opacity:0.95;
+}
+.create-preselection{
+	margin-top:-10px;
+}
+</style>
+<div class="container">
+	<div class="row">
+		<div class="col-sm-6 col-sm-offset-3">
+			{% crispy form %}
+		</div>
+	</div>
+</div>
+{% endblock%}

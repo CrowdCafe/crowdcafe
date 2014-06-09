@@ -20,13 +20,14 @@ def getGithubRepositoryFiles(extention):
 	r = requests.get(url, headers = headers)
 	
 	prefix = 'https://raw.githubusercontent.com/'+owner+'/'+repository+'/master/'
-	files = []
+	files = {}
 
 	for f in r.json():
 		if extention in f['path']:
-			files.append({'name':f['path'],'url':prefix+f['path']})
+			files[f['path']] = prefix+f['path']
 
-	return files
+
+	return [(v, k) for k, v in files.iteritems()]
 
 def saveDataItems(job,dataset):
 	if len(dataset)>0:

@@ -21,6 +21,9 @@ Drawing.prototype = {
 			shape.createInputHidden(form);
 		});
 	},
+	getLastShape : function(){
+		return this.shapes.slice(-1)[0];
+	},
 	init: function(shapeType){
 		var dE = this, 
 		canvas = this.easel.canvas;

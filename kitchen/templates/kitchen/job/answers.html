@@ -1,0 +1,50 @@
+{% extends 'kitchen/kitchen.html'%}
+{%load static%}
+
+{% block kitchen%}
+<!-- content-8  -->
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12"><h1>{{job.title}}</h1>
+		</div>
+	</div>
+	<table class='table table-hover'>
+		<tbody>
+			{% for answer in answers%}
+			<tr >
+				<td>
+					{{answer.executor.profile.full_name}}<br/>
+					score: <strong>{{answer.score}}</scrong>
+				</td>
+				<td>
+					{{answer.value}}<br>
+					<table class='table table-hover'>
+						{% for answeritem in answer.answeritems%}
+						<tr class="{% if answeritem.score < 0 %}negative{%endif%} {% if answeritem.score > 0%}positive{%endif%}">
+							<td>
+								#{{answeritem.dataitem.id}}
+							</td>
+							<td>
+								{{answeritem.score}}
+							</td>
+							<td>
+								<small>{{answeritem.dataitem.value}}</small><br/>
+								{{answeritem.value}}
+							</td>
+
+						</tr>
+						{% endfor%}
+					</table>
+				</td>
+				
+			</tr>
+			{% endfor%}
+		</tbody>
+	</table>
+	
+</div>
+
+
+{% include 'kitchen/job/discussion.html'%}
+
+{% endblock%}

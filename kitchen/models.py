@@ -16,7 +16,7 @@ import requests
 import json
 import urllib2
 
-STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'), ('NP', 'Not published'), ('NR','Not ready'))
+STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Published'), ('FN', 'Finished'), ('NP', 'Not published'), ('NR','Not ready'),('DL', 'Deleted'))
 
 def getPlatformOwner():
     return User.objects.filter(pk = settings.BUSINESS['platform_owner_id']).get()
@@ -38,6 +38,8 @@ class Job(models.Model):
     template_url = models.URLField(null = True, blank = True)
     template_html = models.TextField(null = True, blank = True)
     
+    def category_icon(self):
+        return settings.TASK_CATEGORIES[self.category]['icon']
     def refresh_template(self):
         try:
             self.template_html = urllib2.urlopen(self.template_url).read()

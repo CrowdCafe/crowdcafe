@@ -52,6 +52,7 @@ TASK_CATEGORIES = {
         'examples': 'tasks without any reward'
     },
 }
+TASK_CATEGORIES_DICTIONARY = (('CF','Espresso'),('CP','Cappuccino'),('WN','Wine'),('ZT','Volunteering'),)
 
 
 
@@ -111,12 +112,14 @@ STATIC_URL = '/static/'
 BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
 
 BOWER_INSTALLED_APPS = (
+    'bootstrap',
     'minimal-devices',
     'fontawesome',
     'BrandButtons',
     'framework7',
     'startup-demo',
-    'raphael'
+    'raphael',
+    'jquery'
 )
 
 # Additional locations of static files
@@ -182,6 +185,8 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3' 
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -191,6 +196,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'social_auth',
     'mobi',
+    'crispy_forms',
     'storages',
     'landing',
     'account',

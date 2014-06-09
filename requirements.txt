@@ -10,6 +10,7 @@ python-openid
 wsgiref
 requests
 djangorestframework
+django-crispy-forms==1.4.0
 djrill==0.7.0
 django-gravatar==0.1.0
 boto>=2.4  

@@ -32,12 +32,6 @@ iframe{
 label.radio{
 	text-align: left;
 }
-.row.dataset_options > div{
-	display:none;
-}
-.row.dataset_options > div.active{
-	display:block;
-}
 
 .header-10-sub .background {
 	background-image: url("../img/bg/cafe_m.jpg");

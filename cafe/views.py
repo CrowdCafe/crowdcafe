@@ -99,11 +99,8 @@ def JobAssign(request, job_id):
 	job = get_object_or_404(Job, pk = job_id)
 	if job.status == 'ST' or job.owner == request.user: 
 		assigned_task = generateTask(job,request.user)
-
-		#tasks = tasksAvailableExist(job,request.user)
 		completed_previous = '0'
 		if assigned_task:
-			#assigned_task = tasks.all()[randint(0,tasks.count()-1)]
 			if 'completed_previous' in request.GET:
 				completed_previous = str(int(request.GET['completed_previous']))
 			logEvent(request, 'task_assigned',assigned_task.job.id, assigned_task.id)
@@ -111,11 +108,10 @@ def JobAssign(request, job_id):
 
 	logEvent(request, 'task_not_assigned',job_id)
 	return redirect(reverse('cafe-job-list')+'?category='+job.category)
-	#return redirect('cafe-job-list')
 
 @login_required 
 def TaskExecute(request, task_id): 
-	if Task.objects.filter(status = 'ST', pk = task_id).count() >0 and Answer.objects.filter(executor = request.user, task__id = task_id).count() == 0:
+	if Task.objects.filter(status = 'ST', pk = task_id, job__status = 'ST').count() >0 and Answer.objects.filter(executor = request.user, task__id = task_id).count() == 0:
 		task = get_object_or_404(Task, pk = task_id)
 		logEvent(request, 'execution_started',task.job.id, task.id)
 		return render_to_response('cafe/home/pages/job.html', {'task':task}, context_instance=RequestContext(request))
@@ -139,11 +135,10 @@ def TaskSkip(request, task_id):
 		return redirect(reverse('cafe-task-execute', kwargs={'task_id': assigned_task.id}))
 	else:
 		return redirect(reverse('cafe-job-list')+'?category='+task.job.category)
-		#return redirect('cafe-job-list')
 	
 @login_required 
 def TaskComplete(request, task_id): 
-	task = get_object_or_404(Task, pk = task_id)
+	task = get_object_or_404(Task, pk = task_id, job__status = 'ST')
 
 	if Answer.objects.filter(task = task, executor = request.user).count() == 0:
 		new_answer = Answer(task=task, executor = request.user, status = 'FN')
@@ -213,11 +208,8 @@ def CouponActivate(request, coupon_id):
 def generateTask(job,user):
 
 	score = job.qualitycontrol.score(user)
-	# if the current score is not False (did not work on a task yet) or is higher than the allowed in quality control
 	if job.qualitycontrol.allowed_to_work_more(user):
-		# get a list of available not gold dataitems
 		dataitems_regular = availableDataItems(job, user, False)
-		# get a list of available gold dataitems
 		dataitems_gold = availableDataItems(job, user, True)
 		
 		

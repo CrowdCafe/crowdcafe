@@ -15,3 +15,12 @@
 .gold {
 	border-left:4px solid #FFDB4C;
 }
+.image-icon{
+	width:20px;
+}
+.row.dataset_options > div{
+	display:none;
+}
+.row.dataset_options > div.active{
+	display:block;
+}

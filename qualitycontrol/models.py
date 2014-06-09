@@ -7,6 +7,7 @@ from kitchen.models import Job, Answer, AnswerItem, DataItem
 #=========================================================================
 # QUALITY CONTROL
 #=========================================================================
+DEVICES_ALLOWED = ((0,'Any device'),(1,'Mobile'),(2,'Desktop'))
 
 class QualityControl(models.Model):
     job = models.OneToOneField(Job)
@@ -18,6 +19,7 @@ class QualityControl(models.Model):
     min_answers_per_item = models.IntegerField(default = 1)
     max_dataitems_per_worker = models.FloatField(default = 100)
     device_type = models.IntegerField(default = 0, null = True)
+    qualitycontrol_url = models.URLField(null = True, blank = True)
 
     def allowed_to_work_more(self, user):
         

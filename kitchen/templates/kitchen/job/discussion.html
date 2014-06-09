@@ -1,0 +1,14 @@
+<div class="container">
+	<div class='row'>
+		<hr>
+	</div>
+	<p class='lead'>Job Discussion
+	</p>
+	<div>
+		<script>
+		var disqus_title = '{{job.title}}';
+		var disqus_identifier = '{{job.id}}'
+		</script>
+		{% include 'snippets/disqus.html'%}	
+	</div>
+</div>
