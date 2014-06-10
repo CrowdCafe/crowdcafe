@@ -26,5 +26,5 @@ django-mobi==0.1.7
 djangorestframework-csv
 six==1.4
 python-instagram
-python-requests
+requests
 django-bower
