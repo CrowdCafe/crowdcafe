@@ -81,6 +81,7 @@ class JobCreation(CreateView):
 		log.debug("saved")
 		job = form.save()
 		job.save()
+		job.refresh_template()
 		quality = QualityControl(job = job)
 		quality.save()
 
@@ -107,6 +108,7 @@ class JobUpdate(UpdateView):
 	def form_valid(self, form):
 		log.debug("updated")
 		job = form.save()
+		job.refresh_template()
 		return HttpResponseRedirect(self.get_success_url())
 
 class QualityControlUpdate(UpdateView):
