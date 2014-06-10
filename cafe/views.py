@@ -159,6 +159,7 @@ def TaskComplete(request, task_id):
 							score-=1.0
 			new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value, score = score)
 			new_answer_item.save()
+			task.job.qualitycontrol.externalQualityControl(new_answer_item);
 			new_answer_item.dataitem.refreshStatus()
 		new_answer.webhook()
 		if len(task.answers) >= task.job.qualitycontrol.min_answers_per_item:

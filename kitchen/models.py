@@ -20,6 +20,7 @@ STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Published'), ('FN', 'Finished'), 
 
 def getPlatformOwner():
     return User.objects.filter(pk = settings.BUSINESS['platform_owner_id']).get()
+    
 def calculateCommission(amount):
     return amount * settings.BUSINESS['platform_commission']
 
@@ -173,5 +174,4 @@ class AnswerItem(models.Model):
             return self.answer.task.status
         except:
             return ''
-
 

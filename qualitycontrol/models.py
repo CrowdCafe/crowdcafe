@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from kitchen.models import Job, Answer, AnswerItem, DataItem
-
+import requests
+import json
+import urllib2
 #=========================================================================
 # QUALITY CONTROL
 #=========================================================================
@@ -30,7 +32,24 @@ class QualityControl(models.Model):
         if (all_items >0 and (performed_items/all_items)*100 <= self.max_dataitems_per_worker and ((not score) or (score >= self.score_min))):
         	return True
         return False
+    def externalQualityControl(self, answeritem):
+        if self.qualitycontrol_url:
+            data = {}
+            
+            data['question'] = json.dumps(answeritem.dataitem.value)
+            data['answer'] = json.dumps(answeritem.value)
 
+            print 'external Quality Control started'
+            try:
+                r = requests.post(self.qualitycontrol_url, data = (data))
+                if int(r.text) == 1:
+                    answeritem.score = 1
+                else:
+                    answeritem.score = -1
+                answeritem.save()
+            except:
+                return False
+        return False
     def score(self, user):
         score = False
         for answer in Answer.objects.filter(task__job = self.job, executor = user):
