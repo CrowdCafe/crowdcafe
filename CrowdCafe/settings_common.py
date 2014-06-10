@@ -118,7 +118,7 @@ BOWER_INSTALLED_APPS = (
     'BrandButtons',
     'framework7',
     'startup-demo',
-    'raphael',
+    'raphael#2.1.2',
     'jquery'
 )
 

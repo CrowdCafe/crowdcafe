@@ -102,7 +102,7 @@ class JobUpdate(UpdateView):
 	def form_invalid(self, form):
 		log.debug("form is not valid")
 		print (form.errors)
-		return CreateView.form_invalid(self, form)
+		return UpdateView.form_invalid(self, form)
 	def get_queryset(self):
 		return Job.objects.filter(pk=self.kwargs.get('pk', None),owner = self.request.user) # or request.POST
 	def form_valid(self, form):
@@ -125,7 +125,7 @@ class QualityControlUpdate(UpdateView):
 	def form_invalid(self, form):
 		log.debug("form is not valid")
 		print (form.errors)
-		return CreateView.form_invalid(self, form)
+		return UpdateView.form_invalid(self, form)
 	def get_queryset(self):
 		return QualityControl.objects.filter(pk=self.kwargs.get('pk', None), job__owner = self.request.user) # or request.POST
 	def form_valid(self, form):

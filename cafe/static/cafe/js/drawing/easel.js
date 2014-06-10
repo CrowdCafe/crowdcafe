@@ -50,6 +50,7 @@ Easel.prototype = {
 			response.correct = false;
 			response.description = 'the max amount of shapes should be '+this.control.max_shapes;
 		}
+		
 		return response;
 		
 	},

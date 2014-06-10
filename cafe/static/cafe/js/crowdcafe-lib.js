@@ -1,19 +1,8 @@
-var $$ = Framework7.$;
+var page_scripts_activated = {};
+var page_scripts;
 var background_classes = ['positive','negative','neutral','gold','dontknow'];
 
-function getURLParameter(name) {
-	var regexS = "[\\?&]" + name + "=([^&#]*)";
-	var regex = new RegExp(regexS);
-	var tmpURL = window.location.href;
-	var results = regex.exec(tmpURL);
-	if (results == null)
-		return null;
-	return results[1];
-}
-
-var page_scripts_activated = {}
-
-var page_scripts = {
+page_scripts = {
 	welcome: function(){
 		page_scripts_activated['welcome']=true;
 
@@ -23,7 +12,7 @@ var page_scripts = {
 	},
 	task: function(){
 		page_scripts_activated['task']=true;
-		
+
 		$$('.swipeout-actions a').on('click',function(){
 			var button = $$(this);
 			button.parents('.swipeout').removeClass('swipeout-opened');
@@ -42,18 +31,16 @@ var page_scripts = {
 		$$('[annotation=shapes]').each(function(){
 			var image = $$(this);
 			var namespace = $$(this).attr('annotation-name');
-			document.addEventListener('DOMContentLoaded', function(){
-				if (image.height() > 10){
+			if (image.height() > 10){
+				var easel = new Easel(image,namespace);
+				easel.init(image.attr('annotation-type'));
+			}
+			else{
+				image[0].onload = function(){
 					var easel = new Easel(image,namespace);
 					easel.init(image.attr('annotation-type'));
-				}
-				else{
-					image[0].onload = function(){
-						var easel = new Easel(image);
-						easel.init(image.attr('annotation-type'));
-					};
-				}
-			});
+				};
+			}
 
 		});
 		$$('.contexts').on('change',function(){
@@ -129,15 +116,20 @@ var page_scripts = {
 			$$('.shape_data').remove();
 			var error = false;
 			var message = false;
+			var shapes_amount = 0;
 			easels.forEach(function(easel){
 				var result = easel.qualityCheck();
+				shapes_amount+=easel.drawing.shapes.length;
 				if (!result.correct){
 					message = result.description;
-					
+
 					error = true;
 				}
 			});
-			
+			if (shapes_amount!= $$('.shape_data').length){
+				error = true;
+				message = 'We could not store your shape - try again.';
+			}
 			if (!allFieldsAreFilled()){
 				error = true;
 				message = 'Not all fields are filled. Check carefully.';
@@ -148,8 +140,9 @@ var page_scripts = {
 				return false;
 			}else{
 				crowdcafe.showPreloader('saving...');
-				document.taskForm.submit();
+				return true;
 			}
+			return false;
 		}
 		$$('.skip-instance').on('click',function(){
 			crowdcafe.showPreloader('shuffle...');
@@ -263,6 +256,17 @@ function allFieldsAreFilled(){
 	});
 	return correct;
 }
+
+function getURLParameter(name) {
+	var regexS = "[\\?&]" + name + "=([^&#]*)";
+	var regex = new RegExp(regexS);
+	var tmpURL = window.location.href;
+	var results = regex.exec(tmpURL);
+	if (results == null)
+		return null;
+	return results[1];
+}
+
 
 
 		/*$$('.open-popup').on('click', function(){

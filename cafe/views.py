@@ -139,7 +139,7 @@ def TaskSkip(request, task_id):
 @login_required 
 def TaskComplete(request, task_id): 
 	task = get_object_or_404(Task, pk = task_id, job__status = 'ST')
-
+	print request.POST
 	if Answer.objects.filter(task = task, executor = request.user).count() == 0:
 		new_answer = Answer(task=task, executor = request.user, status = 'FN')
 		new_answer.save()

@@ -9,7 +9,7 @@
 			<h1>{{job.title}} </h1>
 		</div>
 	</div>
-	<form method='POST' action='{% url 'kitchen-job-data-upload' job.id%}'>
+	<form method='POST' action='{% url 'kitchen-job-data-upload' job.id%}' enctype="multipart/form-data">
 		{% csrf_token %}
 		<div class="row">
 			<div class="col-sm-12">

@@ -69,10 +69,11 @@ Shape.prototype = {
 			console.log('shape create error - incorrect type');
 			break;
 		}
-
-		var input_hidden = "<input type='hidden' class='shape_data' name='"+this.drawing.easel.namespace+"_"+this.i+"_"+this.type+"' value='"+data+"' />";
-		console.log(input_hidden);
-		console.log($$(form));
-		$$(form).append(input_hidden);
+		if (this.drawing.easel.namespace){
+			var input_hidden = "<input type='hidden' class='shape_data' name='"+this.drawing.easel.namespace+"_"+this.i+"_"+this.type+"' value='"+data+"' />";
+			console.log(input_hidden);
+			console.log($$(form));
+			$$(form).append(input_hidden);
+		}
 	}
 }

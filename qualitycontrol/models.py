@@ -13,13 +13,13 @@ DEVICES_ALLOWED = ((0,'Any device'),(1,'Mobile'),(2,'Desktop'))
 
 class QualityControl(models.Model):
     job = models.OneToOneField(Job)
-    min_confidence = models.FloatField(default = 50, null = True)
+    min_confidence = models.IntegerField(default = 50, null = True, blank = True)
     gold_min = models.IntegerField(default = 0, null = True)
     gold_max = models.IntegerField(default = 0, null = True)
-    score_min = models.FloatField(default = 0, null = True)
+    score_min = models.IntegerField(default = 0, null = True)
     dataitems_per_task = models.IntegerField(default = 5)
     min_answers_per_item = models.IntegerField(default = 1)
-    max_dataitems_per_worker = models.FloatField(default = 100)
+    max_dataitems_per_worker = models.IntegerField(default = 100)
     device_type = models.IntegerField(default = 0, null = True)
     qualitycontrol_url = models.URLField(null = True, blank = True)
 
@@ -33,21 +33,29 @@ class QualityControl(models.Model):
         	return True
         return False
     def externalQualityControl(self, answeritem):
-        if self.qualitycontrol_url:
+        if self.qualitycontrol_url and answeritem.dataitem.gold:
             data = {}
-            
-            data['question'] = json.dumps(answeritem.dataitem.value)
-            data['answer'] = json.dumps(answeritem.value)
 
+            data['question'] = answeritem.dataitem.value
+            data['answer'] = answeritem.value
+            print data;
             print 'external Quality Control started'
             try:
-                r = requests.post(self.qualitycontrol_url, data = (data))
+                print 'request sent'
+                #print self.qualitycontrol_url
+
+                headers = {'Content-type': 'application/json'}
+                r = requests.post(self.qualitycontrol_url, data = json.dumps(data), headers = headers)
+                print r.text
+                
                 if int(r.text) == 1:
                     answeritem.score = 1
-                else:
+                if int(r.text) == -1:
                     answeritem.score = -1
                 answeritem.save()
+
             except:
+                print 'request crashed'
                 return False
         return False
     def score(self, user):

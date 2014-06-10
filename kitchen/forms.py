@@ -22,7 +22,6 @@ from utils import getGithubRepositoryFiles
 log = logging.getLogger(__name__)
 
 class JobForm(ModelForm):
-
 	owner = forms.ModelChoiceField(queryset=User.objects.all(), widget=forms.HiddenInput)
 	title = forms.CharField(label=(u'Title'))
 	description = forms.CharField(label=(u'Description'), widget=forms.Textarea())
@@ -44,7 +43,7 @@ class JobForm(ModelForm):
 class QualityControlForm(ModelForm):
 
 	job = forms.ModelChoiceField(queryset=Job.objects.all(), widget=forms.HiddenInput)
-	min_confidence = forms.IntegerField(label=(u'Minimum confidence level'))
+	min_confidence = forms.IntegerField(label=(u'Minimum confidence level'), initial=50, widget=forms.HiddenInput, required=False)
 
 	gold_min = forms.IntegerField(label=(u'Minimum amount of gold per task'))
 	gold_max = forms.IntegerField(label=(u'Maximum amount of gold per task'))
@@ -54,15 +53,14 @@ class QualityControlForm(ModelForm):
 	max_dataitems_per_worker = forms.IntegerField(label=(u'Max dataunits per worker'))
 	device_type = forms.ChoiceField(choices=DEVICES_ALLOWED, widget=forms.Select(), initial = 0, label=(u'Device allowed'), required=False)
 	
-	qualitycontrol_url = forms.URLField(label=(u'URL which is called to do quality check'), required=False)
+	qualitycontrol_url = forms.URLField(label=(u'URL which is called to do gold check'), required=False)
 
 	class Meta:
 		model = QualityControl
-		exclude = ('min_confidence')
 	def __init__(self, *args, **kwargs):
 		self.helper = FormHelper()
 		self.helper.form_method = 'post'
 		self.helper.add_input(Submit('submit', 'Save'))
 		self.helper.form_class = 'form-vertical'
-		self.helper.layout = Layout(Fieldset('Quality Control','job', 'gold_min','gold_max','score_min','dataitems_per_task','min_answers_per_item','max_dataitems_per_worker','device_type','qualitycontrol_url'))
+		self.helper.layout = Layout(Fieldset('Quality Control','job', 'gold_min','gold_max','score_min','dataitems_per_task','min_answers_per_item','max_dataitems_per_worker','device_type','qualitycontrol_url','min_confidence'))
 		super(QualityControlForm, self).__init__(*args, **kwargs)
