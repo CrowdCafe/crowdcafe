@@ -112,14 +112,16 @@ class Answer(models.Model):
     def webhook(self):
         if self.task.job.webhook_url:
             print 'webhook started'
-            i=0
-            data = {}
+            dataset = []
             for answeritem in self.answeritem_set.all():
-                data['data['+str(i)+']'] = json.dumps(answeritem.value)
-                i+=1
-            data['length']=i
+                data = {}
+                data['question'] = answeritem.dataitem.value
+                data['answer'] = answeritem.value
+                dataset.append(data)
             try:
-                r = requests.post(self.task.job.webhook_url, data = (data))
+                print dataset
+                headers = {'Content-type': 'application/json'}
+                r = requests.post(self.task.job.webhook_url, data = json.dumps(dataset), headers = headers)
                 return True
             except:
                 return False
@@ -174,4 +176,3 @@ class AnswerItem(models.Model):
             return self.answer.task.status
         except:
             return ''
-
