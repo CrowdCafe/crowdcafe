@@ -1,20 +1,26 @@
 var easels = []
 
-function Easel(image,namespace){
+function Easel(canvas,size,namespace,imageInstance){
 	easels.push(this);
-
+	this.size = size;
 	this.namespace = namespace;
-	this.image = image;
-	this.container = $$(image).parent();
-	this.canvas = this.container.children('.raphael');
-	this.svg = this.canvas.children();
-	this.paper = false;
+	this.imageInstance = imageInstance;
+	this.canvas = $$(canvas);
+	this.container = this.canvas.parent();
+	this.canvas[0].width = this.container.width();
+	this.canvas[0].height = this.size.height*this.canvas[0].width/this.size.width; 
+	this.buttons = {
+		start: this.container.find('.shape-start'),
+		finish: this.container.find('.shape-finish'),
+		remove: this.container.find('.shape-remove')
+	}
+
 	this.inprocess = false;
 	this.control = {}
-	if ($$(image).attr('min-shapes'))
-		this.control.min_shapes = parseInt($$(image).attr('min-shapes'));
-	if ($$(image).attr('max-shapes'))
-		this.control.max_shapes = parseInt($$(image).attr('max-shapes'));
+	if ($$(canvas).attr('min-shapes'))
+		this.control.min_shapes = parseInt($$(canvas).attr('min-shapes'));
+	if ($$(canvas).attr('max-shapes'))
+		this.control.max_shapes = parseInt($$(canvas).attr('max-shapes'));
 	
 	this.scroll = {
 		'active':false,
@@ -22,17 +28,31 @@ function Easel(image,namespace){
 		'start':{}
 	}
 }
+function getImgSize(src,callback) {
+	var newImg = new Image();
+	newImg.onload = function() {
+		var size = {
+			'width' : newImg.width,
+			'height' :newImg.height
+		}
+		callback(size,newImg);
+	}
 
+    newImg.src = src; // this must be done AFTER setting onload
+}
 Easel.prototype = {
-	correctSize : function(){
-		this.canvas.css('width',this.image.width()+'px');
-		this.canvas.css('height',this.image.height()+'px');
-	},
-	correctPosition : function(){
-		var offset = this.image.offset();
+	serialize: function(form){
+		var canvas_data = JSON.stringify(this.fabric);
 
-		this.canvas.css('left',(offset.left)+'px');
-		this.canvas.css('top',(offset.top)+'px');
+		if (this.namespace){
+			name = this.namespace + "_serialization";
+			if ($$(['name='+name]).length == 0){
+				var input_hidden = "<input type='hidden' class='shape_data' name='"+this.namespace+"' value='"+canvas_data+"' />";
+				$$(form).append(input_hidden);
+			}else{
+				$$(['name='+name]).val(canvas_data);
+			}
+		}
 	},
 	qualityCheck : function(){
 		var response = {'correct':true};
@@ -50,14 +70,8 @@ Easel.prototype = {
 			response.correct = false;
 			response.description = 'the max amount of shapes should be '+this.control.max_shapes;
 		}
-		
 		return response;
 		
-	},
-	display: function(){
-		this.correctPosition();
-		this.correctSize();
-		this.paper.safari();
 	},
 	scrolling: function(position){
 
@@ -69,38 +83,56 @@ Easel.prototype = {
 	},
 	init : function(shapeType){
 		var easel = this, mousedown = false;
-
-		easel.paper = new Raphael(this.canvas[0]);
-
-		easel.paper.setViewBox(0,0,this.image.width(),this.image.height(),true);
-		easel.paper.setSize('100%', '100%');
-		
-		easel.display();
-		// Correct position of the SVG canvas as the position is absolute
-		$$('.page-content').on('scroll',function(){
-			easel.display();
+		easel.fabric = new fabric.Canvas(easel.canvas[0].id);
+		easel.imageBackground = new fabric.Image(easel.imageInstance, {
+			width: easel.canvas.width(),
+			height: easel.canvas.height(),
+			selectable: false
 		});
-		// Correct the size of the SVG canvas
-		$$(window).on('resize',function(){
-			easel.display();
-		});
+		easel.fabric.add(easel.imageBackground);
 		easel.initScrolling();
+		easel.initActions();
+
 
 		var drawing = new Drawing(easel);
 		drawing.init(shapeType);
 	},
-	initScrolling: function(){
+	initActions: function(){
 		var easel = this;
+		easel.buttons.start.on('click',function(){
 
-		easel.container.find('.button-cancel').on('click',function(){
+		});
+		easel.buttons.finish.on('click',function(){
+			easel.drawing.activeShape = false;
+			easel.imageBackground.opacity = 1.0;
+			
+			var thelastshape = easel.drawing.getLastShape();
+			if (thelastshape){
+				thelastshape.element.hasControls = true;
+				if (thelastshape.element){
+					thelastshape.element.set({
+						fill: 'green',
+						borderColor: 'red',
+						cornerColor: 'green',
+						cornerSize: 20
+					});
+				}
+			}
+			easel.fabric.renderAll();
+		});
+		easel.buttons.remove.on('click',function(){
+			easel.buttons.finish.click();
+			easel.drawing.activeShape = false;
 			var thelastshape = easel.drawing.getLastShape();
 			if (thelastshape){
 				thelastshape.remove();
 			}
-		});
 
+		});
+	},
+	initScrolling: function(){
+		var easel = this;
 		easel.canvas[0].addEventListener('touchstart',function(e){
-			easel.paper.safari();
 			//console.log('started '+easels.indexOf(easel));
 			easel.scroll.start = Tactile.getPosition(e);
 			//console.log($$(easel.canvas[0]).offset());
@@ -108,18 +140,15 @@ Easel.prototype = {
 			easel.scroll.active = true;
 		}, false);
 		easel.canvas[0].addEventListener('touchmove',function(e){
-			easel.paper.safari();
 			if (!easel.inprocess) {
 				//console.log('moving '+easels.indexOf(easel));
 				easel.scrolling(Tactile.getPosition(e));
 			}
 		}, false);
 		easel.canvas[0].addEventListener('touchend',function(e){
-			easel.paper.safari();
 			easels.forEach(function(entry){
 				//console.log('cancelled');
 				entry.scroll.active = false;
-				entry.display();
 			});
 		}, false);
 	}

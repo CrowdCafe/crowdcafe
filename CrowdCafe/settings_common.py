@@ -119,7 +119,10 @@ BOWER_INSTALLED_APPS = (
     'framework7',
     'startup-demo',
     'raphael#2.1.2',
-    'jquery'
+    'jquery',
+    'ionicons',
+    'pixi.js',
+    'fabric'
 )
 
 # Additional locations of static files

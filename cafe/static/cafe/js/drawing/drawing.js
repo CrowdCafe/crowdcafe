@@ -16,42 +16,38 @@ function Drawing(easel){
 }
 
 Drawing.prototype = {
-	createInputHidden : function(form){
-		this.shapes.forEach(function(shape){
-			shape.createInputHidden(form);
-		});
-	},
 	getLastShape : function(){
 		return this.shapes.slice(-1)[0];
 	},
 	init: function(shapeType){
 		var dE = this, 
 		canvas = this.easel.canvas;
+		var container = this.easel.canvas.parent();
 		this.currentType = shapeType;
 
 		// ------------------------------------------------------------------
 		// Mouse clicking events
-		canvas[0].addEventListener('mousedown', function(e){
-			dE.start(Tactile.getPosition(e, canvas.offset()));
+		container[0].addEventListener('mousedown', function(e){
+			dE.start(Tactile.getPosition(e, container.offset()));
 		}, false);
-		canvas[0].addEventListener('mousemove',function(e){
-			dE.draw(Tactile.getPosition(e, canvas.offset()));
-		}, false);
-		canvas[0].addEventListener('mouseup', function(e){
-			dE.finish();
-		}, false);
-		
+		//container[0].addEventListener('mousemove',function(e){
+		//	dE.draw(Tactile.getPosition(e, container.offset()));
+		//}, false);
+container[0].addEventListener('mouseup', function(e){
+	dE.finish();
+}, false);
+
 		// ------------------------------------------------------------------
 		// Touch events
-		canvas[0].addEventListener('touchstart', function(e){
-			dE.start(Tactile.getPosition(e, canvas.offset()));
+		container[0].addEventListener('touchstart', function(e){
+			dE.start(Tactile.getPosition(e, container.offset()));
 		}, false);
-		canvas[0].addEventListener('touchmove',function(e){
-			dE.draw(Tactile.getPosition(e, canvas.offset()));
-		}, false);
-		canvas[0].addEventListener('touchend', function(e){
-			dE.finish();
-		}, false);
+		//container[0].addEventListener('touchmove',function(e){
+		//	dE.draw(Tactile.getPosition(e, container.offset()));
+		//}, false);
+container[0].addEventListener('touchend', function(e){
+	dE.finish();
+}, false);
 		// ------------------------------------------------------------------
 	},
 	start: function(position){
@@ -60,17 +56,26 @@ Drawing.prototype = {
 			this.startPosition = position;
 
 			if(doubleclick){
-				this.easel.inprocess = true;
-				this.mousedown = true;
-				
-				this.activeShape = new Shape(this,this.currentType);
-				this.activeShape.create({
-					x:position.x,
-					y:position.y,
-					rx:10,
-					ry:10
-				});
+				if (!this.activeShape){
+					this.easel.imageBackground.opacity = 0.5;
+					this.easel.fabric.renderAll();
+
+					this.easel.inprocess = true;
+					this.mousedown = true;
+
+					this.activeShape = new Shape(this,this.currentType);
+					this.activeShape.create({
+						x:position.x,
+						y:position.y
+					});
+				}
+				else{
+					this.easel.buttons.finish.click();
+				}
 			}else{
+				if (this.activeShape){
+					this.activeShape.update({'x':position.x,'y':position.y});
+				}
 				this.mousedown = false;
 			}
 		}
@@ -81,15 +86,16 @@ Drawing.prototype = {
 				return false;
 			}else{
 
-				var radius_x = Math.abs(position.x-this.startPosition.x);
-				var radius_y = Math.abs(position.y-this.startPosition.y);
+				var distance_x = Math.abs(position.x-this.startPosition.x);
+				var distance_y = Math.abs(position.y-this.startPosition.y);
 
-				this.activeShape.update({'rx':radius_x,'ry':radius_y});
+				this.activeShape.update({'x':distance_x,'y':distance_y});
 			}
 		}
 	},
 	finish: function(){
 		this.easel.inprocess = false;
 		this.mousedown = false;
+		
 	}
 }

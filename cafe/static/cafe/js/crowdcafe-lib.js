@@ -29,18 +29,13 @@ page_scripts = {
 			});
 		});
 		$$('[annotation=shapes]').each(function(){
-			var image = $$(this);
+			var canvas = $$(this);
 			var namespace = $$(this).attr('annotation-name');
-			if (image.height() > 10){
-				var easel = new Easel(image,namespace);
-				easel.init(image.attr('annotation-type'));
-			}
-			else{
-				image[0].onload = function(){
-					var easel = new Easel(image,namespace);
-					easel.init(image.attr('annotation-type'));
-				};
-			}
+			getImgSize(canvas.attr('src'),function(size, imageInstance){
+				var easel = new Easel(canvas,size,namespace,imageInstance);
+				var shape_type = canvas.attr('annotation-type');
+				easel.init(shape_type);
+			});
 
 		});
 		$$('.contexts').on('change',function(){
@@ -118,6 +113,8 @@ page_scripts = {
 			var message = false;
 			var shapes_amount = 0;
 			easels.forEach(function(easel){
+
+				easel.serialize($$('#taskForm'));
 				var result = easel.qualityCheck();
 				shapes_amount+=easel.drawing.shapes.length;
 				if (!result.correct){
@@ -134,7 +131,6 @@ page_scripts = {
 				error = true;
 				message = 'Not all fields are filled. Check carefully.';
 			}
-
 			if (error){
 				crowdcafe.alert(message);
 				return false;
