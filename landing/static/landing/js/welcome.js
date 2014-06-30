@@ -83,6 +83,27 @@ function fadedEls(el, shift) {
 $(window).load(function() {
     $('html').addClass('loaded');
     $(window).resize().scroll();
+    $('.social-feed-container').socialfeed({
+        template:social_feed_template,
+                      //FACEBOOK--------------------
+                      facebook:{
+                          accounts:['@crowdcafe.io','#crowdcafe.io'], //usernames or id
+                          limit:5,
+                          token:'240696342763428|FgHgjfn7wWMNT15ONHP0tVdWm_k' //you can also create an app and put  here your 'APP ID|APP SECRET' - it is easier but not safe
+                      },
+                      //INSTAGRAM---------------------
+                      instagram:{
+                        accounts:['#coffeetask'], //userid
+                        client_id:'2c6d2173ae9d41de905236e6301e5a43', //2c6d2173ae9d41de905236e6301e5a43
+                        limit:2
+                    },
+                      //GENERAL SETTINGS--------------
+                      length:250,
+                      show_media:true,
+                      callback: function(){
+                          console.log('all posts are collected');
+                      }
+                  });
 });
 
 })(jQuery);

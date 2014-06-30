@@ -68,11 +68,11 @@ label.radio{
 	height: 250px;
 	width: 100%;
 }
-.content-23.custom-bg {
+.content-23.welcome-block-madeintrento {
 	background-image: url('../img/bg/trento.jpg');
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
+
+	background-position: 50% !important;
+	height:600px !important;
 }
 .navbar a{
 	font-weight: 200 !important;
@@ -89,4 +89,15 @@ label.radio{
 
 h1{
 	font-weight: 100;
+}
+
+.social-feed-element{
+	border:1px solid #eee;
+}
+.social-feed-container{
+	width:100%;
+}
+
+p.social-feed-text{
+	margin-top:25px !important;
 }

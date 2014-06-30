@@ -22,8 +22,9 @@ from serializers import JobSerializer,TaskSerializer, UserSerializer,AnswerDataC
 
 from kitchen.utils import saveDataItems
 
-
+import json
 import requests
+from django.utils import simplejson
 
 @login_required
 def home(request):
@@ -33,16 +34,17 @@ def home(request):
 def uploadItems(request, job_id):
 
 	job = get_object_or_404(Job, pk = job_id, owner = request.user)
+	data = json.loads(request.body)
 
 	print job.id
-	print request.POST
+	print data
 	print request.user.id
-
-	if request.POST:
+	units = []
+	if data:
 		print 'dataset exists'
-		saveDataItems(job,[request.POST])
+		units = saveDataItems(job,[data])
 		
-	return Response()
+	return HttpResponse(json.dumps(units))
 
 @api_view(['GET'])
 def getUser(request):

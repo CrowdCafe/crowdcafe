@@ -30,6 +30,7 @@ def getGithubRepositoryFiles(extention):
 	return [(v, k) for k, v in files.iteritems()]
 
 def saveDataItems(job,dataset):
+	units = []
 	if len(dataset)>0:
 		for item in dataset:
 			dataitem = DataItem(job = job, value = item)
@@ -39,6 +40,8 @@ def saveDataItems(job,dataset):
 					print item
 					dataitem.gold = True
 			dataitem.save()
+			units.append(dataitem.id)
+	return units
 		#createTasks(job)
 
 def createTasks(job):
