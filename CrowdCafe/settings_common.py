@@ -112,16 +112,13 @@ STATIC_URL = '/static/'
 BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
 
 BOWER_INSTALLED_APPS = (
-    'bootstrap',
+    'bootstrap#3.2.0',
     'minimal-devices',
     'fontawesome',
     'BrandButtons',
     'framework7',
     'startup-demo',
-    'raphael#2.1.2',
     'jquery',
-    'ionicons',
-    'pixi.js',
     'fabric'
 )
 

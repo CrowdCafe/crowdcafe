@@ -83,8 +83,28 @@ function fadedEls(el, shift) {
 $(window).load(function() {
     $('html').addClass('loaded');
     $(window).resize().scroll();
+
+    var social_feed_template_html = 
+    '<div class="social-feed-element" dt-create="{{=it.dt_create}}" social-feed-id = "{{=it.id}}">'+
+    '<div class="content">'+
+    '<a class="pull-left" href="{{=it.author_link}}" target="_blank">'+
+    '<img class="media-object" src="{{=it.author_picture}}">'+
+    '</a>'+
+    '<div class="media-body">'+
+    '<p>'+
+    '<i class="fa fa-{{=it.social_network}}"></i>'+
+    '<span class="author-title">{{=it.author_name}}</span>'+
+    '<span class="muted pull-right"> {{=it.time_ago}}</span>'+
+    '</p>'+
+    '<div class="text-wrapper">'+
+    '<p class="social-feed-text">{{=it.text}} <a href="{{=it.link}}" target="_blank" class="read-button">see the rest</a></p>'+
+    '</div>'+
+    '</div>'+
+    '</div>'+
+    '{{=it.attachment}}'+
+    '</div>';
     $('.social-feed-container').socialfeed({
-        template:social_feed_template,
+        template_html:social_feed_template_html,
                       //FACEBOOK--------------------
                       facebook:{
                           accounts:['@crowdcafe.io','#crowdcafe.io'], //usernames or id
