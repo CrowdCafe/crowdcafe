@@ -93,7 +93,7 @@ $(window).load(function() {
     '<div class="media-body">'+
     '<p>'+
     '<i class="fa fa-{{=it.social_network}}"></i>'+
-    '<span class="author-title">{{=it.author_name}}</span>'+
+    '<span class="author-title"> {{=it.author_name}}</span>'+
     '<span class="muted pull-right"> {{=it.time_ago}}</span>'+
     '</p>'+
     '<div class="text-wrapper">'+

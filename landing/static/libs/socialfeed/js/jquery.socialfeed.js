@@ -185,8 +185,6 @@ function getGoogleplusData(account){
             post.author_name = element.actor.displayName;
 
             if(options.show_media === true){
-                console.log(element);
-
                 if(element.object.attachments){
                     $.each(element.object.attachments, function(){
                         var image = '';
@@ -475,8 +473,6 @@ function fixTwitterDate(created_at) {
 }
 function shorten(string){
     string = $.trim(string);
-    console.log(string);
-    console.log(string.length);
     if (string.length > options.length)
     {
         /*var cut = string.substring(0, options.length),
