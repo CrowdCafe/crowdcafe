@@ -36,9 +36,6 @@ def uploadItems(request, job_id):
 	job = get_object_or_404(Job, pk = job_id, owner = request.user)
 	data = json.loads(request.body)
 
-	print job.id
-	print data
-	print request.user.id
 	units = []
 	if data:
 		print 'dataset exists'
