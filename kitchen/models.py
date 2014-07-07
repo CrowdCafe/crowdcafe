@@ -1,178 +1,146 @@
-#!/usr/bin/env python
-#coding: utf8 
-from django.db import models
-from django.contrib.auth.models import User
-from social_auth.models import UserSocialAuth
-from datetime import datetime 
-import jsonfield
+from datetime import datetime
 from decimal import Decimal
-from datetime import  timedelta
-from account.models import AccountTransaction
-from django.conf import settings
-
-from django.db.models import Sum
-
-import requests
+from datetime import timedelta
 import json
 import urllib2
+import os
+import binascii
 
-STATUS_CHOISE = (('PR', 'In process'), ('ST', 'Published'), ('FN', 'Finished'), ('NP', 'Not published'), ('NR','Not ready'),('DL', 'Deleted'))
+from django.db import models
+from social_auth.models import UserSocialAuth
+import jsonfield
+from django.contrib.auth.models import User
+from django.conf import settings
+from django.core.validators import MaxValueValidator
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db.models import Sum
+import requests
 
-def getPlatformOwner():
-    return User.objects.filter(pk = settings.BUSINESS['platform_owner_id']).get()
-    
-def calculateCommission(amount):
-    return amount * settings.BUSINESS['platform_commission']
+from rest_framework.authtoken.models import Token
+
+from CrowdCafe.settings_common import TASK_CATEGORIES
+
+from account.models import Account, FundTransfer
+
+#TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
+TASK_CATEGORY_CHOICES = (
+    ('EP','Espresso',),
+    ('CP','Cappuccino'),
+    ('WN','Wine'),  
+    )
+
+DEVICE_CHOISES = (('MO', 'Mobile only'), ('DO', 'Desktop only'), ('AD', 'Any device'))
+
+# JOBS RELATED CLASSES:
+
+class App(models.Model):
+    account = models.ForeignKey(Account)
+    creator = models.ForeignKey(User)  # the one created the app
+    token = models.CharField(max_length=40, blank=True)
+    title = models.CharField(max_length=100)
+    deleted = models.DateTimeField(blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = binascii.hexlify(os.urandom(20))
+        return super(App, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return str(self.id)
+        #def __unicode__(self):
+        #    return '' + str(self.owner.username) + ' - ' + str(self.name) # TODO this should be redone according to accounts approach
+
+
+JOB_STATUS_CHOISES = (('NP', 'Not published'), ('PB', 'Published'))
+
 
 class Job(models.Model):
-    owner = models.ForeignKey(User)
-    title = models.CharField(max_length=255, default='New task')
-    description = models.CharField(max_length=1024, default='***')
+    # general
+    app = models.ForeignKey(App)
+    creator = models.ForeignKey(User)  # the one created the job
+    title = models.CharField(max_length=255, default='New job')
+    description = models.TextField()
+    category = models.CharField(max_length=2, choices=TASK_CATEGORY_CHOICES)
 
-    category = models.CharField(max_length=2, default='CF', blank=True)
-    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='NP')
-
-    date_created = models.DateTimeField(auto_now_add=True, auto_now=False) 
-    date_deadline = models.DateTimeField(default=lambda: (datetime.now() + timedelta(days=7)), auto_now_add=False)
-
-    webhook_url = models.URLField(null = True, blank = True)
-    template_url = models.URLField(null = True, blank = True)
-    template_html = models.TextField(null = True, blank = True)
+    # settings
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0.03) # reward worker gets per unit
+    units_per_page = models.IntegerField(default=5)
+    device_type = models.CharField(max_length=2, choices=DEVICE_CHOISES, default='AD')
     
-    def category_icon(self):
-        return settings.TASK_CATEGORIES[self.category]['icon']
-    def refresh_template(self):
+    # api+notification
+    judgements_webhook_url = models.URLField(null=True, blank=True) # every time a worker submits judgements, POST is sent on this url with judgements data
+
+    # userinterface
+    userinterface_url = models.URLField(null=True, blank=True) # if this is filled - html is taken from here to set userinterface_html
+    userinterface_html = models.TextField(null=True, blank=True)
+    # make sure we do not have anly volnurabilities in userinterface_html
+    
+    # other
+    status = models.CharField(max_length=2, choices=JOB_STATUS_CHOISES, default='NP')
+    deleted = models.DateTimeField(blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    
+    def __unicode__(self):
+        return str(self.id)
+
+    def refreshUserInterface(self):
         try:
-            self.template_html = urllib2.urlopen(self.template_url).read()
+            self.userinterface_html = urllib2.urlopen(self.userinterface_url).read()
             self.save()
             return True
         except:
             return False
-    @property
-    def amount_tasks(self):
-        return Task.objects.filter(job = self, status = 'ST').count()
-    @property
-    def category_details(self):
-        return settings.TASK_CATEGORIES[self.category]
 
-class Attachment(models.Model):
-    job = models.ForeignKey(Job, null = True, blank = True)
-    file = models.FileField(upload_to='attachments', blank = True)
-
-class DataItem(models.Model):
-    job = models.ForeignKey(Job)
-    value = jsonfield.JSONField()
-    gold = models.BooleanField(default=False)
-    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default = 'NR')
-    @property
-    def tasks(self):
-        return Task.objects.filter(dataitems = self).all()
-    @property
-    def answeritems(self):
-        return AnswerItem.objects.filter(dataitem = self).all()
-    def refreshStatus(self):
-        if not self.gold:
-            print len(self.answeritems)
-            if len(self.answeritems) >= self.job.qualitycontrol.min_answers_per_item:
-                self.status = 'FN'
-                self.save()
-                print 'status changed'
-    def __unicode__(self):
-        return str(self.id)
-
-class Task(models.Model):
-    job = models.ForeignKey(Job)
-    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='ST')
-    dataitems = models.ManyToManyField(DataItem, blank = True, null = True)
-    @property 
-    def items(self):
-        return self.dataitems.all()
-    @property
-    def answers(self):
-        return Answer.objects.filter(task = self).all()
-
-class Answer(models.Model):
-    task = models.ForeignKey(Task)
-    executor = models.ForeignKey(User, blank = True)
-    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    status = models.CharField(max_length=2, choices=STATUS_CHOISE, default='ST', blank=True)
-
-    def __unicode__(self):
-        return str(self.id)
-    @property
-    def score(self):
-        score = 0.0
-        for answeritem in self.answeritems:
-            score+=answeritem.score
-        return score
-    
-    @property
-    def answeritems(self):
-        return AnswerItem.objects.filter(answer = self).all()
-    def webhook(self):
-        if self.task.job.webhook_url:
-            print 'webhook started'
-            dataset = []
-            for answeritem in self.answeritem_set.all():
-                data = {}
-                data['question'] = answeritem.dataitem.value
-                data['answer'] = answeritem.value
-                dataset.append(data)
-            try:
-                print dataset
-                headers = {'Content-type': 'application/json'}
-                r = requests.post(self.task.job.webhook_url, data = json.dumps(dataset), headers = headers)
-                return True
-            except:
-                return False
-        return False
+    # IMPORTANT: i've implemented this to have the price set
     def save(self, *args, **kwargs):
-        #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
-        if self.pk is None and self.task.job.category_details['cost']>0 and self.executor.profile.account != self.task.job.owner.profile.account:
+        if self.price is None:
+            self.price = TASK_CATEGORIES[self.category]['cost']
+        super(Job, self).save(*args, **kwargs)
 
-            # Worker gets money from Requestor
-            transaction = AccountTransaction(currency = 'VM', to_account = self.executor.profile.account, from_account = self.task.job.owner.profile.account, amount = self.task.job.category_details['cost'], description = 'answer for t.i. ['+str(self.task.id)+']')
-            transaction.save()
+# ====================================================
+#ASK - the next two classes QialityControl and GoldQualityControl do not seem to be elegant
 
-            # Platform gets comission from Requestor
-            commission = AccountTransaction(currency = 'VM', to_account = getPlatformOwner().profile.account, from_account = self.task.job.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.task.id)+']')
-            commission.save()
-        super(Answer, self).save(*args, **kwargs)
+class QualityControl(models.Model):
+    job = models.OneToOneField(Job)
+    min_judgements_per_unit = models.IntegerField(default=1)
+    max_units_per_worker = models.IntegerField(default=100)  # Some limitation of amount of units single worker can complete
+    gold_min = models.IntegerField(default=0, null=True)
+    gold_max = models.IntegerField(default=0, null=True)
+    score_min = models.IntegerField(default=0, null=True)
+    qualitycontrol_url = models.URLField(null=True, blank=True)
 
-class AnswerItem(models.Model):
-    answer = models.ForeignKey(Answer, blank = True)
-    dataitem = models.ForeignKey(DataItem, blank = True)
-    value = jsonfield.JSONField()
-    score = models.FloatField(default = 0.0, null = True, blank = True)
     def __unicode__(self):
         return str(self.id)
-    @property
-    def question(self):
-        try:
-            return self.dataitem.value
-        except:
-            return ''
-    @property
-    def worker_id(self):
-        try:
-            return self.answer.executor.id
-        except:
-            return 0
-    @property
-    def date_created(self):
-        try:
-            return self.answer.date_created
-        except:
-            return ''
-    @property
-    def task_id(self):
-        try:
-            return self.answer.task.id
-        except:
-            return 0
-    @property
-    def task_status(self):
-        try:
-            return self.answer.task.status
-        except:
-            return ''
+# ====================================================
+
+# JOB DATA UNITS RELATED CLASSES
+
+UNIT_STATUS_CHOISES = (('NC', 'Not completed'), ('CD', 'Completed'))
+
+class Unit(models.Model):
+    job = models.ForeignKey(Job)
+    input_data = jsonfield.JSONField()
+    status = models.CharField(max_length=2, choices=UNIT_STATUS_CHOISES, default='NC')
+    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    deleted = models.DateTimeField(blank=True, null=True)
+    published = models.BooleanField(default = False) 
+
+    def __unicode__(self):
+        return str(self.id)
+
+# JUDGEMENT RELATED CLASSES
+
+class Judgement(models.Model):
+    unit = models.ForeignKey(Unit, blank=True)
+    output_data = jsonfield.JSONField(blank=True)
+    score = models.FloatField(default=0.0, null=True, blank=True)
+    worker = models.ForeignKey(User, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    # Don't see a reason to have extra class for GoldJudgements, as we won't have any extra fields in it
+    gold = models.BooleanField(default = False) 
+
+    def __unicode__(self):
+        return str(self.id)

@@ -1,0 +1,30 @@
+{% extends 'base_bootstrap.html'%}
+
+{% block title%}
+<div class='container'>
+	<h1>Vendors</h1>
+	<p>
+		<a href = '{% url "vendor-create" account.id %}' class='btn btn-primary'>create vendor</a>
+
+	</p>
+</div>
+{% endblock%}
+
+{% block content%}
+<div class="container">
+	<table class='table table-hover'>
+		{% for vendor in object_list %}
+		<tr>
+			<td>#{{forloop.counter}}</td>
+			<td>id:{{vendor.id}}</td>
+			<td>{{vendor.title}}</td>
+			<td><a href="{% url 'reward-list' vendor.id %}" >rewards</a></td>
+			<td><a href="{% url 'vendor-update' vendor.id %}" class='btn btn-default'>edit</a></td>
+		</div>
+	</tr>
+	{% empty %}
+	<h3>No vendors yet.</h3>
+	{% endfor %}
+
+</div>
+{% endblock%}

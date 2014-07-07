@@ -7,18 +7,27 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{% url 'kitchen-home' %}">CrowdCafe.kitchen</a>
+			<a class="navbar-brand" href="/">CrowdCafe</a>
 		</div>
 		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav pull-right">
+				{% if user.is_authenticated %}
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.profile.short_name}} <b class="caret"></b></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.username}} <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="{% url 'welcome'%}">Home</a></li>
+						
+						<li><a href="{% url 'account-list' %}">Accounts</a></li>
+						<li><a href="{% url 'user-update' %}">Profile</a></li>
 						<li class="divider"></li>
+						<li><a href="{% url 'welcome' %}">Home</a></li>
 						<li><a href="{% url 'logout'%}">Logout</a></li>
 					</ul>
 				</li>
+				{% else %}
+				<li>
+					<a href="{% url 'login'%}" >Login</a>
+				</li>
+				{% endif %}
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div>

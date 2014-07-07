@@ -1,22 +1,23 @@
+# TODO - needs to be rewritten
 from django.conf.urls import patterns, include, url
+from django.contrib import admin
 from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required
-from forms import JobForm
 
 import views
-
 urlpatterns = patterns('',
-    #===============================================================================
-    # Views
-    #-------------------------------------------------------------------------------
-    url(r'^$', views.Home, name='kitchen-home'),
-    url(r'job/(?P<pk>\d+)/workers/$', views.JobWorkers, name='kitchen-job-workers'),
-    
-    url(r'job/create/$', login_required(views.JobCreation.as_view()), name='kitchen-job-create'),
-    url(r'job/(?P<pk>\d+)/update/$', login_required(views.JobUpdate.as_view()), name='kitchen-job-update'),
-    
-    url(r'job/(?P<pk>\d+)/data/$', views.JobData, name='kitchen-job-data'),
-    url(r'job/(?P<pk>\d+)/data/upload$', views.JobDataUpload, name='kitchen-job-data-upload'),
-
-    url(r'job/(?P<pk>\d+)/quality/update/$', login_required(views.QualityControlUpdate.as_view()), name='kitchen-job-quality-update'),
-)
+    # -------------------------------------------------------------------------------
+    # APPS
+    url(r'accounts/(?P<account_pk>\d+)/apps/$', login_required(views.AppListView.as_view()), name='app-list'),
+    url(r'accounts/(?P<account_pk>\d+)/apps/create/$', login_required(views.AppCreateView.as_view()), name='app-create'),
+    url(r'apps/(?P<app_pk>\d+)/update/$', login_required(views.AppUpdateView.as_view()), name='app-update'),
+    # -------------------------------------------------------------------------------
+    # JOBS
+    url(r'apps/(?P<app_pk>\d+)/jobs/$', login_required(views.JobListView.as_view()), name='job-list'),
+    url(r'apps/(?P<app_pk>\d+)/jobs/create/$', login_required(views.JobCreateView.as_view()), name='job-create'),
+    url(r'jobs/(?P<job_pk>\d+)/update/$', login_required(views.JobUpdateView.as_view()), name='job-update'),
+    # -------------------------------------------------------------------------------
+    # UNITS
+    url(r'jobs/(?P<job_pk>\d+)/units/$', login_required(views.UnitListView.as_view()), name='unit-list'),
+    url(r'units/(?P<unit_pk>\d+)/update/$', login_required(views.UnitUpdateView.as_view()), name='unit-update'),
+  )

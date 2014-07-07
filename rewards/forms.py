@@ -1,9 +1,7 @@
 from django import forms
-from datetime import date, timedelta
-from models import App, Job, Unit
+from models import Vendor, Reward, Coupon
 from account.models import Account
 
-from models import JOB_STATUS_CHOISES
 from django.conf import settings
 
 from django.contrib.auth.models import User
@@ -15,47 +13,45 @@ import logging
 from decimal import Decimal
 from django.utils.datetime_safe import datetime
 from django.forms.forms import Form
-from django.forms.fields import FileField
 
 log = logging.getLogger(__name__)
 
-class AppForm(ModelForm):
+class VendorForm(ModelForm):
 	creator = forms.ModelChoiceField(queryset=User.objects.all(), widget=forms.HiddenInput)
 	account = forms.ModelChoiceField(queryset=Account.objects.all(), widget=forms.HiddenInput)
 
 	class Meta:
-		model = App
-		exclude = ('deleted','token')
+		model = Vendor
 	def __init__(self, *args, **kwargs):
 		self.helper = FormHelper()
 		self.helper.form_method = 'post'
 		self.helper.add_input(Submit('submit', 'Save'))
 		self.helper.form_class = 'form-vertical'
-		super(AppForm, self).__init__(*args, **kwargs)
+		super(VendorForm, self).__init__(*args, **kwargs)
 
-class JobForm(ModelForm):
+class RewardForm(ModelForm):
+	vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), widget=forms.HiddenInput)
 	creator = forms.ModelChoiceField(queryset=User.objects.all(), widget=forms.HiddenInput)
-	app = forms.ModelChoiceField(queryset=App.objects.all(), widget=forms.HiddenInput)
 	
 	class Meta:
-		model = Job
-		exclude = ('deleted','date_deadline','date_created')
-	def __init__(self, *args, **kwargs):
-		self.helper = FormHelper()
-		self.helper.form_method = 'post'
-		self.helper.add_input(Submit('submit', 'Save'))
-		self.helper.form_class = 'form-vertical'
-		super(JobForm, self).__init__(*args, **kwargs)
+		model = Reward
 
-class UnitForm(ModelForm):
-	job = forms.ModelChoiceField(queryset=Job.objects.all(), widget=forms.HiddenInput)
-	
-	class Meta:
-		model = Unit
-		exclude = ('date_created')
 	def __init__(self, *args, **kwargs):
 		self.helper = FormHelper()
 		self.helper.form_method = 'post'
 		self.helper.add_input(Submit('submit', 'Save'))
 		self.helper.form_class = 'form-vertical'
-		super(UnitForm, self).__init__(*args, **kwargs)
+		super(RewardForm, self).__init__(*args, **kwargs)
+
+class CouponForm(ModelForm):
+
+	class Meta:
+		model = Coupon
+		exclude = ('account', 'reward')
+
+	def __init__(self, *args, **kwargs):
+		self.helper = FormHelper()
+		self.helper.form_method = 'post'
+		self.helper.add_input(Submit('submit', 'Save'))
+		self.helper.form_class = 'form-vertical'
+		super(CouponForm, self).__init__(*args, **kwargs)

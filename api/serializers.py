@@ -1,64 +1,58 @@
-from kitchen.models import Job, Task, DataItem, Answer, AnswerItem
-
+# TODO - needs to be rewritten
 from django.contrib.auth.models import User
-from account.models import Profile
 from rest_framework import serializers
 
+from kitchen.models import Job, Unit
+from account.models import Profile, Account
+
+
 class ProfileSerializer(serializers.ModelSerializer):
-	#url = serializers.CharField(source='url', read_only=True)
-	short_name = serializers.CharField(source='short_name', read_only=True)
-	full_name = serializers.CharField(source='full_name', read_only=True)
-	class Meta:
-		model = Profile
-		fields = ('short_name','full_name')
+    shortname = serializers.CharField(source='shortname', read_only=True)
+    fullname = serializers.CharField(source='fullname', read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = ('id', 'shortname', 'fullname')
+
 
 class UserSerializer(serializers.ModelSerializer):
-	profile = ProfileSerializer(many=False)
-	class Meta:
-		model = User
-		fields = ('id','first_name','last_name','email','profile')
+    profile = ProfileSerializer(many=False)
+
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'email', 'profile')
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    #creator = UserSerializer(many = False)
+    #users = UserSerializer(many = True)
+
+    class Meta:
+        model = Account
+        fields = ('id', 'title')
 
 
 class JobSerializer(serializers.ModelSerializer):
-    owner = UserSerializer(many=False)
+    pk = serializers.Field()
+    app = serializers.RelatedField(source='app.title', read_only=True)
+    creator = serializers.RelatedField(source='creator.username', read_only=True)
+
     class Meta:
         model = Job
-        fields = ('id','owner', 'title','description','category','template','status','date_created','date_deadline')
+        read_only_fields = ('deleted', 'status', 'userinterface_html')
 
-class AnswerSerializer(serializers.ModelSerializer):
-    executor = UserSerializer(many=False)
+
+class Appserializer(serializers.ModelSerializer):
+    account = serializers.RelatedField(source='account.title', read_only=True)
+    creator = serializers.RelatedField(source='creator.username', read_only=True)
+
     class Meta:
-        model = Answer
-        fields = ('id','executor','date_created','status')
+        model = Account
+        fields = ('title', 'account', 'creator', 'title')
 
-class AnswerItemSerializer(serializers.ModelSerializer):
-    answer = AnswerSerializer(many=False)
+class UnitSerializer(serializers.ModelSerializer):
+    pk = serializers.Field()
     class Meta:
-        model = AnswerItem
-        fields = ('id','value','answer')
-
-class DataItemSerializer(serializers.ModelSerializer):
-    answeritems = AnswerItemSerializer(many = True)
-    class Meta:
-        model = DataItem
-        fields = ('id','answeritems')
-
-
-
-class TaskSerializer(serializers.ModelSerializer):
-    dataitems = DataItemSerializer(many=True)
-    class Meta:
-        model = Task
-        fields = ('id','dataitems')
-
-class AnswerDataCSVSerializer(serializers.ModelSerializer):
-    date_created = serializers.CharField(source='date_created', read_only=True)
-    question = serializers.CharField(source='question', read_only=True)
-    value = serializers.CharField(source='value', read_only=True)
-    worker_id = serializers.IntegerField(source='worker_id', read_only=True)
-    #dataitem_id = serializers.IntegerField(source='dataitem_id', read_only=True)
-    task_id = serializers.IntegerField(source='task_id', read_only=True)
-    task_status = serializers.CharField(source='task_status', read_only=True)
-    class Meta:
-        model = AnswerItem
-        fields = ('question','worker_id','id','value','date_created','task_id','task_status')
+        model = Unit
+        fields=('input_data','status','pk')
+        read_only_fields = ('status',)
