@@ -52,7 +52,10 @@ class Account(models.Model):
     deleted = models.DateTimeField(blank=True, null=True)
     # 'earnings', 'spendings'
     
-    def recalculate(self, total_type):
+    def recalculate(self):
+        self.recalculateType('earnings');
+        self.recalculateType('spendings');
+    def recalculateType(self, total_type):
         if (total_type == 'earnings'):
             self.total_earning = FundTransfer.objects.filter(to_account=self).aggregate(Sum('amount'))['amount__sum']
         elif (total_type == 'spendings'):
@@ -91,6 +94,14 @@ class FundTransfer(models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
     description = models.CharField(max_length=1000, blank=True)  # when we generate transfers we might add here a description - what this transfer is for.
+
+    def save(self, *args, **kwargs):
+        #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
+        if self.pk is None and self.amount != 0:
+            self.from_account.recalculate();
+            self.to_account.recalculate();
+
+        super(FundTransfer, self).save(*args, **kwargs)
 
 
 # create token for each user that is stored.

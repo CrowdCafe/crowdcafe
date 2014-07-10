@@ -52,8 +52,8 @@ def UserProfile(request):
 
 			target_user = users.get()
 			stats = {}
-			stats['completed'] = Answer.objects.filter(executor = profile).count()
-			stats['published'] = Job.objects.filter(owner = profile).count()
+			stats['completed'] = Judgement.objects.filter(worker = target_user).count()
+			stats['published'] = Job.objects.filter(creator = target_user).count()
 			#stats['execution'] = 
 
 
@@ -117,11 +117,13 @@ def UnitsComplete(request, job_id):
 
 	# get list of units which are executed in the task form, which has status "Not Completed" and are published
 	if 'unit_ids' in request.POST:
+		unit_ids_pool = request.POST['unit_ids']
 		units_query = Unit.objects.filter(status = 'NC', published = True)
-		if type(request.POST['unit_ids']).__name__ == 'list':
-			units = units_query.filter(pk__in = request.POST['unit_ids']).all()
+
+		if type(unit_ids_pool).__name__ == 'list':
+			units = units_query.filter(pk__in = unit_ids_pool).all()
 		else:
-			units = units_query.filter(pk__in = [request.POST['unit_ids']]).all()
+			units = units_query.filter(pk = unit_ids_pool).all()
 	
 	# go through all the POST data for each unit and save relative data to judgement
 	for unit in units:

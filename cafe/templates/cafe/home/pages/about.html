@@ -28,10 +28,10 @@
 				<div class="content-block-inner">
 					<div class='row center'>
 						{% for category in task_categories%}
-						<div class='col-25'>
+						<div class='col-33'>
 							<img src="{% static category.icon %}" width="40">
 							<p>{{category.title}}</p>
-							<small>{{category.cost}}&euro; / {{category.time}}</small>
+							<small>{{category.time}}</small>
 						</div>
 						{% endfor %}
 					</div>

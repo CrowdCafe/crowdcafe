@@ -23,6 +23,7 @@ from rest_framework.authtoken.models import Token
 from CrowdCafe.settings_common import TASK_CATEGORIES
 
 from account.models import Account, FundTransfer
+from math import *
 
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
 TASK_CATEGORY_CHOICES = (
@@ -32,7 +33,7 @@ TASK_CATEGORY_CHOICES = (
     )
 
 DEVICE_CHOISES = (('MO', 'Mobile only'), ('DO', 'Desktop only'), ('AD', 'Any device'))
-
+# ====================================================
 # JOBS RELATED CLASSES:
 
 class App(models.Model):
@@ -99,9 +100,11 @@ class Job(models.Model):
         if self.price is None:
             self.price = TASK_CATEGORIES[self.category]['cost']
         super(Job, self).save(*args, **kwargs)
-
-# ====================================================
-#ASK - the next two classes QialityControl and GoldQualityControl do not seem to be elegant
+    # estimated amount of tasks left available for a specific user
+    @property
+    def estimatedTasksLeft(self):
+        # get the integer number of groups of units 
+        return int(ceil(Unit.objects.filter(status = 'NC', published = True, job = self).count() / self.units_per_page))
 
 class QualityControl(models.Model):
     job = models.OneToOneField(Job)
@@ -114,9 +117,9 @@ class QualityControl(models.Model):
 
     def __unicode__(self):
         return str(self.id)
-# ====================================================
 
-# JOB DATA UNITS RELATED CLASSES
+# ====================================================
+# DATA UNITS RELATED CLASSES
 
 UNIT_STATUS_CHOISES = (('NC', 'Not completed'), ('CD', 'Completed'))
 
@@ -133,6 +136,7 @@ class Unit(models.Model):
     @property
     def judgements(self):
         return Judgement.objects.filter(unit = self)
+    
     def updateStatus(self):
         if self.judgements.count() >= self.job.qualitycontrol.min_judgements_per_unit:
             self.status = 'CD'
@@ -155,8 +159,8 @@ class Unit(models.Model):
         
         return judgement
 
-
-# JUDGEMENT RELATED CLASSES
+# ====================================================
+# JUDGEMENTS RELATED CLASSES
 
 class Judgement(models.Model):
     unit = models.ForeignKey(Unit, blank=True)
@@ -169,3 +173,16 @@ class Judgement(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+
+    def save(self, *args, **kwargs):
+        #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
+        if self.pk is None and self.unit.job.price>0:
+
+            # Worker gets money from Requestor
+            fundtransfer = FundTransfer(currency = 'VM', to_account = self.worker.profile.personalAccount, from_account = self.unit.job.app.account, amount = self.unit.job.price, description = 'answer for t.i. ['+str(self.id)+']')
+            fundtransfer.save()
+
+            # Platform gets comission from Requestor
+            # commission = AccountTransaction(currency = 'VM', to_account = getPlatformOwner().profile.account, from_account = self.task.job.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.task.id)+']')
+            # commission.save()
+        super(Judgement, self).save(*args, **kwargs)

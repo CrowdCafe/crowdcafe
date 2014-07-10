@@ -18,8 +18,6 @@
 	<div data-page="tasklist" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
-			
-
 			{% if jobs|length > 0 %}
 			<div class="content-block-title">Select a task to work on:</div>
 			<div class="list-block media-list">
@@ -32,9 +30,9 @@
 						<div class="item-inner">
 							<div class="item-title-row">
 								<div class="item-title">{{job.title}}</div>
-								<div class="item-after amount">{{job.amount_instances}}</div>
+								<div class="item-after money">{{job.price}} &euro;</div>
 							</div>
-							<div class="item-text">{{job.description}} <br> <small class="muted">Published by {{job.owner.profile.full_name}} ago</small></div>
+							<div class="item-text">{{job.description}} <br> </div>
 						</div></a>
 					</li>
 					{% endfor %}

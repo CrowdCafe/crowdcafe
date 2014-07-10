@@ -1,0 +1,31 @@
+{% extends 'base_bootstrap.html'%}
+{%load static%}
+
+{% block title%}
+<div class='container'>
+	<h1>Fund Transfers</h1>
+</div>
+{% endblock%}
+
+{% block content%}
+<div class="container">
+	<table class='table table-hover'>
+		{% for transfer in object_list %}
+		<tr>
+			<td>#{{forloop.counter}}
+			</td>
+			<td>{{transfer.from_account.title}} #{{transfer.from_account.id}}
+			</td>
+			<td>{{transfer.to_account.title}} #{{transfer.to_account.id}}
+			</td>
+			<td>{{transfer.amount}}&euro;
+			</td>
+			<td>{{account.description}}
+			</td>
+		</div>
+	</tr>
+	{% empty %}
+	<h3>No transfers yet.</h3>
+	{% endfor %}
+</div>
+{% endblock%}

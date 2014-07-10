@@ -8,13 +8,14 @@ import logging
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf 
 from forms import LoginForm, UserCreateForm, AccountForm, MembershipForm, UserUpdate
-from models import Account, Profile, Membership
+from models import Account, Profile, Membership, FundTransfer
 from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import render
 from django.http import HttpResponseRedirect    
 
 from rest_framework.authtoken.models import Token
 from django.views.generic.list import ListView
+from django.db.models import Q
 
 log = logging.getLogger(__name__)
 
@@ -102,6 +103,7 @@ def login_user(request):
 class AccountListView(ListView):
     
     model = Account
+    template_name = "account/account_list.html"
 
     def get_queryset(self):
         return Account.objects.filter(users__in=[self.request.user.id]) #TODO make sure it is correct
@@ -197,7 +199,7 @@ class MembershipUpdateView(UpdateView):
         return redirect(reverse('member-list', kwargs={'account_pk': membership.account.id}))
 
 class MembershipListView(ListView):
-
+    template_name = "account/membership_list.html"
     model = Membership
 
     def get_queryset(self):
@@ -207,4 +209,21 @@ class MembershipListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(MembershipListView, self).get_context_data(**kwargs)
         context['account'] = get_object_or_404(Account, pk = self.kwargs.get('account_pk', None))
+        return context
+
+# -------------------------------------------------------------
+# Fund Transfers
+# -------------------------------------------------------------
+
+class FundTransferListView(ListView):
+    
+    model = FundTransfer
+    template_name = "account/fundtransfer_list.html"
+
+    def get_queryset(self):
+        account = get_object_or_404(Account, pk = self.kwargs.get('account_pk', None), users__in=[self.request.user.id])
+
+        return FundTransfer.objects.filter(Q(from_account=account) | Q(to_account=account)) #TODO make sure it is correct
+    def get_context_data(self, **kwargs):
+        context = super(FundTransferListView, self).get_context_data(**kwargs)
         return context
