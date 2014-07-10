@@ -130,6 +130,31 @@ class Unit(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+    @property
+    def judgements(self):
+        return Judgement.objects.filter(unit = self)
+    def updateStatus(self):
+        if self.judgements.count() >= self.job.qualitycontrol.min_judgements_per_unit:
+            self.status = 'CD'
+            self.save()
+        return self.status
+
+    def saveJudgement(self, postdata, worker):
+        judgement_output_data = {}
+        for key in postdata:
+            # only if a POST data has a key with dataunit_handle - it will be saved (otherwise we can not find a connection to a specific unit)
+            dataunit_handle = 'dataitem_'+str(self.id)
+            if dataunit_handle in key:
+                judgement_output_data[key.replace(dataunit_handle,'')] = postdata[key]
+                #TODO - check gold data
+        #TODO external quality control
+        judgement = Judgement(unit = self, output_data =judgement_output_data, worker = worker)
+        judgement.save()
+        
+        self.updateStatus()
+        
+        return judgement
+
 
 # JUDGEMENT RELATED CLASSES
 

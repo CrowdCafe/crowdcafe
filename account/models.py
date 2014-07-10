@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from rest_framework.authtoken.models import Token
 from social_auth.models import UserSocialAuth
+from decimal import Decimal
 
 # Extension of User class to add some properties (does not have any columns)
 class Profile(models.Model):
@@ -24,7 +25,9 @@ class Profile(models.Model):
     @property
     def connectedSocialNetworks(self):
         return UserSocialAuth.objects.filter(user=self.user).all()
-
+    @property
+    def personalAccount(self):
+        return Account.objects.filter(personal = self.user, creator = self.user).all()[0]
     @property
     def avatar(self):
         #TODO - to fix it, as avatars.io works only with Twitter, Facebook, Instagram
@@ -48,6 +51,7 @@ class Account(models.Model):
     #sum of all fundtransfer amounts, where from_account = self (we keep it as a column to do less calls to aggregation of FundTransfer table)
     deleted = models.DateTimeField(blank=True, null=True)
     # 'earnings', 'spendings'
+    
     def recalculate(self, total_type):
         if (total_type == 'earnings'):
             self.total_earning = FundTransfer.objects.filter(to_account=self).aggregate(Sum('amount'))['amount__sum']
@@ -60,7 +64,7 @@ class Account(models.Model):
     # show current balance of an account (saldo)
     @property
     def balance(self):
-        return self.total_earning - self.total_spending
+        return str(self.total_earnings - self.total_spendings)
 
 
 MEMBERSHIP_TYPE = (('AN', 'Admin'), ('MR', 'Member'))

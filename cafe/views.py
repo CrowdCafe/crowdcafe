@@ -4,15 +4,15 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
-from kitchen.models import Job, Task, Answer, AnswerItem, DataItem
-from kitchen.models import getPlatformOwner, calculateCommission
+from kitchen.models import Job, Unit, Judgement
+#from kitchen.models import getPlatformOwner, calculateCommission
 
-from preselection.models import Preselection
-from preselection.utils import qualifiedJob
+#from preselection.models import Preselection
+#from preselection.utils import qualifiedJob
 
 from rewards.models import Vendor, Reward, Coupon
 
-from account.models import AccountTransaction
+from account.models import FundTransfer
 from events.utils import logEvent
 
 from random import randint
@@ -20,6 +20,7 @@ import json
 import random
 from random import shuffle
 from mobi.decorators import detect_mobile
+from utils import getSample
 
 
 def Welcome(request):
@@ -36,26 +37,27 @@ def About(request):
 @login_required 
 def Rewards(request):
 	logEvent(request, 'rewards')
-	coupons = Coupon.objects.filter(worker = request.user, status = 'AC').order_by('-date_updated').all()
+	# show available rewards
+	coupons = Coupon.objects.filter(account = request.user.profile.personalAccount, status = 'AV').order_by('-date_updated').all()
 	vendors = Vendor.objects.all()
 	
 	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors, 'coupons':coupons}, context_instance=RequestContext(request))
 
 @login_required
 def UserProfile(request):
-	profile = {}
+	target_user = {}
 	if 'user' in request.GET:
 		users = User.objects.filter(pk = int(request.GET['user']))
 		if users.count()>0:
 
-			profile = users.get()
+			target_user = users.get()
 			stats = {}
 			stats['completed'] = Answer.objects.filter(executor = profile).count()
 			stats['published'] = Job.objects.filter(owner = profile).count()
 			#stats['execution'] = 
 
 
-	return render_to_response('cafe/home/pages/profile.html', {'profile':profile, 'stats':stats}, context_instance=RequestContext(request))
+	return render_to_response('cafe/home/pages/profile.html', {'target_user':target_user, 'stats':stats}, context_instance=RequestContext(request))
 
 @login_required 
 def Transactions(request):
@@ -82,96 +84,50 @@ def Home(request):
 @detect_mobile
 @login_required 
 def JobList(request):
-	jobs = Job.objects.filter(status = 'ST')
+	jobs = Job.objects.filter(status = 'PB')
 	if 'category' in request.GET:
 		jobs = jobs.filter(category = request.GET['category'])
 	jobs = jobs.order_by('-date_created').all()
-	jobs_available = []
-	for job in jobs:
-		if userIsQualifiedForJob(job, request.user, request.mobile):
-			jobs_available.append(job)
+	jobs_available = jobs
+	#for job in jobs:
+	#	if userIsQualifiedForJob(job, request.user, request.mobile):
+	#		jobs_available.append(job)
 
 	logEvent(request, 'joblist')
 	return render_to_response('cafe/home/pages/joblist.html', {'jobs':jobs_available}, context_instance=RequestContext(request))
 
 @login_required 
-def JobAssign(request, job_id):
+def UnitsAssign(request, job_id):
 	job = get_object_or_404(Job, pk = job_id)
-	if job.status == 'ST' or job.owner == request.user: 
-		assigned_task = generateTask(job,request.user)
-		completed_previous = '0'
-		if assigned_task:
-			if 'completed_previous' in request.GET:
-				completed_previous = str(int(request.GET['completed_previous']))
-			logEvent(request, 'task_assigned',assigned_task.job.id, assigned_task.id)
-			return redirect(reverse('cafe-task-execute', kwargs={'task_id': assigned_task.id})+'?completed_previous='+completed_previous)
 
-	logEvent(request, 'task_not_assigned',job_id)
+	# if this job is published or the current user is its creator	
+	if job.status == 'PB' or job.creator == request.user:
+		# get a subset of data units (the amount defined in job.units_per_page)
+		units = assignUnits(job,request.user)
+		if units:
+			return render_to_response('cafe/home/pages/job.html', {'job':job,'units':units}, context_instance=RequestContext(request))
+	
 	return redirect(reverse('cafe-job-list')+'?category='+job.category)
 
 @login_required 
-def TaskExecute(request, task_id): 
-	if Task.objects.filter(status = 'ST', pk = task_id, job__status = 'ST').count() >0 and Answer.objects.filter(executor = request.user, task__id = task_id).count() == 0:
-		task = get_object_or_404(Task, pk = task_id)
-		logEvent(request, 'execution_started',task.job.id, task.id)
-		return render_to_response('cafe/home/pages/job.html', {'task':task}, context_instance=RequestContext(request))
-	else:
-		return redirect('cafe-home')
-
-@login_required 
-def AccountRemove(request, account_id): 
-	request.user.profile.removeConnectedSocialNetwork(account_id)
-	return redirect(reverse('cafe-profile')+'?user='+str(request.user.id))
-
-@login_required 
-def TaskSkip(request, task_id): 
-	task = get_object_or_404(Task, pk = task_id)
-	tasks = tasksAvailableExist(task.job,request.user, task.id)
-
-	logEvent(request, 'execution_skipped', task.job.id, task.id)
-	if tasks:
-		assigned_task = tasks.all()[randint(0,tasks.count()-1)]
-
-		return redirect(reverse('cafe-task-execute', kwargs={'task_id': assigned_task.id}))
-	else:
-		return redirect(reverse('cafe-job-list')+'?category='+task.job.category)
-	
-@login_required 
-def TaskComplete(request, task_id): 
-	task = get_object_or_404(Task, pk = task_id, job__status = 'ST')
+def UnitsComplete(request, job_id): 
+	job = get_object_or_404(Job, pk = job_id, status = 'PB')
 	print request.POST
-	if Answer.objects.filter(task = task, executor = request.user).count() == 0:
-		new_answer = Answer(task=task, executor = request.user, status = 'FN')
-		new_answer.save()
+	units = []
 
-		for dataitem in task.items:
-			answer_item_value = {}
-			score = 0.0
-			for key in request.POST:
-				dataitem_handle = 'dataitem_'+str(dataitem.id)
-				if dataitem_handle in key:
-					answer_item_value[key.replace(dataitem_handle,'')] = request.POST[key]
-					print dataitem.gold
-					if dataitem.gold and 'gold'+key.replace(dataitem_handle,'') in dataitem.value:
-						if request.POST[key] == dataitem.value['gold'+key.replace(dataitem_handle,'')]:
-							score+=1.0
-						else:
-							score-=1.0
-			new_answer_item = AnswerItem(answer = new_answer,dataitem = dataitem, value = answer_item_value, score = score)
-			new_answer_item.save()
-			task.job.qualitycontrol.externalQualityControl(new_answer_item);
-			new_answer_item.dataitem.refreshStatus()
-		new_answer.webhook()
-		if len(task.answers) >= task.job.qualitycontrol.min_answers_per_item:
-			task.status = 'FN'
-			task.save()
-
-		logEvent(request, 'execution_completed',task.job.id, task.id)
-
-	else:
-		logEvent(request, 'execution_completed_withmistake_notsaved',task.job.id, task.id)
-	return redirect(reverse('cafe-job-assign', kwargs={'job_id': task.job.id})+'?completed_previous=1')
-
+	# get list of units which are executed in the task form, which has status "Not Completed" and are published
+	if 'unit_ids' in request.POST:
+		units_query = Unit.objects.filter(status = 'NC', published = True)
+		if type(request.POST['unit_ids']).__name__ == 'list':
+			units = units_query.filter(pk__in = request.POST['unit_ids']).all()
+		else:
+			units = units_query.filter(pk__in = [request.POST['unit_ids']]).all()
+	
+	# go through all the POST data for each unit and save relative data to judgement
+	for unit in units:
+		unit.saveJudgement(request.POST,request.user)	
+	#TODO job webhook
+	return redirect(reverse('cafe-units-assign', kwargs={'job_id': job.id})+'?completed_previous=1')
 
 @login_required 
 def RewardPurchase(request, reward_id):
@@ -206,6 +162,18 @@ def CouponActivate(request, coupon_id):
 	logEvent(request, 'coupon_activated',coupon.reward.id, coupon.id)
 	return redirect('cafe-rewards')
 
+def assignUnits(job,user):
+
+	units = Unit.objects.filter(job = job, status = 'NC', published = True)
+	if units.count() > 0:
+		if units.count() > job.units_per_page:
+			subset = getSample(iter(units.all()),job.units_per_page)
+		else:
+			subset = units.all()
+		return subset
+	else:
+		return False
+	
 def generateTask(job,user):
 
 	score = job.qualitycontrol.score(user)

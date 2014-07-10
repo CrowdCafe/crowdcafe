@@ -18,6 +18,9 @@
 			<td>#{{forloop.counter}}</td>
 			<td>id:{{unit.id}}</td>
 			<td>{{unit.input_data}}</td>
+			<td>status: {{unit.status}}</td>
+			<td>published: {{unit.published}}</td>
+			<td><a href="{% url 'judgement-list' unit.id %}">judgements</a></td>
 			<td><a href="{% url 'unit-update' unit.id %}" class='btn btn-default'>edit</a></td>
 		</tr>
 		{% empty %}

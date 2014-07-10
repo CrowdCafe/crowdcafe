@@ -16,9 +16,9 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateView
 
-from models import App, Job, Unit, Judgement
+from models import App, Job, QualityControl, Unit, Judgement
 from account.models import Account
-from forms import AppForm, JobForm, UnitForm
+from forms import AppForm, JobForm, QualityControlForm, UnitForm, JudgementForm
 from utils import initJob
 
 
@@ -93,7 +93,7 @@ class JobCreateView(CreateView):
     def get_initial(self):
         initial = {}
         initial['creator'] = self.request.user
-        initial['app'] = get_object_or_404(App, pk=self.kwargs.get('app_pk', None))
+        initial['app'] = get_object_or_404(App, pk=self.kwargs.get('app_pk', None), account__users__in=[self.request.user.id])
         return initial
 
     def form_invalid(self, form):
@@ -109,7 +109,6 @@ class JobCreateView(CreateView):
 
         return redirect(reverse('job-list', kwargs={'app_pk': job.app.id}))
 
-
 class JobUpdateView(UpdateView):
     model = Job
     template_name = "kitchen/crispy.html"
@@ -120,7 +119,7 @@ class JobUpdateView(UpdateView):
         return UpdateView.form_invalid(self, form)
 
     def get_object(self):
-        return get_object_or_404(Job, pk=self.kwargs.get('job_pk', None), creator=self.request.user)
+        return get_object_or_404(Job, pk=self.kwargs.get('job_pk', None), app__account__users__in=[self.request.user.id])
 
     def form_valid(self, form):
         log.debug("updated")
@@ -143,8 +142,29 @@ class JobListView(ListView):
         return context
 
 # -------------------------------------------------------------
+# QualityControl
+# -------------------------------------------------------------
+class QualityControlUpdateView(UpdateView):
+    model = QualityControl
+    template_name = "kitchen/crispy.html"
+    form_class = QualityControlForm
+
+    def form_invalid(self, form):
+        log.debug("form is not valid")
+        return UpdateView.form_invalid(self, form)
+
+    def get_object(self):
+        job = get_object_or_404(Job, pk = self.kwargs.get('job_pk', None), app__account__users__in=[self.request.user.id])
+        return job.qualitycontrol
+
+    def form_valid(self, form):
+        log.debug("updated")
+        qualitycontrol = form.save()
+        return redirect(reverse('job-list', kwargs={'app_pk': qualitycontrol.job.app.id}))
+# -------------------------------------------------------------
 # Units
 # -------------------------------------------------------------
+# Upload of units is in utility.views.AttachmentCreateView
 
 class UnitListView(ListView):
     model = Job
@@ -175,3 +195,38 @@ class UnitUpdateView(UpdateView):
         log.debug("updated")
         unit = form.save()
         return redirect(reverse('unit-list', kwargs={'job_pk': unit.job.id}))
+
+# -------------------------------------------------------------
+# Judgements
+# -------------------------------------------------------------
+# Creation of judgements is done via Cafe app
+
+class JudgementListView(ListView):
+    model = Judgement
+    template_name = "kitchen/judgement_list.html"
+
+    def get_queryset(self):
+        unit = get_object_or_404(Unit, pk=self.kwargs.get('unit_pk', None), job__app__account__users__in=[self.request.user.id])
+        return Judgement.objects.filter(unit=unit)
+
+    def get_context_data(self, **kwargs):
+        context = super(JudgementListView, self).get_context_data(**kwargs)
+        context['unit'] = get_object_or_404(Unit, pk=self.kwargs.get('unit_pk', None))
+        return context
+
+class JudgementUpdateView(UpdateView):
+    model = Judgement
+    template_name = "kitchen/crispy.html"
+    form_class = JudgementForm
+
+    def form_invalid(self, form):
+        log.debug("form is not valid")
+        return UpdateView.form_invalid(self, form)
+
+    def get_object(self):
+        return get_object_or_404(Judgement, pk=self.kwargs.get('judgement_pk', None), unit__job__app__account__users__in=[self.request.user.id])
+
+    def form_valid(self, form):
+        log.debug("updated")
+        judgement = form.save()
+        return redirect(reverse('unit-list', kwargs={'unit_pk': judgement.unit.id}))

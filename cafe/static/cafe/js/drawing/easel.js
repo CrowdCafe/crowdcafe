@@ -1,4 +1,4 @@
-var easels = []
+var easels = [];
 
 function Easel(canvas,size,namespace,imageInstance){
 	easels.push(this);
@@ -16,7 +16,8 @@ function Easel(canvas,size,namespace,imageInstance){
 	}
 
 	this.inprocess = false;
-	this.control = {}
+	this.control = {};
+
 	if ($$(canvas).attr('min-shapes'))
 		this.control.min_shapes = parseInt($$(canvas).attr('min-shapes'));
 	if ($$(canvas).attr('max-shapes'))
@@ -57,7 +58,6 @@ Easel.prototype = {
 	qualityCheck : function(){
 		var response = {'correct':true};
 
-		this.drawing.createInputHidden('[name=taskForm]');
 		var shapes_amount = 0;
 		if (this.drawing.shapes){
 			shapes_amount=this.drawing.shapes.length;

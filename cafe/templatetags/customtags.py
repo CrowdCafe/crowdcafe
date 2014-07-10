@@ -6,7 +6,7 @@ from kitchen.models import Job
 def include_external(context,job_id):
 	job = Job.objects.filter(pk = job_id).get()
 
-	html = job.template_html
+	html = job.userinterface_html
 	t = Template(html)
 	return t.render(context)
 

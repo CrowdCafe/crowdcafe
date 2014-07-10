@@ -1,6 +1,6 @@
 from django import forms
 from datetime import date, timedelta
-from models import App, Job, Unit
+from models import App, Job, QualityControl, Unit, Judgement
 from account.models import Account
 
 from models import JOB_STATUS_CHOISES
@@ -47,15 +47,39 @@ class JobForm(ModelForm):
 		self.helper.form_class = 'form-vertical'
 		super(JobForm, self).__init__(*args, **kwargs)
 
-class UnitForm(ModelForm):
+class QualityControlForm(ModelForm):
 	job = forms.ModelChoiceField(queryset=Job.objects.all(), widget=forms.HiddenInput)
 	
 	class Meta:
+		model = QualityControl
+		
+	def __init__(self, *args, **kwargs):
+		self.helper = FormHelper()
+		self.helper.form_method = 'post'
+		self.helper.add_input(Submit('submit', 'Save'))
+		self.helper.form_class = 'form-vertical'
+		super(QualityControlForm, self).__init__(*args, **kwargs)
+
+class UnitForm(ModelForm):
+
+	class Meta:
 		model = Unit
-		exclude = ('date_created')
+		exclude = ('date_created','job')
 	def __init__(self, *args, **kwargs):
 		self.helper = FormHelper()
 		self.helper.form_method = 'post'
 		self.helper.add_input(Submit('submit', 'Save'))
 		self.helper.form_class = 'form-vertical'
 		super(UnitForm, self).__init__(*args, **kwargs)
+
+class JudgementForm(ModelForm):
+	
+	class Meta:
+		model = Unit
+		exclude = ('date_created','unit')
+	def __init__(self, *args, **kwargs):
+		self.helper = FormHelper()
+		self.helper.form_method = 'post'
+		self.helper.add_input(Submit('submit', 'Save'))
+		self.helper.form_class = 'form-vertical'
+		super(JudgementForm, self).__init__(*args, **kwargs)

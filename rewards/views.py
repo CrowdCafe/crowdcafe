@@ -129,6 +129,7 @@ class RewardListView(ListView):
 # -------------------------------------------------------------
 # Coupons
 # -------------------------------------------------------------
+# Generation of coupons is in utility.views.generateRewardCoupons
 
 class CouponListView(ListView):
     model = Coupon

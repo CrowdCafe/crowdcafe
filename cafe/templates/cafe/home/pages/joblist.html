@@ -25,7 +25,7 @@
 			<div class="list-block media-list">
 				<ul>
 					{% for job in jobs%}
-					<li><a href="{% url 'cafe-job-assign' job.id %}" task-id = "{{job.id}}" class="item-link external item-content task">
+					<li><a href="{% url 'cafe-units-assign' job.id %}" task-id = "{{job.id}}" class="item-link external item-content task">
 						<div class="item-media">
 							<img src='{{job.owner.profile.avatar}}' class='avatar'>
 						</div>
@@ -34,7 +34,7 @@
 								<div class="item-title">{{job.title}}</div>
 								<div class="item-after amount">{{job.amount_instances}}</div>
 							</div>
-							<div class="item-text">{{job.description}} <br> <small class="muted">Published by {{job.owner.profile.full_name}} {{job.date_created|timesince}} ago</small></div>
+							<div class="item-text">{{job.description}} <br> <small class="muted">Published by {{job.owner.profile.full_name}} ago</small></div>
 						</div></a>
 					</li>
 					{% endfor %}

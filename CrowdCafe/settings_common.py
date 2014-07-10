@@ -14,8 +14,8 @@ GITHUB_HTML_TEMPLATES = {
 }
 
 TASK_CATEGORIES = {
-    'CF':{
-        'id':'CF',
+    'EP':{
+        'id':'EP',
         'title':'Espresso',
         'cost':0.03,
         'icon':'landing/img/logo100_black.png',
@@ -41,16 +41,7 @@ TASK_CATEGORIES = {
         'time':'6 min',
         'description':'Custom tasks.',
         'examples':'interview record, video capturing, complex information search, other non trivial tasks...'
-    },
-    'ZT':{
-        'id':'ZT',
-        'title':'Volunteering',
-        'cost':0,
-        'icon':'libs/icons8/like-50.png',
-        'time':'any',
-        'description':'simple',
-        'examples': 'tasks without any reward'
-    },
+    }
 }
 TASK_CATEGORIES_DICTIONARY = (('CF','Espresso'),('CP','Cappuccino'),('WN','Wine'),('ZT','Volunteering'),)
 
@@ -204,9 +195,10 @@ INSTALLED_APPS = (
     #'preselection',
     #'qualitycontrol',
     #'api',
+    'utility',
     'cafe',
     'rewards',
-    #'events',
+    'events',
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
