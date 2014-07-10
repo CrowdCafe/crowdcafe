@@ -6,6 +6,7 @@ from django.dispatch.dispatcher import receiver
 from rest_framework.authtoken.models import Token
 from social_auth.models import UserSocialAuth
 from decimal import Decimal
+from django.db.models import Sum
 
 # Extension of User class to add some properties (does not have any columns)
 class Profile(models.Model):
