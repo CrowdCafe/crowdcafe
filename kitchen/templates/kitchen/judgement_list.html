@@ -1,0 +1,27 @@
+{% extends 'base_bootstrap.html'%}
+
+{% block title%}
+<div class='container'>
+	<h1>Judgements</h1>
+	<p>
+		<a href = '{% url "unit-list" unit.job.id %}' class='btn btn-default'>units</a>
+	</p>
+</div>
+{% endblock%}
+
+{% block content%}
+<div class="container">
+	<table class='table table-hover'>
+		{% for judgement in object_list %}
+		<tr>
+			<td>#{{forloop.counter}}</td>
+			<td>id:{{judgement.id}}</td>
+			<td>{{judgement.output_data}}</td>
+			<td><a href="{% url 'judgement-update' unit.id %}" class='btn btn-default'>edit</a></td>
+		</tr>
+		{% empty %}
+		<h3>No judgements yet.</h3>
+		{% endfor %}
+	</table>
+</div>
+{% endblock%}
