@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from social_auth.models import UserSocialAuth
 from decimal import Decimal
 from django.db.models import Sum
+import hashlib
 
 # Extension of User class to add some properties (does not have any columns)
 class Profile(models.Model):
@@ -23,20 +24,30 @@ class Profile(models.Model):
     def fullname(self):
         return self.user.first_name.encode('utf-8') + ' ' + self.user.last_name.encode('utf-8')
 
-    @property
-    def connectedSocialNetworks(self):
-        return UserSocialAuth.objects.filter(user=self.user).all()
+    # get a list of networks which are connected to the user
+    # if networks is defined then function will return only out of this list
+    def connectedSocialNetworks(self, networks):
+        connected = UserSocialAuth.objects.filter(user=self.user)
+        if networks:
+            connected = connected.filter(provider__in = networks)
+        return connected.all()
+    # gets a personal account from the list of all accounts of this user
     @property
     def personalAccount(self):
         return Account.objects.filter(personal = self.user, creator = self.user).all()[0]
+    
     @property
     def avatar(self):
-        #TODO - to fix it, as avatars.io works only with Twitter, Facebook, Instagram
-        if len(self.connectedSocialNetworks) > 0:
-            return "http://avatars.io/" + self.connectedSocialNetworks.reverse()[0].provider + "/" + str(
-                self.connectedSocialNetworks.reverse()[0].uid) + "?size=medium"
+        # we use http://avatars.io/ to show avatars
+        base_url = "http://avatars.io/"
+        avatars_io_networks = ['twitter','facebook','instagram']
+        
+        if len(self.connectedSocialNetworks(avatars_io_networks)) > 0:
+            return base_url + self.connectedSocialNetworks(avatars_io_networks).reverse()[0].provider + "/" + str(
+                self.connectedSocialNetworks(avatars_io_networks).reverse()[0].uid) + "?size=medium"
         else:
-            return 'http://www.gravatar.com/' + hashlib.md5(self.user.email.lower()).hexdigest()
+            # try to get an avatar from gravatar
+            return base_url +'gravatar/'+ hashlib.md5(self.user.email.lower()).hexdigest()
 
             
 # Class for grouping several users to one billing account. Can be useful - if there is an organization, or a research team, which consists of 3 people working together.
@@ -103,7 +114,6 @@ class FundTransfer(models.Model):
             self.to_account.recalculate();
 
         super(FundTransfer, self).save(*args, **kwargs)
-
 
 # create token for each user that is stored.
 @receiver(post_save, sender=get_user_model())

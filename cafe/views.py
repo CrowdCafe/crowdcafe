@@ -112,10 +112,9 @@ def UnitsAssign(request, job_id):
 @login_required 
 def UnitsComplete(request, job_id): 
 	job = get_object_or_404(Job, pk = job_id, status = 'PB')
-	print request.POST
-	units = []
-
+	
 	# get list of units which are executed in the task form, which has status "Not Completed" and are published
+	units = []
 	if 'unit_ids' in request.POST:
 		unit_ids_pool = request.POST['unit_ids']
 		units_query = Unit.objects.filter(status = 'NC', published = True)
@@ -126,9 +125,11 @@ def UnitsComplete(request, job_id):
 			units = units_query.filter(pk = unit_ids_pool).all()
 	
 	# go through all the POST data for each unit and save relative data to judgement
+	judgements = []
 	for unit in units:
-		unit.saveJudgement(request.POST,request.user)	
-	#TODO job webhook
+		judgements.append(unit.saveJudgement(request.POST,request.user))
+	# send a request to URL defined in job settings with info about judgements provided
+	job.webhook(judgements)
 	return redirect(reverse('cafe-units-assign', kwargs={'job_id': job.id})+'?completed_previous=1')
 
 @login_required 
@@ -221,10 +222,6 @@ def userIsQualifiedForJob(job,user, mobile):
 	if availableDataItems(job, user) and job.qualitycontrol.allowed_to_work_more(user) and qualifiedJob(job,user) and (job.qualitycontrol.device_type == 0 or (mobile and job.qualitycontrol.device_type == 1) or (not mobile and job.qualitycontrol.device_type == 2)):
 		return True
 	else:
-		print job.id
-		print availableDataItems(job, user)
-		print job.qualitycontrol.allowed_to_work_more(user)
-		print qualifiedJob(job,user)
 		return False
 
 def availableDataItems(job, user, gold = False):

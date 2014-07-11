@@ -60,6 +60,7 @@ def register_user(request):
     print args
     return render(request, template_name, args)
 
+#TODO - does not work
 def update_user(request):
     args = {}
     template_name = 'kitchen/crispy.html'

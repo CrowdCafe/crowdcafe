@@ -87,6 +87,24 @@ class Job(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+    def webhook(self, judgements):
+        if self.judgements_webhook_url:
+
+            dataset = []
+            for judgement in judgements:
+                data = {}
+                data['question'] = judgement.unit.input_data
+                data['answer'] = judgement.output_data
+                dataset.append(data)
+            try:
+                headers = {'Content-type': 'application/json'}
+                # send a request with json data and timeout of 2 seconds
+                r = requests.post(self.judgements_webhook_url, data = json.dumps(dataset), headers = headers, timeout = 2)
+                return True
+            except:
+                return False
+        return False
+    
     def refreshUserInterface(self):
         try:
             self.userinterface_html = urllib2.urlopen(self.userinterface_url).read()
@@ -117,6 +135,25 @@ class QualityControl(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+    def webhook(self, judgement):
+        if self.qualitycontrol_url and judgement.unit.gold:
+            #TODO simplify this - combine with job.webhook()
+            data = {}
+            data['question'] = judgement.unit.input_data
+            data['answer'] = judgement.output_data
+            try:
+                headers = {'Content-type': 'application/json'}
+                r = requests.post(self.qualitycontrol_url, data = json.dumps(data), headers = headers, timeout = 2)
+                
+                if int(r.text) == 1:
+                    judgement.score = 1
+                if int(r.text) == -1:
+                    judgement.score = -1
+                judgement.save()
+
+            except:
+                return False
+        return False
 
 # ====================================================
 # DATA UNITS RELATED CLASSES
@@ -134,6 +171,10 @@ class Unit(models.Model):
     def __unicode__(self):
         return str(self.id)
     @property
+    def gold(self):
+        # if this unit has any judgements marked as gold
+        return Judgement.objects.filter(unit = self, gold = True).count()>0
+    @property
     def judgements(self):
         return Judgement.objects.filter(unit = self)
     
@@ -145,15 +186,24 @@ class Unit(models.Model):
 
     def saveJudgement(self, postdata, worker):
         judgement_output_data = {}
+        score = 0.0
         for key in postdata:
             # only if a POST data has a key with dataunit_handle - it will be saved (otherwise we can not find a connection to a specific unit)
             dataunit_handle = 'dataitem_'+str(self.id)
             if dataunit_handle in key:
                 judgement_output_data[key.replace(dataunit_handle,'')] = postdata[key]
-                #TODO - check gold data
-        #TODO external quality control
-        judgement = Judgement(unit = self, output_data =judgement_output_data, worker = worker)
+                # check gold data (simple one)
+                if self.gold and 'gold'+key.replace(dataitem_handle,'') in self.input_data:
+                        # get a gold judgement for the current unit
+                        gold_judgement_data = Judgement.objects.filter(unit = self, gold = True).all()[0].output_data
+                        if postdata[key] == gold_judgement_data['gold'+key.replace(dataitem_handle,'')]:
+                            score+=1.0
+                        else:
+                            score-=1.0
+        
+        judgement = Judgement(unit = self, output_data =judgement_output_data, worker = worker, score = score)
         judgement.save()
+        # check gold data (complex one)
         
         self.updateStatus()
         
