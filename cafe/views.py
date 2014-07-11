@@ -165,9 +165,11 @@ def CouponActivate(request, coupon_id):
 	logEvent(request, 'coupon_activated',coupon.reward.id, coupon.id)
 	return redirect('cafe-rewards')
 
-def assignUnits(job,user):
+def assignUnits(job,worker):
 
-	units = Unit.objects.filter(job = job, status = 'NC', published = True)
+	units_completed_by_worker = Judgement.objects.filter(unit__job = job, worker = worker).values('unit')
+	# get units which are published and do not have any judgements provided by the worker
+	units = Unit.objects.filter(job = job, status = 'NC', published = True).exclude(pk__in = units_completed_by_worker)
 	if units.count() > 0:
 		if units.count() > job.units_per_page:
 			subset = getSample(iter(units.all()),job.units_per_page)

@@ -127,7 +127,7 @@ class Job(models.Model):
 class QualityControl(models.Model):
     job = models.OneToOneField(Job)
     min_judgements_per_unit = models.IntegerField(default=1)
-    max_units_per_worker = models.IntegerField(default=100)  # Some limitation of amount of units single worker can complete
+    max_units_per_worker = models.IntegerField(default=100)  # Some limitation of amount of units single worker can complete ideally in percentage
     gold_min = models.IntegerField(default=0, null=True)
     gold_max = models.IntegerField(default=0, null=True)
     score_min = models.IntegerField(default=0, null=True)
@@ -135,26 +135,17 @@ class QualityControl(models.Model):
 
     def __unicode__(self):
         return str(self.id)
-    def webhook(self, judgement):
-        if self.qualitycontrol_url and judgement.unit.gold:
-            #TODO simplify this - combine with job.webhook()
-            data = {}
-            data['question'] = judgement.unit.input_data
-            data['answer'] = judgement.output_data
-            try:
-                headers = {'Content-type': 'application/json'}
-                r = requests.post(self.qualitycontrol_url, data = json.dumps(data), headers = headers, timeout = 2)
-                
-                if int(r.text) == 1:
-                    judgement.score = 1
-                if int(r.text) == -1:
-                    judgement.score = -1
-                judgement.save()
+    def availableUnits(self, worker):
 
-            except:
-                return False
-        return False
-
+        worker_judgements = Judgement.objects.filter(unit__job = self.job, worker = worker)
+        all_units = Unit.objects.filter(job = self.job).count()
+        available_units = []
+        if (self.score(user) >= self.min_score and (100*worker_judgements.count()/amount_all_units.count() < self.max_units_per_worker)):
+            available_units = all_units.filter(status = 'NC', published = True)
+        else:
+            return False
+    def score(self, worker):
+        return Judgement.objects.filter(unit__job=self.job, worker = worker).aggregate(Sum('score'))['score__sum']
 # ====================================================
 # DATA UNITS RELATED CLASSES
 
@@ -235,3 +226,21 @@ class Judgement(models.Model):
             # commission = AccountTransaction(currency = 'VM', to_account = getPlatformOwner().profile.account, from_account = self.task.job.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.task.id)+']')
             # commission.save()
         super(Judgement, self).save(*args, **kwargs)
+    def webhook(self):
+        if self.unit.job.qualitycontrol.qualitycontrol_url and self.unit.gold:
+            #TODO simplify this - combine with job.webhook()
+            data = {}
+            data['question'] = self.unit.input_data
+            data['answer'] = self.output_data
+            try:
+                headers = {'Content-type': 'application/json'}
+                r = requests.post(self.unit.job.qualitycontrol.qualitycontrol_url, data = json.dumps(data), headers = headers, timeout = 2)
+                
+                if int(r.text) == 1:
+                    self.score = 1
+                if int(r.text) == -1:
+                    self.score = -1
+                self.save()
+            except:
+                return False
+        return False
