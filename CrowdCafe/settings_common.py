@@ -300,7 +300,7 @@ GOOGLE_EXTENDED_PERMISSIONS = ['email']
 
 SOCIAL_AUTH_BACKEND_ERROR_URL = '/welcome/'
 LOGIN_ERROR_URL = '/welcome/'
-LOGIN_URL='/welcome/'
+LOGIN_URL='/user/login/'
 LOGIN_REDIRECT_URL = '/'
 
 CORS_ORIGIN_ALLOW_ALL = True

@@ -20,7 +20,6 @@ import json
 import random
 from random import shuffle
 from mobi.decorators import detect_mobile
-from utils import getSample
 
 
 def Welcome(request):
@@ -54,8 +53,6 @@ def UserProfile(request):
 			stats = {}
 			stats['completed'] = Judgement.objects.filter(worker = target_user).count()
 			stats['published'] = Job.objects.filter(creator = target_user).count()
-			#stats['execution'] = 
-
 
 	return render_to_response('cafe/home/pages/profile.html', {'target_user':target_user, 'stats':stats}, context_instance=RequestContext(request))
 
@@ -96,6 +93,9 @@ def JobList(request):
 	logEvent(request, 'joblist')
 	return render_to_response('cafe/home/pages/joblist.html', {'jobs':jobs_available}, context_instance=RequestContext(request))
 
+# -----------------------------------
+# Units related views
+# -----------------------------------
 @login_required 
 def UnitsAssign(request, job_id):
 	job = get_object_or_404(Job, pk = job_id)
@@ -103,7 +103,7 @@ def UnitsAssign(request, job_id):
 	# if this job is published or the current user is its creator	
 	if job.status == 'PB' or job.creator == request.user:
 		# get a subset of data units (the amount defined in job.units_per_page)
-		units = assignUnits(job,request.user)
+		units = job.assignUnits(request.user)
 		if units:
 			return render_to_response('cafe/home/pages/job.html', {'job':job,'units':units}, context_instance=RequestContext(request))
 	
@@ -132,6 +132,9 @@ def UnitsComplete(request, job_id):
 	job.webhook(judgements)
 	return redirect(reverse('cafe-units-assign', kwargs={'job_id': job.id})+'?completed_previous=1')
 
+# -----------------------------------
+# Rewards related views
+# -----------------------------------
 @login_required 
 def RewardPurchase(request, reward_id):
 
@@ -165,73 +168,3 @@ def CouponActivate(request, coupon_id):
 	logEvent(request, 'coupon_activated',coupon.reward.id, coupon.id)
 	return redirect('cafe-rewards')
 
-def assignUnits(job,worker):
-
-	units_completed_by_worker = Judgement.objects.filter(unit__job = job, worker = worker).values('unit')
-	# get units which are published and do not have any judgements provided by the worker
-	units = Unit.objects.filter(job = job, status = 'NC', published = True).exclude(pk__in = units_completed_by_worker)
-	if units.count() > 0:
-		if units.count() > job.units_per_page:
-			subset = getSample(iter(units.all()),job.units_per_page)
-		else:
-			subset = units.all()
-		return subset
-	else:
-		return False
-	
-def generateTask(job,user):
-
-	score = job.qualitycontrol.score(user)
-	if job.qualitycontrol.allowed_to_work_more(user):
-		dataitems_regular = availableDataItems(job, user, False)
-		dataitems_gold = availableDataItems(job, user, True)
-		
-		
-		if score > job.qualitycontrol.gold_max:
-			gold_amount_to_put = 0
-		if score > job.qualitycontrol.gold_min and score <= job.qualitycontrol.gold_max:
-			gold_amount_to_put = max([score - job.qualitycontrol.gold_min,job.qualitycontrol.gold_min])
-		if score <= job.qualitycontrol.gold_min:
-			gold_amount_to_put = job.qualitycontrol.gold_max
-
-		dataitems_to_put = []
-		if dataitems_regular:
-			gold_amount_to_put = 0
-			regular_amount_to_put = 0
-			if dataitems_gold:
-				if score > job.qualitycontrol.gold_max:
-					gold_amount_to_put = job.qualitycontrol.gold_min
-				if score > job.qualitycontrol.gold_min and score <= job.qualitycontrol.gold_max:
-					gold_amount_to_put = max([job.qualitycontrol.gold_max - score,job.qualitycontrol.gold_min])
-				if score <= job.qualitycontrol.gold_min:
-					gold_amount_to_put = job.qualitycontrol.gold_max
-
-				gold_amount_to_put = min([dataitems_gold.count(), int(gold_amount_to_put)])
-				dataitems_to_put = random.sample(dataitems_gold.all(), gold_amount_to_put) 
-
-			regular_amount_to_put = min([dataitems_regular.count(),int(job.qualitycontrol.dataitems_per_task - gold_amount_to_put)]) 
-			dataitems_to_put += random.sample(dataitems_regular.all(), regular_amount_to_put)
-			shuffle(dataitems_to_put)
-			
-			task = Task(job=job)
-			task.save()
-			task.dataitems.add(*dataitems_to_put)
-			task.save()
-			return task
-	return False
-
-def userIsQualifiedForJob(job,user, mobile):
-	if availableDataItems(job, user) and job.qualitycontrol.allowed_to_work_more(user) and qualifiedJob(job,user) and (job.qualitycontrol.device_type == 0 or (mobile and job.qualitycontrol.device_type == 1) or (not mobile and job.qualitycontrol.device_type == 2)):
-		return True
-	else:
-		return False
-
-def availableDataItems(job, user, gold = False):
-
-	dataitems_already_did = AnswerItem.objects.filter(answer__executor = user, dataitem__job = job).values('dataitem')
-	dataitems_available = DataItem.objects.filter(job = job, status = 'NR', gold = gold).exclude(pk__in = dataitems_already_did)
-
-	if dataitems_available.count()>0:
-		return dataitems_available
-	else:
-		return False

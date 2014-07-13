@@ -8,7 +8,7 @@ import re
 import csv
 import urllib2
 import StringIO
-import scraperwiki 
+import scraperwiki
 
 def saveUnits(job, dataset):
 	units = []
@@ -38,8 +38,3 @@ def collectDataFromCSV(url):
 		i+=1
 	return dataset
 
-def generateCoupons(reward, amount):
-	for i in range(amount):
-		coupon = Coupon(reward = reward)
-		coupon.save()
-	return True

@@ -26,7 +26,7 @@ import csv
 import urllib2
 import StringIO
 
-from utils import collectDataFromCSV, saveUnits, generateCoupons
+from utils import collectDataFromCSV, saveUnits
 log = logging.getLogger(__name__)
 
 # -------------------------------------------------------------
@@ -57,7 +57,7 @@ class AttachmentCreateView(CreateView):
 
 def generateRewardCoupons(request, reward_pk):
 	reward = get_object_or_404(Reward, pk = reward_pk, vendor__account__users__in=[request.user.id])
-	generateCoupons(reward, 5)
+	reward.generateCoupons(5)
 
 	return redirect(reverse('coupon-list', kwargs={'reward_pk': reward.id}))
 

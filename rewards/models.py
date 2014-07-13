@@ -46,6 +46,11 @@ class Reward(models.Model):
 	cost_for_worker = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
 	cost_for_platform = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
 
+	def generateCoupons(self, amount):
+		for i in range(amount):
+			coupon = Coupon(self = reward)
+			coupon.save()
+		return True
 	@property
 	def amount_available(self):
 		return Coupon.objects.filter(reward = self, status = 'AV').count()

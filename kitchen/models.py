@@ -24,6 +24,7 @@ from CrowdCafe.settings_common import TASK_CATEGORIES
 
 from account.models import Account, FundTransfer
 from math import *
+from utility.general import getSample
 
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
 TASK_CATEGORY_CHOICES = (
@@ -112,7 +113,18 @@ class Job(models.Model):
             return True
         except:
             return False
-
+    def assignUnits(self,worker):
+        units_completed_by_worker = Judgement.objects.filter(unit__job = self, worker = worker).values('unit')
+        # get units which are published and do not have any judgements provided by the worker
+        units = Unit.objects.filter(job = self, status = 'NC', published = True).exclude(pk__in = units_completed_by_worker)
+        if units.count() > 0:
+            if units.count() > self.units_per_page:
+                subset = getSample(iter(units.all()),self.units_per_page)
+            else:
+                subset = units.all()
+            return subset
+        else:
+            return False
     # IMPORTANT: i've implemented this to have the price set
     def save(self, *args, **kwargs):
         if self.price is None:
