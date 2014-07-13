@@ -221,7 +221,7 @@ function qualityCheck(element, value){
 				},
 
 				{
-					text: 'I dot not agree. Leave comment to requestor.',
+					text: 'I dot not agree. Leave comment to the requestor.',
 					red: true,
 					onClick: function () {
 						$$('.instructions-open').trigger('click');
