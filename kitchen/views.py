@@ -169,7 +169,7 @@ class UnitListView(ListView):
 
     def get_queryset(self):
         job = get_object_or_404(Job, pk=self.kwargs.get('job_pk', None), app__account__users__in=[self.request.user.id])
-        return Unit.objects.filter(job=job)
+        return Unit.objects.filter(job=job).order_by('-date_created')
 
     def get_context_data(self, **kwargs):
         context = super(UnitListView, self).get_context_data(**kwargs)

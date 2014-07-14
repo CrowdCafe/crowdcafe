@@ -68,12 +68,13 @@ class AppTests(APITestCase):
         url = reverse('api-app-detail', kwargs={'pk': 1})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {"title": "test", "account": "test", "creator": "test"})
+        self.assertEqual(response.data, {"title": "test", "account": "personal account", "creator": "test"})
 
         # someone else trying to access mine
         client = APIClient()
         # another user SAME APP: OK
         user = User.objects.create(username='test2', password='test2', email="test@test.com")
+        Membership.objects.create(user=user, account=self.user.profile.personalAccount)
         token = Token.objects.get(user=user)
         token = 'Token ' + token.key + '|' + self.app.token
         client.credentials(HTTP_AUTHORIZATION=token)
@@ -192,7 +193,7 @@ class UnitTest(APITestCase):
 
 
         url = reverse('api-unit-list', kwargs={'job_pk': self.job.pk})
-        print url
+        # print url
         # first element is an array
         data =  [[{'title':1},{'test':'as'}],{'title':2},{'title':3}]
         response = self.client.post(url, data=data,format='json')
