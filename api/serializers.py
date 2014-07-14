@@ -42,7 +42,7 @@ class JobSerializer(serializers.ModelSerializer):
         read_only_fields = ('deleted', 'status', 'userinterface_html')
 
 
-class Appserializer(serializers.ModelSerializer):
+class AppSerializer(serializers.ModelSerializer):
     account = serializers.RelatedField(source='account.title', read_only=True)
     creator = serializers.RelatedField(source='creator.username', read_only=True)
 

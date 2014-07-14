@@ -49,7 +49,7 @@ class TokenAppAuthentication(BaseAuthentication):
         if "|" in key:
             usertoken,apptoken = key.split("|")
         else:
-            raise exceptions.AuthenticationFailed('Token is of the wrong format')
+            raise exceptions.AuthenticationFailed('Token has the wrong format')
 
         try:
             # get the token via key

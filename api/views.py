@@ -11,7 +11,7 @@ import api
 from api import routers
 from api.routers import ApiRouter, NestedApiRouter
 
-from api.serializers import JobSerializer, Appserializer, UnitSerializer
+from api.serializers import JobSerializer, AppSerializer, UnitSerializer
 from kitchen.models import Job, App, Unit
 from serializers import UserSerializer
 
@@ -63,7 +63,7 @@ class AppViewSet(viewsets.ReadOnlyModelViewSet):
     for the app, only readonly
     '''
     model = App
-    serializer_class = Appserializer
+    serializer_class = AppSerializer
 
     def get_queryset(self):
         #  the job of the user with the requested app
