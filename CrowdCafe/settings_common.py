@@ -194,7 +194,7 @@ INSTALLED_APPS = (
     'kitchen',
     #'preselection',
     #'qualitycontrol',
-    #'api',
+    'api',
     'utility',
     'cafe',
     'rewards',

@@ -19,7 +19,6 @@ from django.db.models import Q
 
 log = logging.getLogger(__name__)
 
-from utils import initUser
 # -------------------------------------------------------------
 # Users
 # -------------------------------------------------------------
@@ -48,7 +47,6 @@ def register_user(request):
                 user.email = user_form.data['email']
                 user.save()
                 #ASK - may be we should init it only in one place - on login?
-                initUser(user)
                 login(request, user)
                 return redirect('account-list')
         return render(request,
@@ -91,7 +89,6 @@ def login_user(request):
         print user
         if user is not None:
             login(request, user)
-            initUser(user)
             #token = Token.objects.get_or_create(user=user)
             return redirect('account-list')
     form = LoginForm()
@@ -110,6 +107,7 @@ class AccountListView(ListView):
         return Account.objects.filter(users__in=[self.request.user.id]) #TODO make sure it is correct
     def get_context_data(self, **kwargs):
         context = super(AccountListView, self).get_context_data(**kwargs)
+        context['token'] = Token.objects.get(user = self.request.user)
         return context
 
 class AccountCreateView(CreateView):

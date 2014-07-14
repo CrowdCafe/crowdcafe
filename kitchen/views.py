@@ -19,7 +19,6 @@ from django.views.generic.base import TemplateView
 from models import App, Job, QualityControl, Unit, Judgement
 from account.models import Account
 from forms import AppForm, JobForm, QualityControlForm, UnitForm, JudgementForm
-from utils import initJob
 
 
 log = logging.getLogger(__name__)
@@ -105,7 +104,6 @@ class JobCreateView(CreateView):
         log.debug("saved")
         job = form.save()
         job.save()
-        initJob(job)
 
         return redirect(reverse('job-list', kwargs={'app_pk': job.app.id}))
 
@@ -124,7 +122,6 @@ class JobUpdateView(UpdateView):
     def form_valid(self, form):
         log.debug("updated")
         job = form.save()
-        initJob(job)
         return redirect(reverse('job-list', kwargs={'app_pk': job.app.id}))
 
 

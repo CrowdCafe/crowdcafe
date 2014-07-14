@@ -139,23 +139,11 @@ def UnitsComplete(request, job_id):
 def RewardPurchase(request, reward_id):
 
 	reward = get_object_or_404(Reward,pk = reward_id)
-	coupons = Coupon.objects.filter(reward = reward, status = 'NA')
-	
-	if coupons.count()>0 and request.user.profile.account.balance >= reward.cost:
-		
-		transaction = AccountTransaction(currency = 'VM', to_account = reward.owner.profile.account, from_account = request.user.profile.account, amount = reward.cost, description = 'reward '+reward.title)
-		transaction.save()
-		
-		assignedcoupon = coupons.all()[0]
-		assignedcoupon.status = 'AC'
-		assignedcoupon.worker = request.user
-		assignedcoupon.transaction = transaction
-
-		assignedcoupon.save()
+	coupon = reward.purchaseCoupon(request.user)
+	if coupon:
 		logEvent(request, 'coupon_purchased',assignedcoupon.reward.id, assignedcoupon.id)
 	else:
 		logEvent(request, 'coupon_not_purchased')
-	
 	return redirect('cafe-rewards')
 
 @login_required 

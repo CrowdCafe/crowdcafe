@@ -132,12 +132,12 @@ class UnitViewSet(viewsets.ModelViewSet):
         # disable this function
         raise exceptions.MethodNotAllowed('DESTROY')
 
-    def update(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed('UPDATE')
+    #def update(self, request, *args, **kwargs):
+    #    raise exceptions.MethodNotAllowed('UPDATE')
 
 
-    def partial_update(self, request, pk=None):
-        raise exceptions.MethodNotAllowed('PARTIAL UPDATE')
+    #def partial_update(self, request, pk=None):
+    #    raise exceptions.MethodNotAllowed('PARTIAL UPDATE')
 
 
 

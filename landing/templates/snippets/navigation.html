@@ -26,18 +26,17 @@
 				</ul>
 			</div>
 			<div class="collapse navbar-collapse pull-right">
-				<ul class="nav">
-					{% if user.is_authenticated %}
+				{% if user.is_authenticated %}
+				<ul class="nav pull-left">
 					<li><a href="{% url 'account-list'%}">Accounts</a></li>
 					<li><a href="{% url 'cafe-home'%}">Execute Tasks</a></li>
-					<li><a href="{% url 'account-list'%}">{{user.profile.short_name}}</a></li>
-
 					<li><a class='muted' href="{% url 'logout'%}">Logout <i class="fa fa-arrow-circle-o-right"></i></a></li>
-					{% endif %}
 				</ul>
+				{% else %}
 				<form class="navbar-form pull-left">
                     <a class="btn btn-primary" href="{% url 'login'%}">Login</a>
                 </form>
+                {% endif%}
 			</div>
 		</div>
 	</div>

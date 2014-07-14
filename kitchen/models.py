@@ -25,6 +25,7 @@ from CrowdCafe.settings_common import TASK_CATEGORIES
 from account.models import Account, FundTransfer
 from math import *
 from utility.general import getSample
+from django.db.models.signals import post_save
 
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
 TASK_CATEGORY_CHOICES = (
@@ -158,6 +159,12 @@ class QualityControl(models.Model):
             return False
     def score(self, worker):
         return Judgement.objects.filter(unit__job=self.job, worker = worker).aggregate(Sum('score'))['score__sum']
+
+@receiver(post_save, sender=Job)
+def initJob(sender, **kwargs):
+    job = kwargs['instance']
+    qualitycontrol, created = QualityControl.objects.get_or_create(job = job)
+
 # ====================================================
 # DATA UNITS RELATED CLASSES
 
@@ -169,7 +176,7 @@ class Unit(models.Model):
     status = models.CharField(max_length=2, choices=UNIT_STATUS_CHOISES, default='NC')
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
     deleted = models.DateTimeField(blank=True, null=True)
-    published = models.BooleanField(default = False) 
+    published = models.BooleanField(default = True) 
 
     def __unicode__(self):
         return str(self.id)

@@ -13,9 +13,9 @@ class TokenAppAuthentication(BaseAuthentication):
     """
         App token authentication, modified from TokenBase Authentication
 
-        Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a/812cf2548f624b93d18e57820a0153accb03da2b
+        Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a|812cf2548f624b93d18e57820a0153accb03da2b
 
-        it's apptoken/usertoken
+        it's apptoken|usertoken
 
         user must have authorized the app to act on his behalf.
     """
@@ -46,8 +46,8 @@ class TokenAppAuthentication(BaseAuthentication):
             the actual function that handles authentication
         '''
         # if only user
-        if "/" in key:
-            usertoken,apptoken = key.split("/")
+        if "|" in key:
+            usertoken,apptoken = key.split("|")
         else:
             raise exceptions.AuthenticationFailed('Token is of the wrong format')
 

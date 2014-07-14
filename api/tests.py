@@ -47,15 +47,13 @@ class AppTests(APITestCase):
         self.user = User.objects.get(username='test')
         token = Token.objects.get(user=self.user)
         self.client = APIClient()
-        self.account = Account.objects.create(title='test', creator=self.user)
-        Membership.objects.create(user=self.user, account=self.account)
-        self.app = App.objects.create(account=self.account, creator=self.user, title='test')
+        self.app = App.objects.create(account=self.user.profile.personalAccount, creator=self.user, title='test')
 
-        token = 'Token ' + token.key + '/' + self.app.token
+        token = 'Token ' + token.key + '|' + self.app.token
         self.client.credentials(HTTP_AUTHORIZATION=token)
 
     def test_list(self):
-        App.objects.create(account=self.account, creator=self.user, title='test 2')
+        App.objects.create(account=self.user.profile.personalAccount, creator=self.user, title='test 2')
         url = reverse('api-app-list')
         response = self.client.get(url)
         # check if the list has 1 element
@@ -76,9 +74,8 @@ class AppTests(APITestCase):
         client = APIClient()
         # another user SAME APP: OK
         user = User.objects.create(username='test2', password='test2', email="test@test.com")
-        Membership.objects.create(user=user, account=self.account)
         token = Token.objects.get(user=user)
-        token = 'Token ' + token.key + '/' + self.app.token
+        token = 'Token ' + token.key + '|' + self.app.token
         client.credentials(HTTP_AUTHORIZATION=token)
         response = client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -103,7 +100,7 @@ class JobTests(APITestCase):
         Membership.objects.create(user=self.user, account=self.account)
         self.app = App.objects.create(account=self.account, creator=self.user, title='test')
 
-        token = 'Token ' + token.key + '/' + self.app.token
+        token = 'Token ' + token.key + '|' + self.app.token
         self.client.credentials(HTTP_AUTHORIZATION=token)
 
         self.user2 = User.objects.create(username='usernew', password='test3', email="test@test.com")
@@ -145,7 +142,7 @@ class JobTests(APITestCase):
         user = User.objects.create(username='test2', password='test2', email="test@test.com")
         Membership.objects.create(user=user, account=self.account)
         token = Token.objects.get(user=user)
-        token = 'Token ' + token.key + '/' + self.app.token
+        token = 'Token ' + token.key + '|' + self.app.token
         client.credentials(HTTP_AUTHORIZATION=token)
 
         response = client.get(url, format='json')
@@ -156,7 +153,7 @@ class JobTests(APITestCase):
 
         token = Token.objects.get(user=self.user2)
 
-        token = 'Token ' + token.key + '/' + self.app2.token
+        token = 'Token ' + token.key + '|' + self.app2.token
         client.credentials(HTTP_AUTHORIZATION=token)
         response = client.get(url, format='json')
         # this is not 403 beacuse the list is restricted by the app (see get_queryset)
@@ -185,7 +182,7 @@ class UnitTest(APITestCase):
         Membership.objects.create(user=self.user, account=self.account)
         self.app = App.objects.create(account=self.account, creator=self.user, title='test')
 
-        token = 'Token ' + token.key + '/' + self.app.token
+        token = 'Token ' + token.key + '|' + self.app.token
         self.client.credentials(HTTP_AUTHORIZATION=token)
         self.job =Job.objects.create(app=self.app, creator=self.user, title='job title 2',
                            description='job desc', category='CF', units_per_page='2', device_type='AD',
@@ -195,6 +192,7 @@ class UnitTest(APITestCase):
 
 
         url = reverse('api-unit-list', kwargs={'job_pk': self.job.pk})
+        print url
         # first element is an array
         data =  [[{'title':1},{'test':'as'}],{'title':2},{'title':3}]
         response = self.client.post(url, data=data,format='json')
@@ -220,7 +218,7 @@ class UnitTest(APITestCase):
         user =User.objects.create(username='test2', password='test2', email="test@test.com")
         Membership.objects.create(user=user, account=self.account)
         token = Token.objects.get(user=user)
-        token = 'Token ' + token.key + '/' + self.app.token
+        token = 'Token ' + token.key + '|' + self.app.token
         client.credentials(HTTP_AUTHORIZATION=token)
         url = reverse('api-unit-list', kwargs={'job_pk': self.job.pk})
         data =  [[{'title':1},{'test':'as'}],{'title':2},{'title':3}]
@@ -233,7 +231,7 @@ class UnitTest(APITestCase):
         Membership.objects.create(user=user, account=account)
         token = Token.objects.get(user=user)
         app = App.objects.create(account=account, creator=user, title='test4')
-        token = 'Token ' + token.key + '/' + app.token
+        token = 'Token ' + token.key + '|' + app.token
         client.credentials(HTTP_AUTHORIZATION=token)
         url = reverse('api-unit-list', kwargs={'job_pk': 1})
         response = client.get(url,format='json')
@@ -265,7 +263,7 @@ class UnitTest(APITestCase):
         user =User.objects.create(username='test2', password='test2', email="test@test.com")
         Membership.objects.create(user=user, account=self.account)
         token = Token.objects.get(user=user)
-        token = 'Token ' + token.key + '/' + self.app.token
+        token = 'Token ' + token.key + '|' + self.app.token
         client.credentials(HTTP_AUTHORIZATION=token)
         response = client.get(url,format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -277,7 +275,7 @@ class UnitTest(APITestCase):
         Membership.objects.create(user=user, account=account)
         token = Token.objects.get(user=user)
         app = App.objects.create(account=account, creator=user, title='test4')
-        token = 'Token ' + token.key + '/' + app.token
+        token = 'Token ' + token.key + '|' + app.token
         client.credentials(HTTP_AUTHORIZATION=token)
         response = client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
