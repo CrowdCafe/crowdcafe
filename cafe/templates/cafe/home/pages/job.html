@@ -42,8 +42,9 @@ canvas{
 				{% csrf_token %}
 				{% for item in units %}
 				{% include_external job.id %}
-				<input type ="hidden" name='unit_ids' value = "{{item.id}}">
+				<input type ="hidden" name="unit_ids" value = "{{item.id}}">
 				{% endfor %}
+				<input type ="hidden" name="gold_creation" value = "{{gold_creation}}">
 
 				{% include 'cafe/home/pages/snippets/contexts.html' %}
 

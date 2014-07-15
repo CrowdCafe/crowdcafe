@@ -37,7 +37,7 @@ def About(request):
 def Rewards(request):
 	logEvent(request, 'rewards')
 	# show available rewards
-	coupons = Coupon.objects.filter(account = request.user.profile.personalAccount, status = 'AV').order_by('-date_updated').all()
+	coupons = Coupon.objects.filter(account = request.user.profile.personalAccount, status = 'AC').order_by('-date_updated').all()
 	vendors = Vendor.objects.all()
 	
 	return render_to_response('cafe/home/pages/rewards.html', {'vendors':vendors, 'coupons':coupons}, context_instance=RequestContext(request))
@@ -100,12 +100,17 @@ def JobList(request):
 def UnitsAssign(request, job_id):
 	job = get_object_or_404(Job, pk = job_id)
 
+
 	# if this job is published or the current user is its creator	
 	if job.status == 'PB' or job.creator == request.user:
+		gold_creation = False 
+		# if the current user is a member of the job app account and there is an http parameter that this is a gold_creation task
+		if 'gold_creation' in request.GET:
+			gold_creation = bool(request.GET['gold_creation'])
 		# get a subset of data units (the amount defined in job.units_per_page)
-		units = job.assignUnits(request.user)
+		units = job.assignUnits(request.user, gold_creation)
 		if units:
-			return render_to_response('cafe/home/pages/job.html', {'job':job,'units':units}, context_instance=RequestContext(request))
+			return render_to_response('cafe/home/pages/job.html', {'job':job,'units':units,'gold_creation':int(gold_creation)}, context_instance=RequestContext(request))
 	
 	return redirect(reverse('cafe-job-list')+'?category='+job.category)
 
@@ -115,6 +120,9 @@ def UnitsComplete(request, job_id):
 	
 	# get list of units which are executed in the task form, which has status "Not Completed" and are published
 	units = []
+	gold_creation = False
+	if 'gold_creation' in request.POST and int(request.POST['gold_creation'])==1:
+		gold_creation = True
 	if 'unit_ids' in request.POST:
 		unit_ids_pool = request.POST['unit_ids']
 		units_query = Unit.objects.filter(status = 'NC', published = True)
@@ -127,10 +135,11 @@ def UnitsComplete(request, job_id):
 	# go through all the POST data for each unit and save relative data to judgement
 	judgements = []
 	for unit in units:
-		judgements.append(unit.saveJudgement(request.POST,request.user))
+		judgements.append(unit.saveJudgement(request.POST,request.user,gold_creation))
 	# send a request to URL defined in job settings with info about judgements provided
 	job.webhook(judgements)
-	return redirect(reverse('cafe-units-assign', kwargs={'job_id': job.id})+'?completed_previous=1')
+	
+	return redirect(reverse('cafe-units-assign', kwargs={'job_id': job.id})+'?completed_previous=1&gold_creation=1')
 
 # -----------------------------------
 # Rewards related views
@@ -141,7 +150,7 @@ def RewardPurchase(request, reward_id):
 	reward = get_object_or_404(Reward,pk = reward_id)
 	coupon = reward.purchaseCoupon(request.user)
 	if coupon:
-		logEvent(request, 'coupon_purchased',assignedcoupon.reward.id, assignedcoupon.id)
+		logEvent(request, 'coupon_purchased',coupon.reward.id, coupon.id)
 	else:
 		logEvent(request, 'coupon_not_purchased')
 	return redirect('cafe-rewards')
@@ -149,8 +158,8 @@ def RewardPurchase(request, reward_id):
 @login_required 
 def CouponActivate(request, coupon_id):
 
-	coupon = get_object_or_404(Coupon, pk = coupon_id, worker = request.user, status = 'AC')
-	coupon.status = 'PS'
+	coupon = get_object_or_404(Coupon, pk = coupon_id, account = request.user.profile.personalAccount, status = 'AC')
+	coupon.status = 'UD'
 	coupon.save()
 	
 	logEvent(request, 'coupon_activated',coupon.reward.id, coupon.id)

@@ -21,7 +21,7 @@
 			<td>{{job.title}}</td>
 			<td>{{job.price}} euro</td>
 			<td><a href="{% url 'unit-list' job.id %}">data</a></td>
-
+			<td><a href="{% url 'cafe-units-assign' job.id %}?gold_creation=1">create gold data</a></td>
 			<td><a href="{% url 'job-update' job.id %}" class='btn btn-default'>edit</a></td>
 			<td><a href="{% url 'qualitycontrol-update' job.id %}" class='btn btn-default'>qualitycontrol</a></td>
 		</div>

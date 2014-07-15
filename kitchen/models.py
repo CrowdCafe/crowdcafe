@@ -24,9 +24,10 @@ from CrowdCafe.settings_common import TASK_CATEGORIES
 
 from account.models import Account, FundTransfer
 from math import *
-from utility.general import getSample
+from utility.general import getSample, getSubset
 from django.db.models.signals import post_save
-
+from django.db.models import Q
+import random
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
 TASK_CATEGORY_CHOICES = (
     ('EP','Espresso',),
@@ -114,15 +115,37 @@ class Job(models.Model):
             return True
         except:
             return False
-    def assignUnits(self,worker):
+    def assignUnits(self,worker,regular_units_only):
         units_completed_by_worker = Judgement.objects.filter(unit__job = self, worker = worker).values('unit')
         # get units which are published and do not have any judgements provided by the worker
         units = Unit.objects.filter(job = self, status = 'NC', published = True).exclude(pk__in = units_completed_by_worker)
-        if units.count() > 0:
-            if units.count() > self.units_per_page:
-                subset = getSample(iter(units.all()),self.units_per_page)
+        # set of available gold units
+        units_gold = [x for x in units if x.gold]
+        # set of available regular units
+        units_regular = [x for x in units if not x.gold]
+        # current workers score in this job
+        score = self.qualitycontrol.score(worker)
+        if len(units_regular) > 0:
+            # if it is a gold creation task
+            if regular_units_only and worker in self.app.account.users.all():
+                subset = getSubset(units_regular,self.units_per_page)
             else:
-                subset = units.all()
+                # if gold is required and exists
+                if self.qualitycontrol.gold_min>0 and len(units_gold)>0:
+                    if score > self.qualitycontrol.gold_max:
+                        gold_amount_to_inject = random.choice([0,0,0,0,0,0,0,0,0,1])
+                    if score > self.qualitycontrol.gold_min and score <= self.qualitycontrol.gold_max:
+                        gold_amount_to_inject = max([score - self.qualitycontrol.gold_min,self.qualitycontrol.gold_min])
+                    if score <= self.qualitycontrol.gold_min:
+                        gold_amount_to_inject = self.qualitycontrol.gold_max
+                    # final number of gold units to be injected
+                    gold_amount_to_inject = min([len(units_gold), int(gold_amount_to_inject)])
+                else:
+                    gold_amount_to_inject = 0
+
+                    subset_gold = getSubset(units_gold,gold_amount_to_inject)
+                    subset_regular = getSubset(units_regular,self.units_per_page)
+                    subset = subset_gold + subset_regular
             return subset
         else:
             return False
@@ -194,7 +217,7 @@ class Unit(models.Model):
             self.save()
         return self.status
 
-    def saveJudgement(self, postdata, worker):
+    def saveJudgement(self, postdata, worker, gold_creation):
         judgement_output_data = {}
         score = 0.0
         for key in postdata:
@@ -212,9 +235,11 @@ class Unit(models.Model):
                             score-=1.0
         
         judgement = Judgement(unit = self, output_data =judgement_output_data, worker = worker, score = score)
+        # if it was a gold creation task and the worker is a member of the job app account
+        if gold_creation and worker in self.job.app.account.users.all():
+            judgement.gold = True
         judgement.save()
-        # check gold data (complex one)
-        
+        #TODO check gold data (complex one)
         self.updateStatus()
         
         return judgement
@@ -238,11 +263,11 @@ class Judgement(models.Model):
         if self.pk is None and self.unit.job.price>0:
 
             # Worker gets money from Requestor
-            fundtransfer = FundTransfer(currency = 'VM', to_account = self.worker.profile.personalAccount, from_account = self.unit.job.app.account, amount = self.unit.job.price, description = 'answer for t.i. ['+str(self.id)+']')
+            fundtransfer = FundTransfer(to_account = self.worker.profile.personalAccount, from_account = self.unit.job.app.account, amount = self.unit.job.price, description = 'answer for t.i. ['+str(self.id)+']')
             fundtransfer.save()
 
             # Platform gets comission from Requestor
-            # commission = AccountTransaction(currency = 'VM', to_account = getPlatformOwner().profile.account, from_account = self.task.job.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.task.id)+']')
+            # commission = AccountTransaction(to_account = getPlatformOwner().profile.account, from_account = self.task.job.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.task.id)+']')
             # commission.save()
         super(Judgement, self).save(*args, **kwargs)
     def webhook(self):

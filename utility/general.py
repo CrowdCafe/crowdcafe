@@ -20,3 +20,11 @@ def getSample(iterator, k):
             result[s] = item
 
     return result
+
+def getSubset(list, k):
+    if k == 0:
+        return []
+    elif len(list) > k:
+        return getSample(iter(list),k)
+    else:
+        return list
