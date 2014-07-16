@@ -139,6 +139,7 @@ Easel.prototype = {
 		easel.buttons.start.on('click', easel.actions.start);
 		easel.buttons.finish.on('click', easel.actions.finish);
 		easel.buttons.remove.on('click', easel.actions.removeLast);
+		
 	},
 	initScrolling: function() {
 		var easel = this;

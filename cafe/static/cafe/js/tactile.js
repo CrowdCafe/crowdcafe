@@ -10,8 +10,8 @@ var Tactile = {
 	},
 	getMousePosition: function(e, offset){
 		return {
-			'x':e.offsetX,
-			'y':e.offsetY
+			'x':e.offsetX-5,
+			'y':e.offsetY-5
 		}
 	},
 	getTouchPosition: function(e, offset){
@@ -22,8 +22,8 @@ var Tactile = {
 				'y' : e.touches[0].pageY
 			}
 			if (offset){
-				position.x -= offset.left;
-				position.y -= offset.top;
+				position.x -= offset.left+20;
+				position.y -= offset.top+5;
 			}
 
 			return position;
@@ -34,7 +34,7 @@ var Tactile = {
 		var now = new Date().getTime();
 		var timesince = now - Tactile.latesttap;
 		Tactile.latesttap = now;
-		if((timesince < 400) && (timesince > 0))
+		if((timesince < 200) && (timesince > 0))
 			return true;
 		else
 			return false;

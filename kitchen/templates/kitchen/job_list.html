@@ -2,11 +2,13 @@
 
 {% block title%}
 <div class='container'>
-	<h1>Jobs</h1>
+	<h1>{{app.title}}</h1>
+
+	<p>app token: {{app.token}}</p>
+	<h3>jobs</h3>
 	<p>
 		<a href = '{% url "app-list" app.account.id %}' class='btn btn-default'>apps</a>
 		<a href = '{% url "job-create" app.id %}' class='btn btn-primary'>create job</a>
-
 	</p>
 </div>
 {% endblock%}
@@ -21,7 +23,8 @@
 			<td>{{job.title}}</td>
 			<td>{{job.price}} euro</td>
 			<td><a href="{% url 'unit-list' job.id %}">data</a></td>
-			<td><a href="{% url 'cafe-units-assign' job.id %}?gold_creation=1">create gold data</a></td>
+			<td><a href="{% url 'cafe-units-assign' job.id %}?gold_creation=1" target="_blank">create gold data</a></td>
+			<td><a href="{% url 'cafe-units-assign' job.id %}" target="_blank">execution page</a></td>
 			<td><a href="{% url 'job-update' job.id %}" class='btn btn-default'>edit</a></td>
 			<td><a href="{% url 'qualitycontrol-update' job.id %}" class='btn btn-default'>qualitycontrol</a></td>
 		</div>
@@ -29,6 +32,5 @@
 	{% empty %}
 	<h3>No jobs yet.</h3>
 	{% endfor %}
-
 </div>
 {% endblock%}

@@ -117,21 +117,17 @@ def UnitsAssign(request, job_id):
 @login_required 
 def UnitsComplete(request, job_id): 
 	job = get_object_or_404(Job, pk = job_id, status = 'PB')
-	
-	# get list of units which are executed in the task form, which has status "Not Completed" and are published
+		# get list of units which are executed in the task form, which has status "Not Completed" and are published
 	units = []
 	gold_creation = False
 	if 'gold_creation' in request.POST and int(request.POST['gold_creation'])==1:
 		gold_creation = True
-	if 'unit_ids' in request.POST:
-		unit_ids_pool = request.POST['unit_ids']
-		units_query = Unit.objects.filter(status = 'NC', published = True)
-
-		if type(unit_ids_pool).__name__ == 'list':
-			units = units_query.filter(pk__in = unit_ids_pool).all()
-		else:
-			units = units_query.filter(pk = unit_ids_pool).all()
 	
+	units_pool_handler = 'unit_ids' # pool with a list of unit ids completed in this task
+	if units_pool_handler in request.POST:
+		unit_ids_pool = request.POST.getlist(units_pool_handler)
+		units_query = Unit.objects.filter(status = 'NC', published = True)
+		units = units_query.filter(pk__in = unit_ids_pool).all()
 	# go through all the POST data for each unit and save relative data to judgement
 	judgements = []
 	for unit in units:

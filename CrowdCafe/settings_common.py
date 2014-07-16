@@ -107,10 +107,11 @@ BOWER_INSTALLED_APPS = (
     'minimal-devices',
     'fontawesome',
     'BrandButtons',
-    'framework7',
+    'framework7#0.9.2',
     'startup-demo',
-    'jquery',
-    'fabric'
+    'jquery#2.1.1',
+    #'fabric', commented, because some change is needed to be done in this plugin
+    'shake.js#1.1.0'
 )
 
 # Additional locations of static files

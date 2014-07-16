@@ -16,6 +16,7 @@
 		<tr>
 			<td>#{{forloop.counter}}</td>
 			<td>id:{{judgement.id}}</td>
+			<td>score{{judgement.score}}</td>
 			<td>{{judgement.output_data}}</td>
 			<td><a href="{% url 'judgement-update' unit.id %}" class='btn btn-default'>edit</a></td>
 		</tr>

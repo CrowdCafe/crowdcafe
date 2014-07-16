@@ -139,13 +139,13 @@ class Job(models.Model):
                     if score <= self.qualitycontrol.gold_min:
                         gold_amount_to_inject = self.qualitycontrol.gold_max
                     # final number of gold units to be injected
-                    gold_amount_to_inject = min([len(units_gold), int(gold_amount_to_inject)])
+                    gold_amount_to_inject = min([len(units_gold), int(gold_amount_to_inject), self.units_per_page])
                 else:
                     gold_amount_to_inject = 0
 
-                    subset_gold = getSubset(units_gold,gold_amount_to_inject)
-                    subset_regular = getSubset(units_regular,self.units_per_page)
-                    subset = subset_gold + subset_regular
+                subset_gold = getSubset(units_gold,gold_amount_to_inject)
+                subset_regular = getSubset(units_regular,self.units_per_page - gold_amount_to_inject)
+                subset = subset_gold + subset_regular
             return subset
         else:
             return False
@@ -212,7 +212,7 @@ class Unit(models.Model):
         return Judgement.objects.filter(unit = self)
     
     def updateStatus(self):
-        if self.judgements.count() >= self.job.qualitycontrol.min_judgements_per_unit:
+        if self.judgements.count() >= self.job.qualitycontrol.min_judgements_per_unit and not self.gold:
             self.status = 'CD'
             self.save()
         return self.status
@@ -225,23 +225,28 @@ class Unit(models.Model):
             dataunit_handle = 'dataitem_'+str(self.id)
             if dataunit_handle in key:
                 judgement_output_data[key.replace(dataunit_handle,'')] = postdata[key]
-                # check gold data (simple one)
-                if self.gold and 'gold'+key.replace(dataitem_handle,'') in self.input_data:
-                        # get a gold judgement for the current unit
-                        gold_judgement_data = Judgement.objects.filter(unit = self, gold = True).all()[0].output_data
+                # check gold data if gold exists but qualitycontrol_url is not given
+                if self.gold:
+                    gold_judgement_data = self.judgements.filter(gold = True).all()[0].output_data
+                    if not self.job.qualitycontrol.qualitycontrol_url and 'gold'+key.replace(dataitem_handle,'') in gold_judgement_data:
+                        #TODO rethink it
                         if postdata[key] == gold_judgement_data['gold'+key.replace(dataitem_handle,'')]:
                             score+=1.0
                         else:
                             score-=1.0
         
         judgement = Judgement(unit = self, output_data =judgement_output_data, worker = worker, score = score)
+        judgement.save()
         # if it was a gold creation task and the worker is a member of the job app account
         if gold_creation and worker in self.job.app.account.users.all():
             judgement.gold = True
-        judgement.save()
-        #TODO check gold data (complex one)
-        self.updateStatus()
+            judgement.save()
+        else:
+            judgement.webhook() 
         
+        
+
+        self.updateStatus()
         return judgement
 
 # ====================================================
@@ -274,8 +279,8 @@ class Judgement(models.Model):
         if self.unit.job.qualitycontrol.qualitycontrol_url and self.unit.gold:
             #TODO simplify this - combine with job.webhook()
             data = {}
-            data['question'] = self.unit.input_data
-            data['answer'] = self.output_data
+            data['gold'] = self.unit.judgements.filter(gold = True).all()[0].output_data
+            data['given'] = self.output_data
             try:
                 headers = {'Content-type': 'application/json'}
                 r = requests.post(self.unit.job.qualitycontrol.qualitycontrol_url, data = json.dumps(data), headers = headers, timeout = 2)
