@@ -131,7 +131,7 @@ class JobListView(ListView):
 
     def get_queryset(self):
         app = get_object_or_404(App, pk=self.kwargs.get('app_pk', None), account__users__in=[self.request.user.id])
-        return Job.objects.filter(app=app)
+        return Job.objects.filter(app=app).order_by('-date_created')
 
     def get_context_data(self, **kwargs):
         context = super(JobListView, self).get_context_data(**kwargs)

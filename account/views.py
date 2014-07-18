@@ -12,10 +12,14 @@ from models import Account, Profile, Membership, FundTransfer
 from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import render
 from django.http import HttpResponseRedirect    
+from django.conf import settings
 
 from rest_framework.authtoken.models import Token
 from django.views.generic.list import ListView
 from django.db.models import Q
+from paypal.standard.forms import PayPalPaymentsForm
+import random
+from django.views.decorators.csrf import csrf_exempt
 
 log = logging.getLogger(__name__)
 
@@ -153,6 +157,30 @@ class AccountUpdateView(UpdateView):
         account = form.save()
         return redirect(reverse('account-list'))
 
+def AccountPaymentRequest(request, account_pk):
+
+    # What you want the button to do.
+    paypal_dict = {
+        "business": settings.PAYPAL_RECEIVER_EMAIL,
+        "amount": "10.00",
+        "item_name": "Buy credit on CrowdCafe",
+        "invoice": random.randint(1000, 9999),
+        "notify_url": "http://tulnartnpx.localtunnel.me" + reverse('paypal-ipn', kwargs={'account_pk': account_pk}),
+        "return_url": "http://localhost:8000"+reverse('account-payment-accept', kwargs={'account_pk': account_pk}),
+        "cancel_return": "http://localhost:8000/accounts/",
+    }
+
+    # Create the instance.
+    form = PayPalPaymentsForm(initial=paypal_dict)
+    context = {"form": form}
+    return render_to_response("account/payment.html", context)
+
+@csrf_exempt
+def AccountPaymentAccept(request, account_pk):
+    print request.body
+    print request.POST
+
+    return redirect(reverse('account-list'))
 # -------------------------------------------------------------
 # Membership
 # -------------------------------------------------------------

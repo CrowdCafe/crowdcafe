@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from kitchen.models import Job, Unit, Judgement
+from django.views.generic.list import ListView
 #from kitchen.models import getPlatformOwner, calculateCommission
 
 #from preselection.models import Preselection
@@ -77,6 +78,26 @@ def Home(request):
 		return render_to_response('cafe/home/pages/home.html', context_instance=RequestContext(request))
 	else:
 		return redirect('cafe-welcome')
+
+class JobListView(ListView):
+	model = Job
+	template_name = "cafe/home/pages/job_list.html"
+
+	def get_queryset(self):
+		#TODO simplify this
+		jobs = Job.objects.filter(status = 'PB')
+		if 'category' in self.request.GET:
+			jobs = jobs.filter(category = self.request.GET['category'])
+		jobs_ids_pool = []
+		for job in jobs:
+			if job.assignUnits(self.request.user):
+				jobs_ids_pool.append(job.id)
+		print jobs_ids_pool
+		return Job.objects.filter(id__in = jobs_ids_pool).order_by('-date_created')
+
+	def get_context_data(self, **kwargs):
+		context = super(JobListView, self).get_context_data(**kwargs)
+		return context
 
 @detect_mobile
 @login_required 

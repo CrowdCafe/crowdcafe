@@ -15,7 +15,7 @@ canvas{
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="left">
-			<a href="{% url 'cafe-job-list' %}?category={{task.job.category}}" class="back external link"><i class="icon icon-back-blue"></i><span>Back</span></a>
+			<a href="{% url 'cafe-job-list' %}?category={{job.category}}" class="back external link"><i class="icon icon-back-blue"></i><span>Back</span></a>
 			<a href="{% url 'cafe-profile' %}?user={{task.job.owner.id}}" class="link "><i class="fa fa-male"></i>
 			</a>
 		</div>

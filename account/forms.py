@@ -7,6 +7,7 @@ from django.forms.forms import Form
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
 
+
 class UserCreateForm(UserCreationForm):
 
     email = forms.EmailField(label=(u'Email'))
@@ -65,6 +66,7 @@ class LoginForm(AuthenticationForm):
         )
         #self.helper.add_input(Submit('submit', 'Login'))
         super(LoginForm, self).__init__(*args, **kwargs)
+
 
 class UserUpdate(ModelForm):
     username = forms.CharField(required=True)

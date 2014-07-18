@@ -27,3 +27,4 @@ djangorestframework-csv
 six==1.4
 python-instagram
 django-bower
+numpy

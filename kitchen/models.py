@@ -28,6 +28,7 @@ from utility.general import getSample, getSubset
 from django.db.models.signals import post_save
 from django.db.models import Q
 import random
+import numpy
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
 TASK_CATEGORY_CHOICES = (
     ('EP','Espresso',),
@@ -115,7 +116,7 @@ class Job(models.Model):
             return True
         except:
             return False
-    def assignUnits(self,worker,regular_units_only):
+    def assignUnits(self,worker,regular_units_only = False):
         units_completed_by_worker = Judgement.objects.filter(unit__job = self, worker = worker).values('unit')
         # get units which are published and do not have any judgements provided by the worker
         units = Unit.objects.filter(job = self, status = 'NC', published = True).exclude(pk__in = units_completed_by_worker)
@@ -124,27 +125,18 @@ class Job(models.Model):
         # set of available regular units
         units_regular = [x for x in units if not x.gold]
         # current workers score in this job
-        score = self.qualitycontrol.score(worker)
-        if len(units_regular) > 0:
+        evaluations_negative = self.qualitycontrol.evaluated_amount(worker, False)
+
+        if len(units_regular) > 0 and evaluations_negative <= self.qualitycontrol.incorrect_allowed:
             # if it is a gold creation task
             if regular_units_only and worker in self.app.account.users.all():
                 subset = getSubset(units_regular,self.units_per_page)
             else:
                 # if gold is required and exists
-                if self.qualitycontrol.gold_min>0 and len(units_gold)>0:
-                    if score > self.qualitycontrol.gold_max:
-                        gold_amount_to_inject = random.choice([0,0,0,0,0,0,0,0,0,1])
-                    if score > self.qualitycontrol.gold_min and score <= self.qualitycontrol.gold_max:
-                        gold_amount_to_inject = max([score - self.qualitycontrol.gold_min,self.qualitycontrol.gold_min])
-                    if score <= self.qualitycontrol.gold_min:
-                        gold_amount_to_inject = self.qualitycontrol.gold_max
-                    # final number of gold units to be injected
-                    gold_amount_to_inject = min([len(units_gold), int(gold_amount_to_inject), self.units_per_page])
-                else:
-                    gold_amount_to_inject = 0
+                gold_amount_to_inject = min(self.qualitycontrol.amountOfGoldToInject(worker),len(units_gold))
 
                 subset_gold = getSubset(units_gold,gold_amount_to_inject)
-                subset_regular = getSubset(units_regular,self.units_per_page - gold_amount_to_inject)
+                subset_regular = getSubset(units_regular,abs(self.units_per_page - gold_amount_to_inject))
                 subset = subset_gold + subset_regular
             return subset
         else:
@@ -166,22 +158,33 @@ class QualityControl(models.Model):
     max_units_per_worker = models.IntegerField(default=100)  # Some limitation of amount of units single worker can complete ideally in percentage
     gold_min = models.IntegerField(default=0, null=True)
     gold_max = models.IntegerField(default=0, null=True)
-    score_min = models.IntegerField(default=0, null=True)
+    incorrect_allowed = models.IntegerField(default=0, null=True)
     qualitycontrol_url = models.URLField(null=True, blank=True)
 
     def __unicode__(self):
         return str(self.id)
-    def availableUnits(self, worker):
-
-        worker_judgements = Judgement.objects.filter(unit__job = self.job, worker = worker)
-        all_units = Unit.objects.filter(job = self.job).count()
-        available_units = []
-        if (self.score(user) >= self.min_score and (100*worker_judgements.count()/amount_all_units.count() < self.max_units_per_worker)):
-            available_units = all_units.filter(status = 'NC', published = True)
-        else:
-            return False
     def score(self, worker):
         return Judgement.objects.filter(unit__job=self.job, worker = worker).aggregate(Sum('score'))['score__sum']
+    def evaluated_amount(self, worker, correct = True):
+        evaluated_queryset = Judgement.objects.filter(unit__job=self.job, worker = worker)
+        if correct:
+            evaluated_queryset = evaluated_queryset.filter(score__gt = 0)
+        else:
+            evaluated_queryset = evaluated_queryset.filter(score__lt = 0)
+            
+        evaluated = evaluated_queryset.aggregate(Sum('score'))['score__sum']
+        if evaluated:
+            evaluated = abs(evaluated)
+        else:
+            evaluated = 0
+        return evaluated
+    
+    def getProbabilityToInjectGold(self,worker):
+        #TODO do we need this 1.0 in the beginning if we want to get float value?
+        return 1.0*(1+self.evaluated_amount(worker, False))/(1+self.evaluated_amount(worker, True)+self.evaluated_amount(worker, False))
+    def amountOfGoldToInject(self,worker):
+        gold_units = [[0, 1][numpy.random.random() < self.getProbabilityToInjectGold(worker)] for _ in range(self.job.units_per_page)]
+        return sum(gold_units)
 
 @receiver(post_save, sender=Job)
 def initJob(sender, **kwargs):
@@ -285,9 +288,9 @@ class Judgement(models.Model):
                 headers = {'Content-type': 'application/json'}
                 r = requests.post(self.unit.job.qualitycontrol.qualitycontrol_url, data = json.dumps(data), headers = headers, timeout = 2)
                 
-                if int(r.text) == 1:
+                if r.status_code in [201,200]:
                     self.score = 1
-                if int(r.text) == -1:
+                if r.status_code in [500]:
                     self.score = -1
                 self.save()
             except:

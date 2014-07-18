@@ -18,11 +18,11 @@
 	<div data-page="tasklist" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
-			{% if jobs|length > 0 %}
+			{% if object_list|length > 0 %}
 			<div class="content-block-title">Select a task to work on:</div>
 			<div class="list-block media-list">
 				<ul>
-					{% for job in jobs%}
+					{% for job in object_list%}
 					<li><a href="{% url 'cafe-units-assign' job.id %}" task-id = "{{job.id}}" class="item-link external item-content task">
 						<div class="item-media">
 							<img src='{{job.owner.profile.avatar}}' class='avatar'>

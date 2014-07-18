@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from django.contrib.auth.decorators import login_required
 
 import views
 
@@ -13,7 +14,7 @@ urlpatterns = patterns('',
     url(r'rewards/$', views.Rewards, name='cafe-rewards'),
     url(r'profile/$', views.UserProfile, name='cafe-profile'),
     url(r'transactions/$', views.Transactions, name='cafe-transactions'),
-    url(r'jobs/$', views.JobList, name='cafe-job-list'),
+    url(r'jobs/$', login_required(views.JobListView.as_view()), name='cafe-job-list'),
     
     # Units execution
     url(r'jobs/(?P<job_id>\d+)/assign/$', views.UnitsAssign, name='cafe-units-assign'),

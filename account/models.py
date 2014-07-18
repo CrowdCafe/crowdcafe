@@ -9,6 +9,8 @@ from decimal import Decimal
 from django.db.models import Sum
 import hashlib
 from django.db.models.signals import post_save
+from paypal.standard.ipn.signals import payment_was_successful
+
 
 
 # Extension of User class to add some properties (does not have any columns)
@@ -131,3 +133,17 @@ def initUser(sender, **kwargs):
 
     # add current user to this account with Admin permission
     membership, created = Membership.objects.get_or_create(user = user, permission = 'AN', account = account)
+
+def show_me_the_money(sender, **kwargs):
+    ipn_obj = sender
+    # You need to check 'payment_status' of the IPN
+    print 'show me the money'
+    print ipn_obj
+    print self.kwargs
+    print '************'
+    if ipn_obj.payment_status == "Completed":
+        # Undertake some action depending upon `ipn_obj`.
+        if ipn_obj.custom == "Upgrade all users!":
+            Users.objects.update(paid=True)
+
+payment_was_successful.connect(show_me_the_money)
