@@ -29,7 +29,7 @@ urlpatterns = patterns('',
     url(r'^accounts/(?P<account_pk>\d+)/payment/request/$', views.AccountPaymentRequest, name='account-payment-request'),
     url(r'^accounts/(?P<account_pk>\d+)/payment/accept/$', views.AccountPaymentAccept, name='account-payment-accept'),
 
-    url(r'^accounts/(?P<account_pk>\d+)/paypal/', include('paypal.standard.ipn.urls')),
+    url(r'^accounts/paypal/', include('paypal.standard.ipn.urls')),
 
     url(r'^accounts/(?P<account_pk>\d+)/transfers/$', login_required(views.FundTransferListView.as_view()), name='fundtransfer-list'),
 

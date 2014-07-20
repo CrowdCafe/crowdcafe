@@ -9,7 +9,7 @@ oauth2
 python-openid
 wsgiref
 requests
-djangorestframework
+djangorestframework==2.3.14
 django-crispy-forms==1.4.0
 djrill==0.7.0
 django-gravatar==0.1.0
@@ -28,3 +28,4 @@ six==1.4
 python-instagram
 django-bower
 numpy
+django-paypal

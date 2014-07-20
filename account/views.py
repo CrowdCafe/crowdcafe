@@ -165,9 +165,10 @@ def AccountPaymentRequest(request, account_pk):
         "amount": "10.00",
         "item_name": "Buy credit on CrowdCafe",
         "invoice": random.randint(1000, 9999),
-        "notify_url": "http://tulnartnpx.localtunnel.me" + reverse('paypal-ipn', kwargs={'account_pk': account_pk}),
-        "return_url": "http://localhost:8000"+reverse('account-payment-accept', kwargs={'account_pk': account_pk}),
-        "cancel_return": "http://localhost:8000/accounts/",
+        "account_pk":account_pk,
+        "notify_url": settings.APP_URL + reverse('paypal-ipn', kwargs={'account_pk': account_pk}),
+        "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': account_pk}),
+        "cancel_return": settings.APP_URL + reverse('account-list'),
     }
 
     # Create the instance.
