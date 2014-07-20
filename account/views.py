@@ -180,7 +180,6 @@ def AccountPaymentRequest(request, account_pk):
 
 class PayPalPayment(FormView):
     
-    success_url = '/thanks/'
     template_name = "kitchen/crispy.html"
     form_class = PayPalForm
 
@@ -196,9 +195,6 @@ class PayPalPayment(FormView):
             "custom":self.kwargs.get('account_pk', None)
         }
         return initial
-    def open_paypal(self, form):
-        print 'saved'
-        return redirect(reverse('account-list'))
 @csrf_exempt
 def AccountPaymentAccept(request, account_pk):
     print request.body

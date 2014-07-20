@@ -138,26 +138,11 @@ def initUser(sender, **kwargs):
     membership, created = Membership.objects.get_or_create(user = user, permission = 'AN', account = account)
 
 def show_me_the_money(sender, **kwargs):
-    print "##################"
     ipn_obj = sender
-    # You need to check 'payment_status' of the IPN
-    print 'show me the money'
-    print ipn_obj
-    print ipn_obj.custom
-    print ipn_obj.auth_amount
-    print ipn_obj.mc_currency
-    print ipn_obj.mc_gross
-    print ipn_obj.mc_handling
-    print ipn_obj.mc_shipping
-    print ipn_obj.mc_fee
-    print ipn_obj.payment_gross
-    print ipn_obj.tax
-    print ipn_obj.invoice
-    print '************'
     if ipn_obj.payment_status == "Completed":
         # Undertake some action depending upon `ipn_obj`.
         account = get_object_or_404(Account, pk = ipn_obj.custom)
-        deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross,description = "PayPal invoice:"+ipn_obj.invoice+' transaction: '+ipn_obj.txn_id)
+        deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross, description = "PayPal invoice: "+ipn_obj.invoice+' transaction: '+ipn_obj.txn_id)
         deposit.save()
 
 payment_was_successful.connect(show_me_the_money)
