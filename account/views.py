@@ -169,7 +169,7 @@ def AccountPaymentRequest(request, account_pk):
         "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': account_pk}),
         "cancel_return": settings.APP_URL + reverse('account-list'),
     }
-
+    print paypal_dict
     # Create the instance.
     form = PayPalPaymentsForm(initial=paypal_dict)
     context = {"form": form}
