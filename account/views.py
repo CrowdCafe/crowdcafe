@@ -166,7 +166,7 @@ def AccountPaymentRequest(request, account_pk):
         "item_name": "Buy credit on CrowdCafe",
         "invoice": random.randint(1000, 9999),
         "notify_url": settings.APP_URL + reverse('paypal-ipn'),
-        "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': account_pk}),
+        "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': account_pk})+'?account_pk='+str(account_pk),
         "cancel_return": settings.APP_URL + reverse('account-list'),
     }
     print paypal_dict
