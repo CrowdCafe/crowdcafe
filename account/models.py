@@ -135,6 +135,7 @@ def initUser(sender, **kwargs):
     membership, created = Membership.objects.get_or_create(user = user, permission = 'AN', account = account)
 
 def show_me_the_money(sender, **kwargs):
+    print "##################"
     ipn_obj = sender
     # You need to check 'payment_status' of the IPN
     print 'show me the money'
