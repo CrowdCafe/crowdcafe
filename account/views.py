@@ -163,6 +163,7 @@ def AccountPaymentRequest(request, account_pk):
     paypal_dict = {
         "business": settings.PAYPAL_RECEIVER_EMAIL,
         "amount": "10.00",
+        "currency": "EUR",
         "item_name": "Buy credit on CrowdCafe",
         "invoice": str(account_pk)+'|'+str(random.randint(1000000, 9999999)),
         "notify_url": settings.APP_URL + reverse('paypal-ipn'),
