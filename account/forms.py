@@ -6,7 +6,35 @@ from models import Profile, Account, Membership
 from django.forms.forms import Form
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
+from paypal.standard.forms import PayPalPaymentsForm
+from django.conf import settings
+from paypal.standard import conf
 
+class SubmitButtonWidget(forms.Widget):
+    def render(self, name, value, attrs=None):
+        return '<input type="submit" name="%s" value="%s">' % (html.escape(name), html.escape(value))
+
+
+class SubmitButtonField(forms.Field):
+    def __init__(self, *args, **kwargs):
+        kwargs["widget"] = SubmitButtonWidget
+
+        super(SubmitButtonField, self).__init__(*args, **kwargs)
+
+    def clean(self, value):
+        return value
+
+class PayPalForm(PayPalPaymentsForm):
+    action_url = conf.POSTBACK_ENDPOINT
+    if settings.PAYPAL_TEST:
+        action_url = conf.SANDBOX_POSTBACK_ENDPOINT
+    payment_amounts = ((5.0,'5 euro'),(10.0,'10 euro'),(25.0,'25 euro'),(100.0,'100 euro'))
+    amount = forms.ChoiceField(choices=payment_amounts, widget=forms.Select(), label=(u'Amount to pay'), required=True)
+    
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_action = action_url
+    helper.add_input(Submit('submit', 'Pay via PayPal'))
 
 class UserCreateForm(UserCreationForm):
 

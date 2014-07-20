@@ -7,7 +7,7 @@ from django.contrib.auth import logout, authenticate, login
 import logging
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf 
-from forms import LoginForm, UserCreateForm, AccountForm, MembershipForm, UserUpdate
+from forms import LoginForm, UserCreateForm, AccountForm, MembershipForm, UserUpdate, PayPalForm
 from models import Account, Profile, Membership, FundTransfer
 from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import render
@@ -20,7 +20,8 @@ from django.db.models import Q
 from paypal.standard.forms import PayPalPaymentsForm
 import random
 from django.views.decorators.csrf import csrf_exempt
-
+from paypal.standard.models import PayPalStandardBase
+from django.views.generic.edit import FormView
 log = logging.getLogger(__name__)
 
 # -------------------------------------------------------------
@@ -164,7 +165,7 @@ def AccountPaymentRequest(request, account_pk):
         "business": settings.PAYPAL_RECEIVER_EMAIL,
         "amount": "10.00",
         "currency_code": "EUR",
-        "item_name": "Buy credit on CrowdCafe",
+        "item_name": "CrowdCafe Credit",
         "invoice": str(account_pk)+'|'+str(random.randint(1000000, 9999999)),
         "notify_url": settings.APP_URL + reverse('paypal-ipn'),
         "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': account_pk})+'?account_pk='+str(account_pk),
@@ -177,6 +178,27 @@ def AccountPaymentRequest(request, account_pk):
     context = {"form": form}
     return render_to_response("account/payment.html", context)
 
+class PayPalPayment(FormView):
+    
+    success_url = '/thanks/'
+    template_name = "kitchen/crispy.html"
+    form_class = PayPalForm
+
+    def get_initial(self):
+        initial = {
+            "business": settings.PAYPAL_RECEIVER_EMAIL,
+            "currency_code": "EUR",
+            "item_name": "CrowdCafe Credit",
+            "invoice": str(self.kwargs.get('account_pk', None))+'|'+str(random.randint(1000000, 9999999)),
+            "notify_url": settings.APP_URL + reverse('paypal-ipn'),
+            "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': self.kwargs.get('account_pk', None)})+'?account_pk='+str(self.kwargs.get('account_pk', None)),
+            "cancel_return": settings.APP_URL + reverse('account-list'),
+            "custom":self.kwargs.get('account_pk', None)
+        }
+        return initial
+    def open_paypal(self, form):
+        print 'saved'
+        return redirect(reverse('account-list'))
 @csrf_exempt
 def AccountPaymentAccept(request, account_pk):
     print request.body

@@ -157,7 +157,7 @@ def show_me_the_money(sender, **kwargs):
     if ipn_obj.payment_status == "Completed":
         # Undertake some action depending upon `ipn_obj`.
         account = get_object_or_404(Account, pk = ipn_obj.custom)
-        deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross,description = "paypal "+ipn_obj.invoice)
+        deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross,description = "PayPal invoice:"+ipn_obj.invoice+' transaction: '+ipn_obj.txn_id)
         deposit.save()
 
 payment_was_successful.connect(show_me_the_money)
