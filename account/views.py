@@ -168,6 +168,7 @@ def AccountPaymentRequest(request, account_pk):
         "notify_url": settings.APP_URL + reverse('paypal-ipn'),
         "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': account_pk})+'?account_pk='+str(account_pk),
         "cancel_return": settings.APP_URL + reverse('account-list'),
+        "custom":account_pk
     }
     print paypal_dict
     # Create the instance.

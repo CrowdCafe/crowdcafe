@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404, render_to_response, redirect, HttpResponseRedirect
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -140,12 +141,16 @@ def show_me_the_money(sender, **kwargs):
     # You need to check 'payment_status' of the IPN
     print 'show me the money'
     print ipn_obj
+    print ipn_obj.custom
+    print ipn_obj.settle_amount
+    print ipn_obj.settle_currency
+    print ipn_obj.remaining_settle
     print ipn_obj.invoice
-    print self.kwargs
     print '************'
     if ipn_obj.payment_status == "Completed":
         # Undertake some action depending upon `ipn_obj`.
-        if ipn_obj.custom == "Upgrade all users!":
-            Users.objects.update(paid=True)
+        account = get_object_or_404(Account, pk = ipn_obj.invoice.split(str="|")[0])
+        deposit = FundTransfer(to_account = account, amount = ipn_obj.settle_amount,description = "paypal "+ipn_obj.invoice)
+        deposit.save()
 
 payment_was_successful.connect(show_me_the_money)
