@@ -145,9 +145,11 @@ def show_me_the_money(sender, **kwargs):
     print ipn_obj.auth_amount
     print ipn_obj.mc_currency
     print ipn_obj.mc_gross
-    print ipn_obj.handling
-    print ipn_obj.shipping
+    print ipn_obj.mc_handling
+    print ipn_obj.mc_shipping
     print ipn_obj.mc_fee
+    print ipn_obj.payment_gross
+    print ipn_obj.tax
     print ipn_obj.invoice
     print '************'
     if ipn_obj.payment_status == "Completed":
