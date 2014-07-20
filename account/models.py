@@ -140,6 +140,7 @@ def show_me_the_money(sender, **kwargs):
     # You need to check 'payment_status' of the IPN
     print 'show me the money'
     print ipn_obj
+    print ipn_obj.invoice
     print self.kwargs
     print '************'
     if ipn_obj.payment_status == "Completed":

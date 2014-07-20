@@ -203,7 +203,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'requests',
     'djangobower',
-    'paypal.standard.ipn',
+    'paypal.standard.pdt',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -211,12 +211,7 @@ INSTALLED_APPS = (
 )
 
 
-PAYPAL_RECEIVER_EMAIL = "pavel-facilitator@kucherbaev.com"
-PAYPAL_TEST = True
-PAYPAL_API_URL = 'https://api-3t.sandbox.paypal.com/nvp'
-PAYPAL_LOGIN_URL = (
-    'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='
-)
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
