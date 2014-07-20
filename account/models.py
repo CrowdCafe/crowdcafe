@@ -142,15 +142,18 @@ def show_me_the_money(sender, **kwargs):
     print 'show me the money'
     print ipn_obj
     print ipn_obj.custom
-    print ipn_obj.settle_amount
-    print ipn_obj.settle_currency
-    print ipn_obj.remaining_settle
+    print ipn_obj.auth_amount
+    print ipn_obj.mc_currency
+    print ipn_obj.mc_gross
+    print ipn_obj.handling
+    print ipn_obj.shipping
+    print ipn_obj.mc_fee
     print ipn_obj.invoice
     print '************'
     if ipn_obj.payment_status == "Completed":
         # Undertake some action depending upon `ipn_obj`.
-        account = get_object_or_404(Account, pk = ipn_obj.invoice.split(str="|")[0])
-        deposit = FundTransfer(to_account = account, amount = ipn_obj.settle_amount,description = "paypal "+ipn_obj.invoice)
+        account = get_object_or_404(Account, pk = ipn_obj.custom)
+        deposit = FundTransfer(to_account = account, amount = ipn_obj.auth_amount,description = "paypal "+ipn_obj.invoice)
         deposit.save()
 
 payment_was_successful.connect(show_me_the_money)
