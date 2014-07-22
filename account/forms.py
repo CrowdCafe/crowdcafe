@@ -2,7 +2,7 @@ from crispy_forms.helper import FormHelper
 from django.contrib.auth.models import User
 from crispy_forms.layout import Submit, Fieldset, Layout, Button, HTML
 from django import forms
-from models import Profile, Account, Membership
+from models import Profile, Account, Membership, FundTransfer
 from django.forms.forms import Form
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
@@ -28,7 +28,7 @@ class PayPalForm(PayPalPaymentsForm):
     action_url = conf.POSTBACK_ENDPOINT
     if settings.PAYPAL_TEST:
         action_url = conf.SANDBOX_POSTBACK_ENDPOINT
-    payment_amounts = ((5.0,'5 euro'),(10.0,'10 euro'),(25.0,'25 euro'),(100.0,'100 euro'))
+    payment_amounts = ((10.0,'10 euro'),(25.0,'25 euro'),(100.0,'100 euro'))
     amount = forms.ChoiceField(choices=payment_amounts, widget=forms.Select(), label=(u'Amount to pay'), required=True)
     
     helper = FormHelper()
@@ -95,7 +95,7 @@ class LoginForm(AuthenticationForm):
         #self.helper.add_input(Submit('submit', 'Login'))
         super(LoginForm, self).__init__(*args, **kwargs)
 
-
+#TODO - it does not work
 class UserUpdate(ModelForm):
     username = forms.CharField(required=True)
     email = forms.EmailField(required=True)
@@ -135,6 +135,8 @@ class AccountForm(ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
         super(AccountForm, self).__init__(*args, **kwargs)
 
+
+
 class MembershipForm(ModelForm):
     
     account = forms.ModelChoiceField(queryset=Account.objects.all(), widget=forms.HiddenInput)
@@ -149,3 +151,18 @@ class MembershipForm(ModelForm):
         self.helper.form_class = 'form-vertical'
         self.helper.add_input(Submit('submit', 'Save'))
         super(MembershipForm, self).__init__(*args, **kwargs)
+
+class FundTransferForm(ModelForm):
+    
+    class Meta:
+        model = FundTransfer
+        exclude = ('date_created')
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        #TODO Filter accounts - show only the ones belonging to this user
+     
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-vertical'
+        self.helper.add_input(Submit('submit', 'Transfer funds'))
+        super(FundTransferForm, self).__init__(*args, **kwargs)

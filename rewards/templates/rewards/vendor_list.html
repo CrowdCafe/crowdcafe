@@ -18,7 +18,7 @@
 			<td>#{{forloop.counter}}</td>
 			<td>id:{{vendor.id}}</td>
 			<td>{{vendor.title}}</td>
-			<td><a href="{% url 'reward-list' vendor.id %}" >rewards</a></td>
+			<td><a href="{% url 'reward-list' vendor.id %}" ><i class="fa fa-gift"></i> rewards</a></td>
 			<td><a href="{% url 'vendor-update' vendor.id %}" class='btn btn-default'>edit</a></td>
 		</div>
 	</tr>

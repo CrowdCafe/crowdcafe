@@ -7,7 +7,7 @@ from django.contrib.auth import logout, authenticate, login
 import logging
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf 
-from forms import LoginForm, UserCreateForm, AccountForm, MembershipForm, UserUpdate, PayPalForm
+from forms import LoginForm, UserCreateForm, AccountForm, MembershipForm, UserUpdate, PayPalForm, FundTransferForm
 from models import Account, Profile, Membership, FundTransfer
 from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import render
@@ -168,7 +168,7 @@ def AccountPaymentRequest(request, account_pk):
         "item_name": "CrowdCafe Credit",
         "invoice": str(account_pk)+'|'+str(random.randint(1000000, 9999999)),
         "notify_url": settings.APP_URL + reverse('paypal-ipn'),
-        "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': account_pk})+'?account_pk='+str(account_pk),
+        "return_url": settings.APP_URL + reverse('account-list'),
         "cancel_return": settings.APP_URL + reverse('account-list'),
         "custom":account_pk
     }
@@ -195,18 +195,37 @@ class PayPalPayment(FormView):
             "custom":self.kwargs.get('account_pk', None)
         }
         return initial
-@csrf_exempt
-def AccountPaymentAccept(request, account_pk):
-    print request.body
-    print request.POST
 
-    return redirect(reverse('account-list'))
+class AccountCreateView(CreateView):
+    
+    model = Account
+    template_name = "kitchen/crispy.html"
+    form_class = AccountForm
+
+    def get_initial(self):
+        initial = {}
+        initial['creator'] = self.request.user
+        return initial
+    
+    def form_invalid(self, form):
+        log.debug("form is not valid")
+        print (form.errors)
+        return CreateView.form_invalid(self, form)
+    
+    def form_valid(self, form):
+        log.debug("saved")
+        account = form.save()
+        account.save()
+        membership, created = Membership.objects.get_or_create(user = self.request.user, permission = 'AN', account = account)
+
+        return redirect(reverse('account-list'))
+
 # -------------------------------------------------------------
 # Membership
 # -------------------------------------------------------------
 
 class MembershipCreateView(CreateView):
-    
+#TODO fix - preselection of users to select from
     model = Membership
     template_name = "kitchen/crispy.html"
     form_class = MembershipForm
@@ -261,6 +280,27 @@ class MembershipListView(ListView):
 # -------------------------------------------------------------
 # Fund Transfers
 # -------------------------------------------------------------
+class FundTransferCreateView(CreateView):
+    
+    model = FundTransfer
+    template_name = "kitchen/crispy.html"
+    form_class = FundTransferForm
+
+    def get_initial(self):
+        initial = {}
+        initial['creator'] = self.request.user
+        return initial
+    
+    def form_invalid(self, form):
+        log.debug("form is not valid")
+        return CreateView.form_invalid(self, form)
+    
+    def form_valid(self, form):
+        log.debug("saved")
+        #TODO test it
+        if self.request.user in form['from_account'].members and form['from_account'].balance >= form['amount']:
+            form.save()
+        return redirect(reverse('account-list'))
 
 class FundTransferListView(ListView):
     

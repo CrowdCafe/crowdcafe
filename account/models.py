@@ -60,6 +60,7 @@ class Profile(models.Model):
 class Account(models.Model):
     users = models.ManyToManyField(User, through='Membership')
     title = models.CharField(max_length=256)
+    avatar_url = models.URLField(null=True, blank=True)
     personal = models.BooleanField(default=False)
     creator = models.ForeignKey(User, related_name='Creator')
     #sum of all fundtransfer amounts, where to_account = self (we keep it as a column to do less calls to aggregation of FundTransfer table)
@@ -86,6 +87,12 @@ class Account(models.Model):
     def __unicode__(self):
         return str(self.creator.profile.fullname+' '+self.title)
     # show current balance of an account (saldo)
+    @property
+    def avatar(self):
+        if self.avatar_url:
+            return self.avatar_url
+        else:
+            return self.creator.avatar_url
     @property
     def balance(self):
         return self.total_earnings - self.total_spendings

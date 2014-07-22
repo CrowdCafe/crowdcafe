@@ -22,6 +22,12 @@ import random
 from random import shuffle
 from mobi.decorators import detect_mobile
 
+def Home(request):
+	if request.user.is_authenticated():
+		logEvent(request, 'home')
+		return render_to_response('cafe/home/pages/home.html', context_instance=RequestContext(request))
+	else:
+		return redirect('cafe-welcome')
 
 def Welcome(request):
 	if request.user.is_authenticated():
@@ -72,12 +78,7 @@ def setContext(request):
 	logEvent(request, 'context_change')
 	return HttpResponse({json.dumps({'context':context})}, content_type="application/json")
 
-def Home(request):
-	if request.user.is_authenticated():
-		logEvent(request, 'home')
-		return render_to_response('cafe/home/pages/home.html', context_instance=RequestContext(request))
-	else:
-		return redirect('cafe-welcome')
+
 
 class JobListView(ListView):
 	model = Job
@@ -98,21 +99,6 @@ class JobListView(ListView):
 	def get_context_data(self, **kwargs):
 		context = super(JobListView, self).get_context_data(**kwargs)
 		return context
-
-@detect_mobile
-@login_required 
-def JobList(request):
-	jobs = Job.objects.filter(status = 'PB')
-	if 'category' in request.GET:
-		jobs = jobs.filter(category = request.GET['category'])
-	jobs = jobs.order_by('-date_created').all()
-	jobs_available = jobs
-	#for job in jobs:
-	#	if userIsQualifiedForJob(job, request.user, request.mobile):
-	#		jobs_available.append(job)
-
-	logEvent(request, 'joblist')
-	return render_to_response('cafe/home/pages/joblist.html', {'jobs':jobs_available}, context_instance=RequestContext(request))
 
 # -----------------------------------
 # Units related views
@@ -155,8 +141,10 @@ def UnitsComplete(request, job_id):
 		judgements.append(unit.saveJudgement(request.POST,request.user,gold_creation))
 	# send a request to URL defined in job settings with info about judgements provided
 	job.webhook(judgements)
-	
-	return redirect(reverse('cafe-units-assign', kwargs={'job_id': job.id})+'?completed_previous=1&gold_creation=1')
+	get_url = '?completed_previous=1'
+	if gold_creation:
+		get_url+='&gold_creation=1'
+	return redirect(reverse('cafe-units-assign', kwargs={'job_id': job.id})+get_url)
 
 # -----------------------------------
 # Rewards related views

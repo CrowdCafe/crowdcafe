@@ -91,19 +91,26 @@ class Job(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+    def fundsAreSufficientToCoverAssignment(self, subset):
+        units_count = len(subset)
+        return (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission']))
+
     def webhook(self, judgements):
         if self.judgements_webhook_url:
-
             dataset = []
             for judgement in judgements:
                 data = {}
+                
                 data['question'] = judgement.unit.input_data
-                data['answer'] = judgement.output_data
+                data['judgement'] = judgement.output_data
+                data['score'] = judgement.score
+                data['judgement_is_gold'] = judgement.gold
+                data['unit_is_gold'] = judgement.unit.gold
                 dataset.append(data)
             try:
                 headers = {'Content-type': 'application/json'}
                 # send a request with json data and timeout of 2 seconds
-                r = requests.post(self.judgements_webhook_url, data = json.dumps(dataset), headers = headers, timeout = 2)
+                r = requests.post(self.judgements_webhook_url, data = json.dumps(dataset), headers = headers) #timeout = 2
                 return True
             except:
                 return False
@@ -138,6 +145,9 @@ class Job(models.Model):
                 subset_gold = getSubset(units_gold,gold_amount_to_inject)
                 subset_regular = getSubset(units_regular,abs(self.units_per_page - gold_amount_to_inject))
                 subset = subset_gold + subset_regular
+                # if there is no enough money on the account 
+                if not self.fundsAreSufficientToCoverAssignment(subset):
+                    subset = False
             return subset
         else:
             return False
@@ -271,19 +281,20 @@ class Judgement(models.Model):
         if self.pk is None and self.unit.job.price>0:
 
             # Worker gets money from Requestor
-            fundtransfer = FundTransfer(to_account = self.worker.profile.personalAccount, from_account = self.unit.job.app.account, amount = self.unit.job.price, description = 'answer for t.i. ['+str(self.id)+']')
+            fundtransfer = FundTransfer(to_account = self.worker.profile.personalAccount, from_account = self.unit.job.app.account, amount = self.unit.job.price, description = 'judgement for unit ['+str(self.unit.id)+']')
             fundtransfer.save()
-
+            
             # Platform gets comission from Requestor
-            # commission = AccountTransaction(to_account = getPlatformOwner().profile.account, from_account = self.task.job.owner.profile.account, amount = calculateCommission(transaction.amount), description = 'comission for answer for t.i. ['+str(self.task.id)+']')
-            # commission.save()
+            platform_owner_account = Account.objects.get(pk = settings.BUSINESS['platform_owner_account_id'])
+            commission = FundTransfer(to_account = platform_owner_account, from_account = self.unit.job.app.account, amount = Decimal(settings.BUSINESS['platform_commission'])*fundtransfer.amount, description = 'commission for judgement for unit ['+str(self.unit.id)+']')
+            commission.save()
         super(Judgement, self).save(*args, **kwargs)
     def webhook(self):
         if self.unit.job.qualitycontrol.qualitycontrol_url and self.unit.gold:
             #TODO simplify this - combine with job.webhook()
             data = {}
             data['gold'] = self.unit.judgements.filter(gold = True).all()[0].output_data
-            data['given'] = self.output_data
+            data['judgement'] = self.output_data
             try:
                 headers = {'Content-type': 'application/json'}
                 r = requests.post(self.unit.job.qualitycontrol.qualitycontrol_url, data = json.dumps(data), headers = headers, timeout = 2)

@@ -6,6 +6,7 @@
 	<h1>Accounts</h1>
 	<p>Your API token: {{token}}</p>
 	<a href = '{% url "account-create" %}' class='btn btn-primary'>create account</a>
+	<a href = '{% url "fundtransfer-create" %}' class='btn btn-default'>transfer money between accounts</a>
 </div>
 {% endblock%}
 
@@ -18,15 +19,13 @@
 			</td>
 			<td>{{account.title}} {% if account.personal %} <i>personal</i>{% endif %}
 			</td>
-			<td>earnings: {{account.total_earnings}} euro
+			<td>balance: {{account.balance}} euro
 			</td>
-			<td>spendings: {{account.total_spendings}} euro
-			</td>
-			<td><a href="{% url 'account-payment-request' account.id %}">popup</a>
-			<td><a href="{% url 'member-list' account.id %}">members</a>
-			<td><a href="{% url 'app-list' account.id %}">apps</a>
-			<td><a href="{% url 'fundtransfer-list' account.id %}">transfers</a>
-			<td><a href="{% url 'vendor-list' account.id %}">vendors</a>
+			<td><a href="{% url 'account-payment-request' account.id %}"><i class="fa fa-money"></i> popup</a>
+			<td><a href="{% url 'member-list' account.id %}"><i class="fa fa-users"></i> members</a>
+			<td><a href="{% url 'app-list' account.id %}"><i class="fa fa-cubes"></i> apps</a>
+			<td><a href="{% url 'fundtransfer-list' account.id %}"><i class="fa fa-paper-plane-o"></i> transfers</a>
+			<td><a href="{% url 'vendor-list' account.id %}"><i class="fa fa-home"></i> vendors</a>
 			</td>
 			<td>
 				<a href="{% url 'account-update' account.id %}" class='btn btn-default'>edit</a>
