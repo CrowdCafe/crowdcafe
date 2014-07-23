@@ -29,6 +29,7 @@ from django.db.models.signals import post_save
 from django.db.models import Q
 import random
 import numpy
+
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
 TASK_CATEGORY_CHOICES = (
     ('EP','Espresso',),
@@ -94,27 +95,6 @@ class Job(models.Model):
     def fundsAreSufficientToCoverAssignment(self, subset):
         units_count = len(subset)
         return (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission']))
-
-    def webhook(self, judgements):
-        if self.judgements_webhook_url:
-            dataset = []
-            for judgement in judgements:
-                data = {}
-                
-                data['question'] = judgement.unit.input_data
-                data['judgement'] = judgement.output_data
-                data['score'] = judgement.score
-                data['judgement_is_gold'] = judgement.gold
-                data['unit_is_gold'] = judgement.unit.gold
-                dataset.append(data)
-            try:
-                headers = {'Content-type': 'application/json'}
-                # send a request with json data and timeout of 2 seconds
-                r = requests.post(self.judgements_webhook_url, data = json.dumps(dataset), headers = headers) #timeout = 2
-                return True
-            except:
-                return False
-        return False
     
     def refreshUserInterface(self):
         try:
@@ -254,8 +234,6 @@ class Unit(models.Model):
         if gold_creation and worker in self.job.app.account.users.all():
             judgement.gold = True
             judgement.save()
-        else:
-            judgement.webhook() 
         
         
 
@@ -289,21 +267,3 @@ class Judgement(models.Model):
             commission = FundTransfer(to_account = platform_owner_account, from_account = self.unit.job.app.account, amount = Decimal(settings.BUSINESS['platform_commission'])*fundtransfer.amount, description = 'commission for judgement for unit ['+str(self.unit.id)+']')
             commission.save()
         super(Judgement, self).save(*args, **kwargs)
-    def webhook(self):
-        if self.unit.job.qualitycontrol.qualitycontrol_url and self.unit.gold:
-            #TODO simplify this - combine with job.webhook()
-            data = {}
-            data['gold'] = self.unit.judgements.filter(gold = True).all()[0].output_data
-            data['judgement'] = self.output_data
-            try:
-                headers = {'Content-type': 'application/json'}
-                r = requests.post(self.unit.job.qualitycontrol.qualitycontrol_url, data = json.dumps(data), headers = headers, timeout = 2)
-                
-                if r.status_code in [201,200]:
-                    self.score = 1
-                if r.status_code in [500]:
-                    self.score = -1
-                self.save()
-            except:
-                return False
-        return False

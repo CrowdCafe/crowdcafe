@@ -2,7 +2,7 @@
 This file contains the permission rules for the api.
 
 '''
-from kitchen.models import App, Job, Unit
+from kitchen.models import App, Job, Unit, Judgement
 
 __author__ = 'stefano'
 
@@ -41,6 +41,10 @@ class IsOwner(permissions.BasePermission):
         elif isinstance(obj,Unit):
             log.debug('unit %s %s %s'%(obj.job.app,request.app,obj.job.app==request.app))
             return obj.job.app==request.app
+        # if it's a judgement
+        elif isinstance(obj,Judgement):
+            log.debug('judgement %s %s %s'%(obj.unit.job.app,request.app,obj.unit.job.app==request.app))
+            return obj.unit.job.app==request.app
         else:
             log.debug('is smt else')
             return False

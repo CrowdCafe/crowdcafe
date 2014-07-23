@@ -11,8 +11,8 @@ import api
 from api import routers
 from api.routers import ApiRouter, NestedApiRouter
 
-from api.serializers import JobSerializer, AppSerializer, UnitSerializer
-from kitchen.models import Job, App, Unit
+from api.serializers import JobSerializer, AppSerializer, UnitSerializer, JudgementSerializer
+from kitchen.models import Job, App, Unit, Judgement
 from serializers import UserSerializer
 
 from rest_framework_nested import routers
@@ -132,17 +132,48 @@ class UnitViewSet(viewsets.ModelViewSet):
         # disable this function
         raise exceptions.MethodNotAllowed('DESTROY')
 
-    #def update(self, request, *args, **kwargs):
-    #    raise exceptions.MethodNotAllowed('UPDATE')
+    def update(self, request, *args, **kwargs):
+        raise exceptions.MethodNotAllowed('UPDATE')
 
 
     #def partial_update(self, request, pk=None):
     #    raise exceptions.MethodNotAllowed('PARTIAL UPDATE')
 
 
+class JudgementViewSet(viewsets.ModelViewSet):
+    serializer_class = JudgementSerializer
+    model = Judgement
+    paginate_by = 10
+
+    def get_queryset(self):
+        # we don't need any other control beacuse this is nested
+        # so permission checks if app owns the job
+        list = Judgement.objects.filter(unit=self.kwargs['unit_pk'])
+        return list
+
+    def list(self, request, *args, **kwargs):
+        try:
+            Unit.objects.get(pk=self.kwargs['unit_pk'], job__app=request.app)
+        except:
+            raise exceptions.PermissionDenied()
+        return viewsets.ModelViewSet.list(self, request, *args, **kwargs)
+
+    def create(self,request,unit_pk):
+        # disable this function
+        raise exceptions.MethodNotAllowed('CREATE')
+
+
+    def destroy(self, request, pk=None):
+        # disable this function
+        raise exceptions.MethodNotAllowed('DESTROY')
 
 router = ApiRouter()
 router.register(r'app', AppViewSet)
 router.register(r'job', JobsViewSet)
+router.register(r'unit', UnitViewSet)
+
 job_router = NestedApiRouter(router, r'job', lookup='job')
 job_router.register(r'unit', UnitViewSet)
+
+unit_router = NestedApiRouter(router, r'unit', lookup='unit')
+unit_router.register(r'judgement', JudgementViewSet)

@@ -2,7 +2,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from kitchen.models import Job, Unit
+from kitchen.models import Job, Unit, Judgement
 from account.models import Profile, Account
 
 
@@ -31,6 +31,14 @@ class AccountSerializer(serializers.ModelSerializer):
         model = Account
         fields = ('id', 'title')
 
+class AppSerializer(serializers.ModelSerializer):
+    account = serializers.RelatedField(source='account.title', read_only=True)
+    creator = serializers.RelatedField(source='creator.username', read_only=True)
+
+    class Meta:
+        model = Account
+        fields = ('title', 'account', 'creator', 'title')
+
 
 class JobSerializer(serializers.ModelSerializer):
     pk = serializers.Field()
@@ -41,18 +49,17 @@ class JobSerializer(serializers.ModelSerializer):
         model = Job
         read_only_fields = ('deleted', 'status', 'userinterface_html')
 
-
-class AppSerializer(serializers.ModelSerializer):
-    account = serializers.RelatedField(source='account.title', read_only=True)
-    creator = serializers.RelatedField(source='creator.username', read_only=True)
-
-    class Meta:
-        model = Account
-        fields = ('title', 'account', 'creator', 'title')
-
 class UnitSerializer(serializers.ModelSerializer):
+    job = serializers.RelatedField(source='job.pk', read_only=True)
     pk = serializers.Field()
     class Meta:
         model = Unit
-        fields=('input_data','status','pk')
-        read_only_fields = ('status',)
+        fields=('input_data','status','pk','published','job')
+        #read_only_fields = ('gold')
+
+class JudgementSerializer(serializers.ModelSerializer):
+    unit = serializers.RelatedField(source='unit.pk', read_only=True)
+    pk = serializers.Field()
+    class Meta:
+        model = Judgement
+        fields=('output_data','score', 'unit','pk','gold')
