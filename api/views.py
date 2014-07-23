@@ -3,11 +3,11 @@ import logging
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, action
-from rest_framework.generics import get_object_or_404
+from rest_framework.generics import get_object_or_404,UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import routers, viewsets, status, routers
-from rest_framework import exceptions
-import api
+from rest_framework import exceptions 
+
 from api import routers
 from api.routers import ApiRouter, NestedApiRouter
 
@@ -97,6 +97,17 @@ class JobsViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, pk=None):
         raise exceptions.MethodNotAllowed('PARTIAL UPDATE')
 
+class UnitUpdateView(UpdateAPIView):
+    serializer_class = UnitSerializer
+    model = Unit
+    def get_object(self):
+        try:
+            unit = Unit.objects.filter(pk=self.kwargs['unit_pk'], job__app = self.request.app).get()
+        except:
+            raise exceptions.PermissionDenied()
+        return unit
+
+
 class UnitViewSet(viewsets.ModelViewSet):
     serializer_class = UnitSerializer
     model = Unit
@@ -170,7 +181,7 @@ class JudgementViewSet(viewsets.ModelViewSet):
 router = ApiRouter()
 router.register(r'app', AppViewSet)
 router.register(r'job', JobsViewSet)
-router.register(r'unit', UnitViewSet)
+router.register(r'unit', JobsViewSet)
 
 job_router = NestedApiRouter(router, r'job', lookup='job')
 job_router.register(r'unit', UnitViewSet)

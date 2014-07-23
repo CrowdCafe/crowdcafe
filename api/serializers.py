@@ -51,10 +51,11 @@ class JobSerializer(serializers.ModelSerializer):
 
 class UnitSerializer(serializers.ModelSerializer):
     job = serializers.RelatedField(source='job.pk', read_only=True)
+    gold = serializers.BooleanField(source='gold', read_only=True)
     pk = serializers.Field()
     class Meta:
         model = Unit
-        fields=('input_data','status','pk','published','job')
+        fields=('input_data','status','pk','published','job','gold')
         #read_only_fields = ('gold')
 
 class JudgementSerializer(serializers.ModelSerializer):
