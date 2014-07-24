@@ -7,10 +7,6 @@ from django.contrib.auth.models import User
 from kitchen.models import Job, Unit, Judgement
 from kitchen.webhooks import webhook_results, webhook_quality_conrol, saveJudgements
 from django.views.generic.list import ListView
-#from kitchen.models import getPlatformOwner, calculateCommission
-
-#from preselection.models import Preselection
-#from preselection.utils import qualifiedJob
 
 from rewards.models import Vendor, Reward, Coupon
 

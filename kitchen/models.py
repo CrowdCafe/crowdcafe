@@ -59,9 +59,7 @@ class App(models.Model):
         #def __unicode__(self):
         #    return '' + str(self.owner.username) + ' - ' + str(self.name) # TODO this should be redone according to accounts approach
 
-
 JOB_STATUS_CHOISES = (('NP', 'Not published'), ('PB', 'Published'))
-
 
 class Job(models.Model):
     # general
@@ -94,6 +92,7 @@ class Job(models.Model):
 
     def fundsAreSufficientToCoverAssignment(self, subset):
         units_count = len(subset)
+        #TODO #EMAIL- send notification here to account email if it exists - that funds are not sufficient
         return (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission']))
     
     def refreshUserInterface(self):
@@ -170,7 +169,7 @@ class QualityControl(models.Model):
         return evaluated
     
     def getProbabilityToInjectGold(self,worker):
-        #TODO do we need this 1.0 in the beginning if we want to get float value?
+        #TODO #EMAIL do we need this 1.0 in the beginning if we want to get float value?
         return 1.0*(1+self.evaluated_amount(worker, False))/(1+self.evaluated_amount(worker, True)+self.evaluated_amount(worker, False))
     def amountOfGoldToInject(self,worker):
         gold_units = [[0, 1][numpy.random.random() < self.getProbabilityToInjectGold(worker)] for _ in range(self.job.units_per_page)]
@@ -211,7 +210,11 @@ class Unit(models.Model):
         return self.status
         self.updateStatus()
         return judgement
-
+    def save(self, *args, **kwargs):
+        if self.job.published and Unit.objects.filter(job = self.job, status = 'NC').count() == 0:
+            #TODO - send email here to account email if it exists
+            sendNotificationToAccountEmail = True
+        super(Unit, self).save(*args, **kwargs)
 # ====================================================
 # JUDGEMENTS RELATED CLASSES
 

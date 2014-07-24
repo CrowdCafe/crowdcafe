@@ -130,12 +130,13 @@ class UnitViewSet(viewsets.ModelViewSet):
     def create(self,request,job_pk):
         job = get_object_or_404(Job, pk=job_pk, app=request.app)
         input = request.DATA
-        # it expect an array
+        # it expects an array
         if isinstance(input,list):
             for d in input:
                 Unit.objects.create(job=job, input_data=json.dumps(d))
         else:
             Unit.objects.create(job=job, input_data=json.dumps(input))
+        #TODO #EMAIL - send notifications to workers but not for every unit (need to send not more often than 1nce in 5 min - smth like that)
         return Response(status=status.HTTP_201_CREATED)
 
 

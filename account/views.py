@@ -22,6 +22,7 @@ import random
 from django.views.decorators.csrf import csrf_exempt
 from paypal.standard.models import PayPalStandardBase
 from django.views.generic.edit import FormView
+
 log = logging.getLogger(__name__)
 
 # -------------------------------------------------------------
@@ -60,7 +61,6 @@ def register_user(request):
     args = {}
     args.update(csrf(request))
     args['form'] = UserCreateForm()
-    print args
     return render(request, template_name, args)
 
 #TODO - does not work
@@ -89,12 +89,10 @@ def login_user(request):
     template_name = 'kitchen/crispy.html'
 
     if request.method == 'POST':
-        #TODO - need to fix this part
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
-        print user
+        log.debug('logged user '+str(user))
         if user is not None:
             login(request, user)
-            #token = Token.objects.get_or_create(user=user)
             return redirect('account-list')
     form = LoginForm()
     return render_to_response(template_name, {'form': form}, context_instance=RequestContext(request))
@@ -128,7 +126,7 @@ class AccountCreateView(CreateView):
     
     def form_invalid(self, form):
         log.debug("form is not valid")
-        print (form.errors)
+        log.debug(form.errors)
         return CreateView.form_invalid(self, form)
     
     def form_valid(self, form):
@@ -147,7 +145,7 @@ class AccountUpdateView(UpdateView):
 
     def form_invalid(self, form):
         log.debug("form is not valid")
-        print (form.errors)
+        log.debug(form.errors)
         return UpdateView.form_invalid(self, form)
     
     def get_object(self):
@@ -157,26 +155,6 @@ class AccountUpdateView(UpdateView):
         log.debug("updated")
         account = form.save()
         return redirect(reverse('account-list'))
-
-def AccountPaymentRequest(request, account_pk):
-
-    # What you want the button to do.
-    paypal_dict = {
-        "business": settings.PAYPAL_RECEIVER_EMAIL,
-        "amount": "10.00",
-        "currency_code": "EUR",
-        "item_name": "CrowdCafe Credit",
-        "invoice": str(account_pk)+'|'+str(random.randint(1000000, 9999999)),
-        "notify_url": settings.APP_URL + reverse('paypal-ipn'),
-        "return_url": settings.APP_URL + reverse('account-list'),
-        "cancel_return": settings.APP_URL + reverse('account-list'),
-        "custom":account_pk
-    }
-    print paypal_dict
-    # Create the instance.
-    form = PayPalPaymentsForm(initial=paypal_dict)
-    context = {"form": form}
-    return render_to_response("account/payment.html", context)
 
 class PayPalPayment(FormView):
     
@@ -254,7 +232,7 @@ class MembershipUpdateView(UpdateView):
 
     def form_invalid(self, form):
         log.debug("form is not valid")
-        print (form.errors)
+        log.debug(form.errors)
         return UpdateView.form_invalid(self, form)
     def get_object(self):
         return get_object_or_404(Membership, pk = self.kwargs.get('member_pk', None), account__users__in = [self.request.user.id])

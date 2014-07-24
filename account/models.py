@@ -61,6 +61,7 @@ class Account(models.Model):
     users = models.ManyToManyField(User, through='Membership')
     title = models.CharField(max_length=256)
     avatar_url = models.URLField(null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
     personal = models.BooleanField(default=False)
     creator = models.ForeignKey(User, related_name='Creator')
     #sum of all fundtransfer amounts, where to_account = self (we keep it as a column to do less calls to aggregation of FundTransfer table)
@@ -144,12 +145,16 @@ def initUser(sender, **kwargs):
     # add current user to this account with Admin permission
     membership, created = Membership.objects.get_or_create(user = user, permission = 'AN', account = account)
 
-def show_me_the_money(sender, **kwargs):
+def receivePayment(sender, **kwargs):
     ipn_obj = sender
     if ipn_obj.payment_status == "Completed":
-        # Undertake some action depending upon `ipn_obj`.
-        account = get_object_or_404(Account, pk = ipn_obj.custom)
-        deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross, description = "PayPal invoice: "+ipn_obj.invoice+' transaction: '+ipn_obj.txn_id)
-        deposit.save()
+        if ipn_obj.currency == "EUR":
+            # Undertake some action depending upon `ipn_obj`.
+            account = get_object_or_404(Account, pk = ipn_obj.custom)
+            deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross, description = "PayPal invoice: "+ipn_obj.invoice+' transaction: '+ipn_obj.txn_id)
+            deposit.save()
+        else:
+            #TODO #EMAIL - send email to the admin account
+            send_email = True
 
-payment_was_successful.connect(show_me_the_money)
+payment_was_successful.connect(receivePayment)
