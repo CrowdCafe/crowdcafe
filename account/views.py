@@ -173,7 +173,9 @@ class PayPalPayment(FormView):
             "custom":self.kwargs.get('account_pk', None)
         }
         return initial
+@csrf_exempt
 def acceptPayment(request):
+    log.debug(request.POST)
     return redirect(reverse('account-list'))
 class AccountCreateView(CreateView):
     
