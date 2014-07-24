@@ -168,12 +168,13 @@ class PayPalPayment(FormView):
             "item_name": "CrowdCafe Credit",
             "invoice": str(self.kwargs.get('account_pk', None))+'|'+str(random.randint(1000000, 9999999)),
             "notify_url": settings.APP_URL + reverse('paypal-ipn'),
-            "return_url": settings.APP_URL + reverse('account-list'),
+            "return_url": settings.APP_URL + reverse('account-payment-accept'),
             "cancel_return": settings.APP_URL + reverse('account-list'),
             "custom":self.kwargs.get('account_pk', None)
         }
         return initial
-
+def acceptPayment(request):
+    return redirect(reverse('account-list'))
 class AccountCreateView(CreateView):
     
     model = Account

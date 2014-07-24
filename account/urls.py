@@ -29,8 +29,9 @@ urlpatterns = patterns('',
     url(r'^accounts/create/$', login_required(views.AccountCreateView.as_view()), name='account-create'),
     url(r'^accounts/(?P<account_pk>\d+)/update/$', login_required(views.AccountUpdateView.as_view()), name='account-update'),
     url(r'^accounts/(?P<account_pk>\d+)/payment/request/$', login_required(views.PayPalPayment.as_view()), name='account-payment-request'),
-  
-    url(r'^accounts/paypal/', csrf_exempt(include('paypal.standard.ipn.urls')),
+
+    url(r'^accounts/payment/accept/$', login_required(views.acceptPayment), name='account-payment-accept'),
+    url(r'^accounts/paypal/', (include('paypal.standard.ipn.urls')),
 
     url(r'^accounts/(?P<account_pk>\d+)/transfers/$', login_required(views.FundTransferListView.as_view()), name='fundtransfer-list'),
 
