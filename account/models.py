@@ -148,7 +148,7 @@ def initUser(sender, **kwargs):
 def receivePayment(sender, **kwargs):
     ipn_obj = sender
     if ipn_obj.payment_status == "Completed":
-        if ipn_obj.currency == "EUR":
+        if ipn_obj.mc_currency == "EUR":
             # Undertake some action depending upon `ipn_obj`.
             account = get_object_or_404(Account, pk = ipn_obj.custom)
             deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross, description = "PayPal invoice: "+ipn_obj.invoice+' transaction: '+ipn_obj.txn_id)
