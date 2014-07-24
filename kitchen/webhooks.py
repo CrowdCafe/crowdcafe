@@ -35,6 +35,7 @@ def saveJudgements(units, postdata, worker, gold_creation):
 	judgements = []
 	for unit in units:
 		judgement = createJudgement(unit, postdata, worker, gold_creation)
+		log.debug('new judgement: '+str(judgement))
 		judgement = webhook_quality_conrol(judgement,judgement.unit.job.qualitycontrol.qualitycontrol_url)
 		judgements.append(judgement)
 	# send a request to URL defined in job settings with info about judgements provided
@@ -65,14 +66,18 @@ def webhook_results(judgements, url):
 	return False
 
 def webhook_quality_conrol(judgement, url):
-	if url and judgement.unit.judgements.filter(gold = True).count()>0:
+	log.debug('start quality control '+str(judgement)+' url: '+str(url)) 
+	if url and judgement.unit.gold:
 		dataset = []
 		
 		dataset.append(JudgementSerializer(judgement).data)
 		dataset.append(JudgementSerializer(judgement.unit.judgements.filter(gold = True).all()[0]).data)
 		
+		log.debug('dataset: '+str(dataset)) 
+		
 		evaluation = webhook(dataset, url)
-
+		
+		log.debug('evaluation: '+str(evaluation)) 
 		if evaluation:
 			log.debug('evaluation status code: '+str(evaluation.status_code)) 
 			if evaluation.status_code in [201,200]:
@@ -84,4 +89,5 @@ def webhook_quality_conrol(judgement, url):
 					if not d['correct']:
 						judgement.score = -1
 	judgement.save()
+	log.debug('judgement saved: '+str(judgement)+' with score: '+str(judgement.score)) 
 	return judgement

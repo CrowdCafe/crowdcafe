@@ -262,6 +262,16 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'kitchen': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'cafe': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'rest_framework': {
         'handlers': ['console'],
         'level': 'DEBUG',
