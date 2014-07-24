@@ -153,8 +153,9 @@ def receivePayment(sender, **kwargs):
             account = get_object_or_404(Account, pk = ipn_obj.custom)
             deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross, description = "PayPal invoice: "+ipn_obj.invoice+' transaction: '+ipn_obj.txn_id)
             deposit.save()
+            #TODO #EMAIL - send email to the admin account that we have some money!
         else:
-            #TODO #EMAIL - send email to the admin account
+            #TODO #EMAIL - send email to the admin account that something bad happened
             send_email = True
 
 payment_was_successful.connect(receivePayment)

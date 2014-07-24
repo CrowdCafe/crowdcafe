@@ -9,7 +9,7 @@ sudo python ez_setup.py
 # xcode-select --install
 # open another terminal window, open virtualenv and continue
 # sudo pip install http://effbot.org/media/downloads/Imaging-1.1.7.tar.gz
-sudo pip install -r requirements.txt
+pip install -r requirements.txt
 
 python manage.py bower_install -- --allow-root
 python manage.py syncdb
