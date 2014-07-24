@@ -31,13 +31,11 @@ urlpatterns = patterns('',
     url(r'^accounts/(?P<account_pk>\d+)/payment/request/$', login_required(views.PayPalPayment.as_view()), name='account-payment-request'),
 
     url(r'^accounts/payment/accept/$', login_required(views.acceptPayment), name='account-payment-accept'),
-    url(r'^accounts/paypal/', (include('paypal.standard.ipn.urls')),
+    url(r'^accounts/paypal/', include('paypal.standard.ipn.urls')),
 
     url(r'^accounts/(?P<account_pk>\d+)/transfers/$', login_required(views.FundTransferListView.as_view()), name='fundtransfer-list'),
 
     url(r'^accounts/(?P<account_pk>\d+)/members/$', login_required(views.MembershipListView.as_view()), name='member-list'),
     url(r'^accounts/(?P<account_pk>\d+)/members/create/$', login_required(views.MembershipCreateView.as_view()), name='member-create'),
     url(r'^members/(?P<member_pk>\d+)/update/$', login_required(views.MembershipUpdateView.as_view()), name='member-update'),
-
-
 )
