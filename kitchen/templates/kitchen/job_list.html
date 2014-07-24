@@ -26,6 +26,7 @@
 			<td><a href="{% url 'cafe-units-assign' job.id %}?gold_creation=1" target="_blank"><i class="fa fa-graduation-cap"></i> create gold data</a></td>
 			<td><a href="{% url 'cafe-units-assign' job.id %}" target="_blank">execution page</a></td>
 			<td><a href="{% url 'job-update' job.id %}" class='btn btn-default'>edit</a></td>
+			<td><a href="{% url 'job-duplicate' job.id %}" class='btn btn-default'>duplicate</a></td>
 			<td><a href="{% url 'qualitycontrol-update' job.id %}" class='btn btn-default'><i class="fa fa-sliders"></i> qualitycontrol</a></td>
 		</div>
 	</tr>

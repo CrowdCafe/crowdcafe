@@ -209,34 +209,6 @@ class Unit(models.Model):
             self.status = 'CD'
             self.save()
         return self.status
-
-    def saveJudgement(self, postdata, worker, gold_creation):
-        judgement_output_data = {}
-        score = 0.0
-        for key in postdata:
-            # only if a POST data has a key with dataunit_handle - it will be saved (otherwise we can not find a connection to a specific unit)
-            dataunit_handle = 'dataitem_'+str(self.id)
-            if dataunit_handle in key:
-                judgement_output_data[key.replace(dataunit_handle,'')] = postdata[key]
-                # check gold data if gold exists but qualitycontrol_url is not given
-                if self.gold:
-                    gold_judgement_data = self.judgements.filter(gold = True).all()[0].output_data
-                    if not self.job.qualitycontrol.qualitycontrol_url and 'gold'+key.replace(dataitem_handle,'') in gold_judgement_data:
-                        #TODO rethink it
-                        if postdata[key] == gold_judgement_data['gold'+key.replace(dataitem_handle,'')]:
-                            score+=1.0
-                        else:
-                            score-=1.0
-        
-        judgement = Judgement(unit = self, output_data =judgement_output_data, worker = worker, score = score)
-        judgement.save()
-        # if it was a gold creation task and the worker is a member of the job app account
-        if gold_creation and worker in self.job.app.account.users.all():
-            judgement.gold = True
-            judgement.save()
-        
-        
-
         self.updateStatus()
         return judgement
 
@@ -256,7 +228,7 @@ class Judgement(models.Model):
         return str(self.id)
     def save(self, *args, **kwargs):
         #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
-        if self.pk is None and self.unit.job.price>0:
+        if self.pk is None and self.unit.job.price>0 and self.score >= 0:
 
             # Worker gets money from Requestor
             fundtransfer = FundTransfer(to_account = self.worker.profile.personalAccount, from_account = self.unit.job.app.account, amount = self.unit.job.price, description = 'judgement for unit ['+str(self.unit.id)+']')

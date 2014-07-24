@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from kitchen.models import Job, Unit, Judgement
-from kitchen.webhooks import webhook_results, webhook_quality_conrol
+from kitchen.webhooks import webhook_results, webhook_quality_conrol, saveJudgements
 from django.views.generic.list import ListView
 #from kitchen.models import getPlatformOwner, calculateCommission
 
@@ -137,13 +137,7 @@ def UnitsComplete(request, job_id):
 		units_query = Unit.objects.filter(status = 'NC', published = True)
 		units = units_query.filter(pk__in = unit_ids_pool).all()
 	# go through all the POST data for each unit and save relative data to judgement
-	judgements = []
-	for unit in units:
-		new_judgement = unit.saveJudgement(request.POST,request.user,gold_creation)
-		judgements.append(new_judgement)
-		webhook_quality_conrol(new_judgement,new_judgement.unit.job.qualitycontrol.qualitycontrol_url)
-	# send a request to URL defined in job settings with info about judgements provided
-	webhook_results(judgements, job.judgements_webhook_url)
+	saveJudgements(units, request.POST, request.user, gold_creation)
 	get_url = '?completed_previous=1'
 	if gold_creation:
 		get_url+='&gold_creation=1'

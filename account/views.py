@@ -190,7 +190,7 @@ class PayPalPayment(FormView):
             "item_name": "CrowdCafe Credit",
             "invoice": str(self.kwargs.get('account_pk', None))+'|'+str(random.randint(1000000, 9999999)),
             "notify_url": settings.APP_URL + reverse('paypal-ipn'),
-            "return_url": settings.APP_URL + reverse('account-payment-accept', kwargs={'account_pk': self.kwargs.get('account_pk', None)})+'?account_pk='+str(self.kwargs.get('account_pk', None)),
+            "return_url": settings.APP_URL + reverse('account-list'),
             "cancel_return": settings.APP_URL + reverse('account-list'),
             "custom":self.kwargs.get('account_pk', None)
         }

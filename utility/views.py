@@ -20,6 +20,7 @@ from django.views.generic.list import ListView
 from django.views.generic.base import TemplateView
 
 import logging
+import copy
 
 import re
 import csv
@@ -61,3 +62,11 @@ def generateRewardCoupons(request, reward_pk):
 
 	return redirect(reverse('coupon-list', kwargs={'reward_pk': reward.id}))
 
+def duplicateJob(request, job_pk):
+	#TODO this function duplicates only Job object - we need to duplicate QualityControl also
+	job = get_object_or_404(Job, pk = job_pk, app__account__users__in=[request.user.id])
+	new_job = job
+	new_job.pk = None
+	new_job.save()
+	
+	return redirect(reverse('job-list', kwargs={'app_pk': job.app.id}))
