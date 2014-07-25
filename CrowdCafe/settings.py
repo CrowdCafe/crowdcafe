@@ -1,6 +1,25 @@
 #!/usr/bin/env python
 #coding: utf8 
 
+
+# Adjustable settings
+# ---------------------------------------------------------------
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+ALLOWED_HOSTS = ['localhost','crowdcafe.io','5.101.96.187','kitchen']
+
+# Settings for admin account, commission amount etc
+# ---------------------------------------------------------------
+BUSINESS = {
+    'platform_owner_account_id': 1,
+    'platform_commission': 0.3,
+    'allow_debt':30
+}
+# ---------------------------------------------------------------
+# Django settings for CrowdCafe project.
+BROKER_URL = "amqp://guest:guest@localhost:5672//"
+# ---------------------------------------------------------------
+
 from settings_adjustable import *
 from settings_database import *
 from settings_credentials import *
