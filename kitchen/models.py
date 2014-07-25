@@ -20,8 +20,6 @@ import requests
 
 from rest_framework.authtoken.models import Token
 
-from CrowdCafe.settings_common import TASK_CATEGORIES
-
 from account.models import Account, FundTransfer
 from math import *
 from utility.general import getSample, getSubset
@@ -133,7 +131,7 @@ class Job(models.Model):
     # IMPORTANT: i've implemented this to have the price set
     def save(self, *args, **kwargs):
         if self.price is None:
-            self.price = TASK_CATEGORIES[self.category]['cost']
+            self.price = settings.TASK_CATEGORIES[self.category]['cost']
         super(Job, self).save(*args, **kwargs)
     # estimated amount of tasks left available for a specific user
     @property
