@@ -1,6 +1,6 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-ALLOWED_HOSTS = ['localhost','crowdcafe.io']
+ALLOWED_HOSTS = ['localhost','crowdcafe.io','5.101.96.187']
 
 # Settings for admin account, commission amount etc
 # ---------------------------------------------------------------
