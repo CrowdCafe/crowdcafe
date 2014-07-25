@@ -211,7 +211,7 @@ class Unit(models.Model):
         self.updateStatus()
         return judgement
     def save(self, *args, **kwargs):
-        if self.job.published and Unit.objects.filter(job = self.job, status = 'NC').count() == 0:
+        if self.job.status == 'PB' and Unit.objects.filter(job = self.job, status = 'NC').count() == 0:
             #TODO - send email here to account email if it exists
             sendNotificationToAccountEmail = True
         super(Unit, self).save(*args, **kwargs)
