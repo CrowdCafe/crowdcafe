@@ -37,10 +37,6 @@ def home(request):
 
 
 def register_user(request):
-    # HACK
-    for account in Account.objects.all():
-        account.recalculate()
-    # -----
     template_name = 'kitchen/crispy.html'
 
     if request.method == 'POST':
