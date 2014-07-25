@@ -44,8 +44,11 @@ class MandrillTest(TestCase):
     def test_notifySU(self):
         self.user = User.objects.create(username='stefano', password='test', first_name="Stefano",
                                         email="stefano@crowdcafe.io")
+        self.account = Account.objects.create(title='test', creator=self.user, email='test@crowdcafe.io')
         # self.user
-        notifyMoneyAdmin(self.user, 2)
-        notifyMoneyAdmin(self.user, 1)
-        notifyMoneyAdmin(self.user, 0, 1.0)
+        notifyMoneyAdmin(self.account, 2)
+        notifyMoneyAdmin(self.account, 1)
+        self.account = Account.objects.create(title='test', creator=self.user)
+
+        notifyMoneyAdmin(self.account, 0, 1.0)
 

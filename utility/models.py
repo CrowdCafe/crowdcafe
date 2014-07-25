@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.timezone import now
 from kitchen.models import Job
 
 class Attachment(models.Model):
@@ -8,4 +7,4 @@ class Attachment(models.Model):
 
 class Notification(models.Model):
     job = models.ForeignKey(Job, null = True, blank = True)
-    last = models.DateField(auto_now=True,default=now())
+    last = models.DateField(auto_now=True)
