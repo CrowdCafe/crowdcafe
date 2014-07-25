@@ -11,12 +11,15 @@ from django.test.utils import override_settings
 
 from account.models import Account, Membership
 from kitchen.models import App, Job
-from utility.utils import notifySuperUser, notifyMoneyAdmin
+from utility.utils import notifySuperUser
 
 
 
 #NOTE: remove this if u wanto to send the email.
 # @override_settings(EMAIL_BACKEND="djrill.mail.backends.djrill.DjrillBackend")
+from utility.utils2 import notifyMoneyAdmin
+
+
 class MandrillTest(TestCase):
     def test_notifySU(self):
         self.group = Group.objects.create(name='superuser')
