@@ -1,6 +1,6 @@
 #!/bin/bash
-# create settings_local.py
-# create settings_sensitive.py
+# create settings_credentials.py https://gist.github.com/pavelk2/68dc3c62bf7a745b0e4e
+# create settings_database.py https://gist.github.com/pavelk2/2638137e8d368b97412b
 
 sudo virtualenv /opt/crowdcafe-local/
 source /opt/crowdcafe-local/bin/activate

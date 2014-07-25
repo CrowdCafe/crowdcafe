@@ -30,6 +30,10 @@ log = logging.getLogger(__name__)
 # Users
 # -------------------------------------------------------------
 def home(request):
+    # HACK
+    for account in Account.objects.all():
+        account.recalculate()
+    # -----
     if request.user.is_authenticated():
         return redirect('account-list')
     else:
