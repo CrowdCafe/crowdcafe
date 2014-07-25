@@ -20,7 +20,6 @@ BUSINESS = {
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 # ---------------------------------------------------------------
 
-from settings_adjustable import *
 from settings_database import *
 from settings_credentials import *
 
