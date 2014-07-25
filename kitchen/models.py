@@ -206,8 +206,6 @@ class Unit(models.Model):
             self.status = 'CD'
             self.save()
         return self.status
-        self.updateStatus()
-        return judgement
     def save(self, *args, **kwargs):
         if self.job.status == 'PB' and Unit.objects.filter(job = self.job, status = 'NC').count() == 0:
             #TODO - send email here to account email if it exists
@@ -228,6 +226,7 @@ class Judgement(models.Model):
     def __unicode__(self):
         return str(self.id)
     def save(self, *args, **kwargs):
+        self.unit.updateStatus()
         #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
         if self.pk is None and self.unit.job.price>0 and self.score >= 0:
 
