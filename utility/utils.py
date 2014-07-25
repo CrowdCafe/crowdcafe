@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 import scraperwiki
 from django.core.mail import EmailMessage
 
-from CrowdCafe.settings_local import DEBUG
+from CrowdCafe.settings import DEBUG
 from kitchen.models import Job, Unit
 from utility.models import Notification
 
