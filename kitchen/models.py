@@ -31,6 +31,8 @@ import random
 import numpy
 
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
+from utility.utils import notifyMoneyAdmin
+
 TASK_CATEGORY_CHOICES = (
     ('EP','Espresso',),
     ('CP','Cappuccino'),
@@ -92,8 +94,14 @@ class Job(models.Model):
 
     def fundsAreSufficientToCoverAssignment(self, subset):
         units_count = len(subset)
-        #TODO #EMAIL- send notification here to account email if it exists - that funds are not sufficient
-        return (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission']))
+        #TODO COMMENT THIS LOGIC, it's very long and not really understandable. explain why
+        if (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission'])):
+            return True
+        else:
+            #TODO #MAIL to whom?
+            account = self.app.account
+            notifyMoneyAdmin(account,2)
+            return False
     
     def refreshUserInterface(self):
         try:

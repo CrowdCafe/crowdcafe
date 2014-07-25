@@ -13,3 +13,14 @@ AWS_STORAGE_BUCKET_NAME = 'ENTER_YOUR_BUCKET_NAME'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'YOUR_SECRET'
+
+# TODO: fix the key when in production with one that can be used only by the ip of the server
+MANDRILL_API_KEY = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = ''
+EMAIL_HOST = ''
+EMAIL_PORT = 0 #set correct one
+SERVER_EMAIL = ''
+
+# TODO: change accordingly to the webhook of mailchimp
+MC_KEY = ''

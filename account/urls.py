@@ -22,6 +22,8 @@ urlpatterns = patterns('',
     url(r'^user/update/$',login_required(views.update_user),name='user-update'),
     url(r'^user/register/$', views.register_user, name='register'),
     url(r'^user/logout/$', login_required(views.logout_user), name='logout'),
+    url(r'^user/mandrill$', views.webHookSuperUser, name = 'user-mandrill'),
+
     
 
     url(r'^accounts/$', login_required(views.AccountListView.as_view()), name='account-list'),
@@ -38,4 +40,5 @@ urlpatterns = patterns('',
     url(r'^accounts/(?P<account_pk>\d+)/members/$', login_required(views.MembershipListView.as_view()), name='member-list'),
     url(r'^accounts/(?P<account_pk>\d+)/members/create/$', login_required(views.MembershipCreateView.as_view()), name='member-create'),
     url(r'^members/(?P<member_pk>\d+)/update/$', login_required(views.MembershipUpdateView.as_view()), name='member-update'),
+    
 )

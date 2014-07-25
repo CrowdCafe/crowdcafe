@@ -15,6 +15,9 @@ from paypal.standard.ipn.signals import payment_was_successful
 
 
 # Extension of User class to add some properties (does not have any columns)
+from utility.utils import notifyMoneyAdmin
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User)
 
@@ -153,9 +156,13 @@ def receivePayment(sender, **kwargs):
             account = get_object_or_404(Account, pk = ipn_obj.custom)
             deposit = FundTransfer(to_account = account, amount = ipn_obj.mc_gross, description = "PayPal invoice: "+ipn_obj.invoice+' transaction: '+ipn_obj.txn_id)
             deposit.save()
-            #TODO #EMAIL - send email to the admin account that we have some money!
+            notifyMoneyAdmin(account,0)
+            #TODO #ASK to whom? creator?
         else:
-            #TODO #EMAIL - send email to the admin account that something bad happened
+            #TODO #ASK ok to get this account?
+            account = get_object_or_404(Account, pk = ipn_obj.custom)
+            notifyMoneyAdmin(account,1)
+
             send_email = True
 
 payment_was_successful.connect(receivePayment)

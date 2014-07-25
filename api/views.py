@@ -16,6 +16,7 @@ from kitchen.models import Job, App, Unit, Judgement
 from serializers import UserSerializer
 
 from rest_framework_nested import routers
+from utility.utils import notifySuperUser
 
 log = logging.getLogger(__name__)
 
@@ -136,7 +137,8 @@ class UnitViewSet(viewsets.ModelViewSet):
                 Unit.objects.create(job=job, input_data=json.dumps(d))
         else:
             Unit.objects.create(job=job, input_data=json.dumps(input))
-        #TODO #EMAIL - send notifications to workers but not for every unit (need to send not more often than 1nce in 5 min - smth like that)
+        # this notifies SU once a day
+        notifySuperUser(job_pk)
         return Response(status=status.HTTP_201_CREATED)
 
 

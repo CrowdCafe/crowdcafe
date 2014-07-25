@@ -2,6 +2,7 @@
 #coding: utf8 
 
 import os
+
 PROJECT_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), ".."),
 )
@@ -9,46 +10,45 @@ PROJECT_ROOT = os.path.abspath(
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 
 GITHUB_HTML_TEMPLATES = {
-    'owner':'CrowdCafe',
-    'repository':'crowdcafe-ui-templates'
+    'owner': 'CrowdCafe',
+    'repository': 'crowdcafe-ui-templates'
 }
 
 TASK_CATEGORIES = {
-    'EP':{
-        'id':'EP',
-        'title':'Espresso',
-        'cost':0.03,
-        'icon':'landing/img/logo100_black.png',
-        'time':'10 sec',
-        'description':'Mostly clicking and swiping.',
+    'EP': {
+        'id': 'EP',
+        'title': 'Espresso',
+        'cost': 0.03,
+        'icon': 'landing/img/logo100_black.png',
+        'time': '10 sec',
+        'description': 'Mostly clicking and swiping.',
         'examples': 'pair comparison, tag an object on an image, tweets sentiment, other simple tasks...'
     },
-    'CP':{
-        'id':'CP',
-        'title':'Cappuccino',
-        'cost':0.33,
-        'icon':'libs/icons8/coffee-50.png',
-        'time':'2 min',
-        'description':'Some typing, some learning.',
-        'examples':'make a photo of an object, short survey, receipt transcription, other medium-size tasks...'
-        
+    'CP': {
+        'id': 'CP',
+        'title': 'Cappuccino',
+        'cost': 0.33,
+        'icon': 'libs/icons8/coffee-50.png',
+        'time': '2 min',
+        'description': 'Some typing, some learning.',
+        'examples': 'make a photo of an object, short survey, receipt transcription, other medium-size tasks...'
+
     },
-    'WN':{   
-        'id':'WN',
-        'title':'Wine',
-        'cost':1,
-        'icon':'libs/icons8/wine_bottle-50.png',
-        'time':'6 min',
-        'description':'Custom tasks.',
-        'examples':'interview record, video capturing, complex information search, other non trivial tasks...'
+    'WN': {
+        'id': 'WN',
+        'title': 'Wine',
+        'cost': 1,
+        'icon': 'libs/icons8/wine_bottle-50.png',
+        'time': '6 min',
+        'description': 'Custom tasks.',
+        'examples': 'interview record, video capturing, complex information search, other non trivial tasks...'
     }
 }
-TASK_CATEGORIES_DICTIONARY = (('CF','Espresso'),('CP','Cappuccino'),('WN','Wine'),('ZT','Volunteering'),)
-
-
+TASK_CATEGORIES_DICTIONARY = (('CF', 'Espresso'), ('CP', 'Cappuccino'), ('WN', 'Wine'), ('ZT', 'Volunteering'),)
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    # ('Pavel', 'pavel@crowdcafe.io'),
+    ('Stefano', 'stefano@crowdcafe.io'),
 )
 
 MANAGERS = ADMINS
@@ -127,7 +127,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'djangobower.finders.BowerFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 
@@ -135,7 +135,7 @@ STATICFILES_FINDERS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    #     'django.template.loaders.eggs.Loader',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -177,7 +177,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3' 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -204,8 +204,9 @@ INSTALLED_APPS = (
     'requests',
     'djangobower',
     'paypal.standard.ipn',
+    'djrill',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -235,12 +236,27 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'propagate': True,
             'level': 'WARN',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
         },
         'django.db.backends': {
             'handlers': ['console'],
@@ -272,11 +288,21 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'utility': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'account': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'rest_framework': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-        'propagate': True,
-    }
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
 
     }
 }
@@ -284,25 +310,25 @@ LOGGING = {
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.twitter.TwitterBackend',
     'social_auth.backends.facebook.FacebookBackend',
-#    'social_auth.backends.google.GoogleOAuthBackend',
+    #    'social_auth.backends.google.GoogleOAuthBackend',
     'social_auth.backends.google.GoogleOAuth2Backend',
-#    'social_auth.backends.google.GoogleBackend',
-#    'social_auth.backends.yahoo.YahooBackend',
-#    'social_auth.backends.browserid.BrowserIDBackend',
-#    'social_auth.backends.contrib.linkedin.LinkedinBackend',
-#    'social_auth.backends.contrib.livejournal.LiveJournalBackend',
-#    'social_auth.backends.contrib.orkut.OrkutBackend',
-#    'social_auth.backends.contrib.foursquare.FoursquareBackend',
+    #    'social_auth.backends.google.GoogleBackend',
+    #    'social_auth.backends.yahoo.YahooBackend',
+    #    'social_auth.backends.browserid.BrowserIDBackend',
+    #    'social_auth.backends.contrib.linkedin.LinkedinBackend',
+    #    'social_auth.backends.contrib.livejournal.LiveJournalBackend',
+    #    'social_auth.backends.contrib.orkut.OrkutBackend',
+    #    'social_auth.backends.contrib.foursquare.FoursquareBackend',
     'social_auth.backends.contrib.github.GithubBackend',
-#    'social_auth.backends.contrib.vkontakte.VKontakteBackend',
-#    'social_auth.backends.contrib.live.LiveBackend',
-#    'social_auth.backends.contrib.skyrock.SkyrockBackend',
-#    'social_auth.backends.contrib.yahoo.YahooOAuthBackend',
-#    'social_auth.backends.OpenIDBackend',
+    #    'social_auth.backends.contrib.vkontakte.VKontakteBackend',
+    #    'social_auth.backends.contrib.live.LiveBackend',
+    #    'social_auth.backends.contrib.skyrock.SkyrockBackend',
+    #    'social_auth.backends.contrib.yahoo.YahooOAuthBackend',
+    #    'social_auth.backends.OpenIDBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter','facebook','github','google-oauth2')
+SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter', 'facebook', 'github', 'google-oauth2')
 
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
@@ -316,8 +342,8 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 REST_FRAMEWORK = {
-# Use hyperlinked styles by default.
-# Only used if the `serializer_class` attribute is not set on a view.
+    # Use hyperlinked styles by default.
+    # Only used if the `serializer_class` attribute is not set on a view.
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'api.authentication.TokenAppAuthentication',
         # not needed, maybe only sessionAuth if we need to test it from the browser
@@ -330,10 +356,10 @@ REST_FRAMEWORK = {
     # ),
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-     'DEFAULT_PERMISSION_CLASSES': [
-         'rest_framework.permissions.IsAuthenticated',
-         'api.permissions.IsOwner',
-     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        'api.permissions.IsOwner',
+    ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'TEST_REQUEST_RENDERER_CLASSES': (
         # 'rest_framework.renderers.MultiPartRenderer',
@@ -348,22 +374,22 @@ GOOGLE_EXTENDED_PERMISSIONS = ['email']
 
 SOCIAL_AUTH_BACKEND_ERROR_URL = '/welcome/'
 LOGIN_ERROR_URL = '/welcome/'
-LOGIN_URL='/user/login/'
+LOGIN_URL = '/user/login/'
 LOGIN_REDIRECT_URL = '/'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_METHODS = (
-        'GET'
-    )
+    'GET'
+)
 CORS_ALLOW_HEADERS = (
-        'x-requested-with',
-        'content-type',
-        'accept',
-        'origin',
-        'authorization',
-        'x-csrftoken'
-    )
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken'
+)
 
 
 
@@ -371,6 +397,6 @@ CORS_ALLOW_HEADERS = (
 #DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
-
-
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
