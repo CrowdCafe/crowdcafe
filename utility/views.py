@@ -4,8 +4,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from models import Attachment
-from kitchen.models import Job
+from kitchen.models import Job, Attachment
 from account.models import Account
 from rewards.models import Reward
 

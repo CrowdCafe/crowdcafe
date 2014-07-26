@@ -10,8 +10,7 @@ import scraperwiki
 from django.core.mail import EmailMessage
 
 from CrowdCafe.settings import DEBUG
-from kitchen.models import Job, Unit
-from utility.models import Notification
+from kitchen.models import Job, Unit, Notification
 
 
 def saveUnits(job, dataset):

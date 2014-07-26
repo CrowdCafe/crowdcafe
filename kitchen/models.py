@@ -247,3 +247,13 @@ class Judgement(models.Model):
             commission = FundTransfer(to_account = platform_owner_account, from_account = self.unit.job.app.account, amount = Decimal(settings.BUSINESS['platform_commission'])*fundtransfer.amount, description = 'commission for judgement for unit ['+str(self.unit.id)+']')
             commission.save()
         super(Judgement, self).save(*args, **kwargs)
+
+
+class Notification(models.Model):
+    job = models.ForeignKey(Job, null = True, blank = True)
+    last = models.DateField(auto_now=True)
+
+
+class Attachment(models.Model):
+    job = models.ForeignKey(Job, null = True, blank = True)
+    source_file = models.FileField(upload_to='attachments')

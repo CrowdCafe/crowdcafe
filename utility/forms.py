@@ -2,8 +2,7 @@ from django import forms
 from datetime import date, timedelta
 from account.models import Account
 
-from models import Attachment
-from kitchen.models import Job
+from kitchen.models import Job, Attachment
 from django.conf import settings
 
 from django.contrib.auth.models import User
