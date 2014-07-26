@@ -62,7 +62,6 @@ def sendEmail(sender, title, html, email):
     msg.send()
     return True
 
-#FIXME: THIS IS NOT USED
 def notifySuperUser(job_id):
     log.debug(job_id)
     job = Job.objects.get(pk=job_id)
