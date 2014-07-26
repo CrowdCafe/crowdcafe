@@ -15,6 +15,7 @@ BUSINESS = {
     'platform_commission': 0.3,
     'allow_debt': 30
 }
+APP_URL = 'http://crowdcafe.io'
 # ---------------------------------------------------------------
 # Django settings for CrowdCafe project.
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
