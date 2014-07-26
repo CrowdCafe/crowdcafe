@@ -537,4 +537,4 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 # STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
-SCRAPERWIKI_DATABASE_NAME = "/tmp/scraperwiki.sqlite"
+os.environ['SCRAPERWIKI_DATABASE_NAME'] = "/tmp/sw.sqlite"
