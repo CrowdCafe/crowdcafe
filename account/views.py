@@ -339,3 +339,6 @@ def webHookSuperUser(request):
             #else nothign
         return redirect(reverse('home'))
         # subscribe or unsubscibe
+
+def error500(request):
+    request.DATA['500']
