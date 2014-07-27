@@ -3,7 +3,7 @@ import logging
 import random
 
 from django.contrib.auth.models import User, Group
-from django.http.response import Http404
+from django.http.response import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
@@ -309,7 +309,7 @@ class FundTransferListView(ListView):
         return context
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["POST","GET"])
 @csrf_exempt
 #TODO test me when online
 #FIXME set a consistent key and specify it in mailchimp
@@ -319,26 +319,26 @@ def webHookSuperUser(request):
     this view handles the webhook from mailchimp, pls refer to this for details
     http://apidocs.mailchimp.com/webhooks/#email-address-changes
     '''
-    url_key = request.GET['key']
-    log.debug(url_key)
-    if url_key != MC_KEY:
-        raise Http404('Nope')
+    if request.method == 'GET':
+        return HttpResponse(status=200)
     else:
-        event_type = request.POST['type']
-        email = request.POST['data']['email']
-        user = get_object_or_404(User, email=email)
-        g = Group.objects.get(name='superuser')
-        if event_type == 'subscribe':
-            g.user_set.add(user)
-            g.save()
-            log.debug('added')
-        elif event_type == 'unsubscribe':
-            g.user_set.remove(user)
-            log.debug('removed')
-            g.save()
-            #else nothign
-        return redirect(reverse('home'))
-        # subscribe or unsubscibe
-
-def error500(request):
-    request.DATA['500']
+        url_key = request.GET['key']
+        log.debug(url_key)
+        if url_key != MC_KEY:
+            return Http404('Nope')
+        else:
+            event_type = request.POST['type']
+            email = request.POST['data']['email']
+            user = get_object_or_404(User, email=email)
+            g = Group.objects.get(name='superuser')
+            if event_type == 'subscribe':
+                g.user_set.add(user)
+                g.save()
+                log.debug('added')
+            elif event_type == 'unsubscribe':
+                g.user_set.remove(user)
+                log.debug('removed')
+                g.save()
+                #else nothign
+            return HttpResponse(status=200)
+            # subscribe or unsubscibe

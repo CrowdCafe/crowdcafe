@@ -243,8 +243,6 @@ class UnitTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_unit_detail_get(self):
-
-
         url = reverse('api-unit-list', kwargs={'job_pk': self.job.pk})
         # first element is an array
         data =  [[{'title':1},{'test':'as'}],{'title':2},{'title':3}]

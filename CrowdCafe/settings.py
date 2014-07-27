@@ -122,7 +122,7 @@ else:
 if DEBUG:
     STATIC_URL = '/static/'
 else:
-    STATIC_URL = 'https://www.crowdcafe.io/static/'
+    STATIC_URL = 'http://www.crowdcafe.io/static/'
 
 BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
 

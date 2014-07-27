@@ -150,6 +150,7 @@ class UnitViewSet(viewsets.ModelViewSet):
         raise exceptions.MethodNotAllowed('UPDATE')
 
 
+
     #def partial_update(self, request, pk=None):
     #    raise exceptions.MethodNotAllowed('PARTIAL UPDATE')
 
