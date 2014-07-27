@@ -328,7 +328,8 @@ def webHookSuperUser(request):
             return Http404('Nope')
         else:
             event_type = request.POST['type']
-            email = request.POST['data']['email']
+            # not sure it's but should work
+            email = request.POST['data[merges][EMAIL]']
             log.debug("email: %s",email)
             user = get_object_or_404(User, email=email)
             g = Group.objects.get(name='superuser')
