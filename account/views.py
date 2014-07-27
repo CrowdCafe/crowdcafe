@@ -331,11 +331,11 @@ def webHookSuperUser(request):
             return Http404('Nope')
         else:
             event_type = request.POST['type']
-            log.debug("Type %s",event_type)
+            log.debug("Type %s", event_type)
             # not sure it's but should work
             # data = request.POST['data']
             # log.debug("data %s",data)
-            email = request.POST['data[merges][EMAIL]']
+            email = request.POST['data[email]']
             log.debug("email: %s",email)
             try:
                 user = User.objects.get(email=email)
