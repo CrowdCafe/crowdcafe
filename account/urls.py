@@ -2,8 +2,6 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from account.views import error500
-
 import views
 
 urlpatterns = patterns('',
@@ -39,7 +37,5 @@ urlpatterns = patterns('',
     url(r'^accounts/(?P<account_pk>\d+)/members/$', login_required(views.MembershipListView.as_view()), name='member-list'),
     url(r'^accounts/(?P<account_pk>\d+)/members/create/$', login_required(views.MembershipCreateView.as_view()), name='member-create'),
     url(r'^members/(?P<member_pk>\d+)/update/$', login_required(views.MembershipUpdateView.as_view()), name='member-update'),
-
-    url(r'^500/$', error500),
 
 )
