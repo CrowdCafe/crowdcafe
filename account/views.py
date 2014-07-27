@@ -322,8 +322,8 @@ def webHookSuperUser(request):
     if request.method == 'GET':
         return HttpResponse(status=200)
     else:
-
-        url_key = request.POST['key']
+        # get beacuse it's from url
+        url_key = request.GET['key']
         log.debug("key %s",url_key)
         if url_key != MC_KEY:
             log.warning('wrong key, someone trying to mess up?')
