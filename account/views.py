@@ -322,14 +322,17 @@ def webHookSuperUser(request):
     if request.method == 'GET':
         return HttpResponse(status=200)
     else:
-        url_key = request.GET['key']
-        log.debug(url_key)
+
+        url_key = request.DATA['key']
+        log.debug("key %s",url_key)
         if url_key != MC_KEY:
+            log.warning('wrong key, someone trying to mess up?')
             return Http404('Nope')
         else:
-            event_type = request.POST['type']
+            event_type = request.DATA['type']
+            log.debug("Type %s",event_type)
             # not sure it's but should work
-            email = request.POST['data[merges][EMAIL]']
+            email = request.DATA['[merges][EMAIL]']
             log.debug("email: %s",email)
             user = get_object_or_404(User, email=email)
             g = Group.objects.get(name='superuser')
