@@ -119,10 +119,8 @@ else:
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-if DEBUG:
-    STATIC_URL = '/static/'
-else:
-    STATIC_URL = 'http://www.crowdcafe.io/static/'
+
+STATIC_URL = '/static/'
 
 BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
 
