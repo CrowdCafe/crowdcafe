@@ -332,6 +332,8 @@ def webHookSuperUser(request):
             event_type = request.POST['type']
             log.debug("Type %s",event_type)
             # not sure it's but should work
+            data = request.POST['data']
+            log.debug("data %s",data)
             email = request.POST['data[merges][EMAIL]']
             log.debug("email: %s",email)
             user = get_object_or_404(User, email=email)
