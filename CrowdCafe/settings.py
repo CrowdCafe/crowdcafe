@@ -4,7 +4,7 @@
 
 # Adjustable settings
 # ---------------------------------------------------------------
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 ALLOWED_HOSTS = ['localhost', 'crowdcafe.io', '5.101.96.187']
 
@@ -270,12 +270,20 @@ if DEBUG:
                 'level': 'ERROR',
                 'filters': ['require_debug_false'],
                 'class': 'django.utils.log.AdminEmailHandler'
-            }
+            },
+             'logfile_debug': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': "/var/log/django/cc_debug.log",
+                'maxBytes': 50000,
+                'backupCount': 3,
+                'formatter': 'standard',
+            },
 
         },
         'loggers': {
             'django': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'propagate': True,
                 'level': 'WARN',
             },
@@ -291,47 +299,47 @@ if DEBUG:
             #     'propagate': True,
             # },
             'django.db.backends': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'WARNING',
                 'propagate': False,
             },
             'api.permissions': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'WARN',
                 'propagate': False,
             },
             'api.authentication': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'WARN',
                 'propagate': False,
             },
             'api': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'kitchen': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'cafe': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'utility': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'account': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'rest_framework': {
-                'handlers': ['console'],
+                'handlers': ['console','logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             }
@@ -378,6 +386,7 @@ else:
                 'backupCount': 3,
                 'formatter': 'standard',
             },
+
 
         },
         'loggers': {

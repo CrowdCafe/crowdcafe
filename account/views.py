@@ -3,6 +3,7 @@ import logging
 import random
 
 from django.contrib.auth.models import User, Group
+from django.core.mail import mail_admins
 from django.http.response import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.core.urlresolvers import reverse
@@ -336,8 +337,14 @@ def webHookSuperUser(request):
             # log.debug("data %s",data)
             email = request.POST['data[merges][EMAIL]']
             log.debug("email: %s",email)
-            user = get_object_or_404(User, email=email)
+            try:
+                user = User.objects.get(email=email)
+            except:
+                # mail_admins('SuperUser subscribed not found',('Super user %s just subscribed but there is not match in the db',email))
+                log.error(('Super user %s just subscribed but there is not match in the db'% email))
+                return HttpResponse(status=200)
             g = Group.objects.get(name='superuser')
+            log.debug("? %s",event_type == 'subscribe')
             if event_type == 'subscribe':
                 g.user_set.add(user)
                 g.save()
