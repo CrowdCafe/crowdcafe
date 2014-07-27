@@ -9,8 +9,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
 
 from account.models import Account, Membership
-from kitchen.models import App, Job
+from kitchen.models import App, Job, Unit
 
+import logging
+log = logging.getLogger(__name__)
 
 class AccountTests(APITestCase):
     '''
@@ -115,7 +117,6 @@ class JobTests(APITestCase):
         self.job2=Job.objects.create(app=self.app2, creator=self.user2, title='job title 2',
                            description='job desc', category='CF', units_per_page='2', device_type='AD',
                            judgements_webhook_url='http://example.com', userinterface_url="http://example.com/ui/")
-
     def test_list(self):
 
         url = reverse('api-job-list')
@@ -242,8 +243,19 @@ class UnitTest(APITestCase):
         response = client.post(url, data=data,format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_unit_get_patch(self):
+
+        new_unit = Unit(job=self.job, input_data = json.dumps({'a':1}), status = 'NC')
+        new_unit.save()
+
+        url = reverse('api-unit-detail', kwargs={'pk': new_unit.pk})
+        response = self.client.patch(url, data= {'status':'CD'}, format='json')
+        
+        self.assertEqual(response.data['status'], 'CD')
+    
     def test_unit_detail_get(self):
         url = reverse('api-unit-list', kwargs={'job_pk': self.job.pk})
+        log.debug('\nurl: '+str(url))
         # first element is an array
         data =  [[{'title':1},{'test':'as'}],{'title':2},{'title':3}]
         response = self.client.post(url, data=data,format='json')
@@ -253,6 +265,7 @@ class UnitTest(APITestCase):
 
 
         url = reverse('api-unit-detail', kwargs={'job_pk': self.job.pk,'pk':first_unit})
+        
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['input_data'],[{'title':1},{'test':'as'}])

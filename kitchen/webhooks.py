@@ -89,5 +89,6 @@ def webhook_quality_conrol(judgement, url):
 					if not d['correct']:
 						judgement.score = -1
 	judgement.save()
+	judgement.unit.updateStatus()
 	log.debug('judgement saved: '+str(judgement)+' with score: '+str(judgement.score)) 
 	return judgement

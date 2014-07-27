@@ -98,22 +98,19 @@ class JobsViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, pk=None):
         raise exceptions.MethodNotAllowed('PARTIAL UPDATE')
 
-class UnitUpdateView(UpdateAPIView):
-    serializer_class = UnitSerializer
-    model = Unit
-    def get_object(self):
-        try:
-            unit = Unit.objects.filter(pk=self.kwargs['unit_pk'], job__app = self.request.app).get()
-        except:
-            raise exceptions.PermissionDenied()
-        return unit
-
-
 class UnitViewSet(viewsets.ModelViewSet):
     serializer_class = UnitSerializer
     model = Unit
     paginate_by = 10
 
+    def get_object(self):
+        try:
+            log.debug(self.kwargs)
+            
+            unit = Unit.objects.filter(pk=self.kwargs['pk'], job__app = self.request.app).get()
+        except:
+            raise exceptions.PermissionDenied()
+        return unit
     def get_queryset(self):
         # we don't need any other control beacuse this is nested
         # so permission checks if app owns the job
@@ -126,7 +123,6 @@ class UnitViewSet(viewsets.ModelViewSet):
         except:
             raise exceptions.PermissionDenied()
         return viewsets.ModelViewSet.list(self, request, *args, **kwargs)
-
 
     def create(self,request,job_pk):
         job = get_object_or_404(Job, pk=job_pk, app=request.app)
@@ -141,13 +137,29 @@ class UnitViewSet(viewsets.ModelViewSet):
         notifySuperUser(job_pk)
         return Response(status=status.HTTP_201_CREATED)
 
-
+    def partial_update(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+            created = False
+        except Http404:
+            self.object = None
+            created = True
+ 
+        serializer = self.get_serializer(self.object, data=request.DATA, files=request.FILES, partial=True)
+ 
+        if serializer.is_valid():
+            self.pre_save(serializer.object)
+            self.object = serializer.save()
+            status_code = created and status.HTTP_201_CREATED or status.HTTP_200_OK
+            return Response(serializer.data, status=status_code)
+ 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def destroy(self, request, pk=None):
         # disable this function
         raise exceptions.MethodNotAllowed('DESTROY')
 
-    def update(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed('UPDATE')
+    #def update(self, request, *args, **kwargs):
+    #    raise exceptions.MethodNotAllowed('UPDATE')
 
 
 
@@ -177,15 +189,15 @@ class JudgementViewSet(viewsets.ModelViewSet):
         # disable this function
         raise exceptions.MethodNotAllowed('CREATE')
 
-
     def destroy(self, request, pk=None):
         # disable this function
         raise exceptions.MethodNotAllowed('DESTROY')
 
 router = ApiRouter()
+
 router.register(r'app', AppViewSet)
 router.register(r'job', JobsViewSet)
-router.register(r'unit', JobsViewSet)
+router.register(r'unit', UnitViewSet)
 
 job_router = NestedApiRouter(router, r'job', lookup='job')
 job_router.register(r'unit', UnitViewSet)

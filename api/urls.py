@@ -7,8 +7,7 @@ import views
 
 
 urlpatterns = patterns('',
-						url(r'^unit/(?P<unit_pk>\d+)/$', views.UnitUpdateView.as_view()),
-                       url(r'^', include(views.router.urls)),
+					   url(r'^', include(views.router.urls)),
                        url(r'^', include(job_router.urls)),
                        url(r'^', include(unit_router.urls)),
                        url(r'^me/', me, name='me'),
