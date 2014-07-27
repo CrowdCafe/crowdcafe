@@ -2,7 +2,6 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from account.views import error500
 
 import views
 

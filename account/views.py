@@ -329,6 +329,7 @@ def webHookSuperUser(request):
         else:
             event_type = request.POST['type']
             email = request.POST['data']['email']
+            log.debug("email: %s",email)
             user = get_object_or_404(User, email=email)
             g = Group.objects.get(name='superuser')
             if event_type == 'subscribe':
