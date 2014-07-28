@@ -37,9 +37,4 @@ urlpatterns = patterns('',
     url(r'^accounts/(?P<account_pk>\d+)/members/create/$', login_required(views.MembershipCreateView.as_view()), name='member-create'),
     url(r'^members/(?P<member_pk>\d+)/update/$', login_required(views.MembershipUpdateView.as_view()), name='member-update'),
 
-<<<<<<< HEAD
 )
-=======
-
-)
->>>>>>> 78f8d775d7caee4953cdf816fc9d7d311fed6d8d
