@@ -234,7 +234,6 @@ class Judgement(models.Model):
     def __unicode__(self):
         return str(self.id)
     def save(self, *args, **kwargs):
-        self.unit.updateStatus()
         #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
         if self.pk is None and self.unit.job.price>0 and self.score >= 0:
 
