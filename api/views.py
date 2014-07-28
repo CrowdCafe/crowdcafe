@@ -105,6 +105,8 @@ class UnitViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
         try:
+            print 'received uni object'
+            print self.kwargs['pk']
             log.debug(self.kwargs)
             
             unit = Unit.objects.filter(pk=self.kwargs['pk'], job__app = self.request.app).get()
