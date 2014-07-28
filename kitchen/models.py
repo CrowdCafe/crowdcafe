@@ -27,6 +27,9 @@ from django.db.models.signals import post_save
 from django.db.models import Q
 import random
 import numpy
+import logging
+
+log = logging.getLogger(__name__)
 
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
 from utility.utils2 import notifyMoneyAdmin
@@ -215,6 +218,8 @@ class Unit(models.Model):
             self.save()
         return self.status
     def save(self, *args, **kwargs):
+        log.debug('unit '+str(self.pk)+' was saved, its status = '+str(self.status))
+
         if self.job.status == 'PB' and Unit.objects.filter(job = self.job, status = 'NC').count() == 0:
             #TODO - send email here to account email if it exists
             sendNotificationToAccountEmail = True
