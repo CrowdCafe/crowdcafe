@@ -16,7 +16,6 @@ canvas{
 	<div class="navbar-inner">
 		<div class="left">
 			<a href="{% url 'cafe-job-list' %}?category={{job.category}}" class="back external link"><i class="icon icon-back-blue"></i><span>Back</span></a>
-			<a href="{% url 'cafe-profile' %}?user={{task.job.owner.id}}" class="link "><i class="fa fa-male"></i>
 			</a>
 		</div>
 		<div class="center sliding task-title">
@@ -68,7 +67,7 @@ canvas{
 		<div class="page">
 			<div class="navbar">
 				<div class="navbar-inner">
-					<div class="center popup-title" style="left: 583px;">{{task.job.title}}</div>
+					<div class="center popup-title" style="left: 583px;">{{job.title}}</div>
 					<div class="right"><a href="#" class="link close-popup">Close</a></div>
 				</div>
 			</div>
@@ -77,7 +76,7 @@ canvas{
 					<h3>Task instructions:</h3>
 				</div>
 				<div class="content-block popup-content">
-					{{task.job.description}}
+					{{job.description}}
 				</div>
 
 				<div class="content-block">
