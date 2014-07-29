@@ -115,3 +115,14 @@ def import_super_user_list(csv_filename):
                     g.save()
                 except :
                     log.error(('Super user %s just subscribed but there is not match in the db' % email))
+
+def notify_user(email, subject, body, user=''):
+    msg = EmailMessage(subject=subject, from_email="CrowdCafe <team@crowdcafe.io>",
+                       to=[email])
+    msg.template_name = "CONTACT_USER"
+    msg.global_merge_vars = {
+        'MESSAGE': body,
+         "USER": user
+    }
+    msg.async = True
+    msg.send()
