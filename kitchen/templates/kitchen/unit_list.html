@@ -14,7 +14,7 @@
 <div class="container">
 	<table class='table table-hover'>
 		{% for unit in object_list %}
-		<tr class='{% if unit.gold %} warning {% else %} {%if unit.published %} {%if unit.status == "NC"%} info {%else%} success {%endif%} {%endif%}'>
+		<tr class='{% if unit.gold %} warning {% else %} {%if unit.published %} {%if unit.status == "NC"%} info {%else%} success {%endif%} {%endif%} {%endif%}'>
 			<td>#{{forloop.counter}}</td>
 			<td>id:{{unit.id}}</td>
 			<td>{{unit.input_data}}</td>
