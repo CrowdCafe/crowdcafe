@@ -18,7 +18,8 @@
 			<td>#{{forloop.counter}}</td>
 			<td>id:{{reward.id}}</td>
 			<td>{{reward.title}}</td>
-			<td><a href="{% url 'coupon-list' reward.id %}" ><i class="fa fa-ticket"></i> coupons</a></td>
+			<td><a href="{% url 'coupon-list' reward.id %}" class='btn btn-default'><i class="fa fa-ticket"></i> coupons</a></td>
+			<td><a href="{% url 'reward-update' reward.id %}" class='btn btn-default' ><i class="fa fa-pencil"></i> edit</a></td>
 		</div>
 	</tr>
 	{% empty %}

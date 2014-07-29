@@ -19,7 +19,7 @@
 			<td>id:{{coupon.id}}</td>
 			<td>{{coupon.code}}</td>
 			<td>{{coupon.status}}</td>
-			<td><a href="{% url 'coupon-update' coupon.id %}" class='btn btn-default'>edit</a></td>
+			<td><a href="{% url 'coupon-update' coupon.id %}" class='btn btn-default'><i class="fa fa-pencil"></i> edit</a></td>
 		</div>
 	</tr>
 	{% empty %}
