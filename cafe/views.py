@@ -115,7 +115,7 @@ def UnitsAssign(request, job_id):
 		if units:
 			return render_to_response('cafe/home/pages/job.html', {'job':job,'units':units,'gold_creation':int(gold_creation)}, context_instance=RequestContext(request))
 	
-	return redirect(reverse('cafe-job-list')+'?category='+job.category)
+	return redirect(reverse('cafe-job-list')+'?completed_previous=0&category='+job.category)
 
 @login_required 
 def UnitsComplete(request, job_id): 
