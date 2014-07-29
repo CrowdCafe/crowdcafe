@@ -219,7 +219,7 @@ class MembershipCreateView(CreateView):
         initial = {}
         #TODO check here that current user can add other members
         membership = get_object_or_404(Membership, account__pk = self.kwargs.get('account_pk', None), permission = 'AN',
-                                 account__users__in=[self.request.user.id])
+                                 user__pk=self.request.user.id)
         initial['account'] = get_object_or_404(Account, pk=self.kwargs.get('account_pk', None),
                                                users__in=[self.request.user.id])
         return initial
