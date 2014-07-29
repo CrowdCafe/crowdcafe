@@ -13,7 +13,7 @@
 <div class="container">
 	<table class='table table-hover'>
 		{% for judgement in object_list %}
-		<tr class='{%if judgement.score<0%}danger{%endif%}{%if judgement.score>0%}success{%endif%}'>
+		<tr class='{%if judgement.score < 0%}danger{%endif%}{%if judgement.score > 0%}success{%endif%}'>
 			<td>#{{forloop.counter}}</td>
 			<td>id:{{judgement.id}}</td>
 			<td>score{{judgement.score}}</td>
