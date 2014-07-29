@@ -76,7 +76,7 @@ canvas{
 					<h3>Task instructions:</h3>
 				</div>
 				<div class="content-block popup-content">
-					{% render_instructions job.id %}
+					{{job.description|safe}}
 				</div>
 
 				<div class="content-block">
