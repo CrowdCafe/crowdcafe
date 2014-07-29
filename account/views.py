@@ -64,14 +64,34 @@ def register_user(request):
     args['form'] = UserCreateForm()
     return render(request, template_name, args)
 
+class UserUpdateView(UpdateView):
+    model = User
+    template_name = "kitchen/crispy.html"
+    form_class = UserUpdate
 
-#TODO - does not work
+    def get_initial(self):
+        initial = {}
+        initial['user'] = self.request.user
+        return initial
+    def form_invalid(self, form):
+        log.debug("form is not valid")
+        log.debug(form.errors)
+        return UpdateView.form_invalid(self, form)
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        log.debug("updated")
+        user = form.save()
+        return redirect(reverse('user-update'))
 def update_user(request):
     args = {}
     template_name = 'kitchen/crispy.html'
 
     if request.method == 'POST':
         form = UserUpdate(request.POST, instance=request.user)
+        print form
         if form.is_valid():
             form.save()
             return redirect('account-list')

@@ -16,7 +16,7 @@ urlpatterns = patterns('',
 
     #TODO - we need to find a consistent way to call functions and classes
     url(r'^user/login/$',views.login_user,name='login'),
-    url(r'^user/update/$',login_required(views.update_user),name='user-update'),
+    url(r'^user/update/$',login_required(views.UserUpdateView.as_view()),name='user-update'),
     url(r'^user/register/$', views.register_user, name='register'),
     url(r'^user/logout/$', login_required(views.logout_user), name='logout'),
     url(r'^user/mandrill$', views.webHookSuperUser, name = 'user-mandrill'),

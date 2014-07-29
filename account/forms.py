@@ -91,22 +91,20 @@ class LoginForm(AuthenticationForm):
         #self.helper.add_input(Submit('submit', 'Login'))
         super(LoginForm, self).__init__(*args, **kwargs)
 
-#TODO - it does not work
 class UserUpdate(ModelForm):
-    username = forms.CharField(required=True)
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(required=False)
-    last_name = forms.CharField(required=False)
+    username = forms.CharField(required=True, widget=forms.HiddenInput)
+    first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'readonly':'readonly'}))
 
     class Meta:
         model = User
-        fields = ('username','email', 'first_name', 'last_name')
-
+        fields = ('username','email','first_name','last_name')
+    
     def clean_email(self):
         username = self.cleaned_data.get('username')
         email = self.cleaned_data.get('email')
-
-        if email and User.objects.filter(email=email).exclude(pk=self.request.id).count():
+        print User.objects.filter(email=email).exclude(username=username).count()
+        if email and User.objects.filter(email=email).exclude(username=username).count():
             raise forms.ValidationError('This email address is already in use. Please supply a different email address.')
         return email
     def __init__(self, *args, **kwargs):

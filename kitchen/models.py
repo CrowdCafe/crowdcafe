@@ -218,10 +218,19 @@ class Unit(models.Model):
         return self.status
     def save(self, *args, **kwargs):
         log.debug('unit '+str(self.pk)+' was saved, its status = '+str(self.status))
+        # if the job is published, there are no 
 
-        if self.job.status == 'PB' and Unit.objects.filter(job = self.job, status = 'NC').count() == 0:
-            #TODO - send email here to account email if it exists
-            sendNotificationToAccountEmail = True
+        # if this unit is not new
+        if self.pk is not None:
+            orig = Unit.objects.get(pk=self.pk)
+            # if the status of this unit is "Completed" and before it was different
+            if orig.status != self.status and self.status == 'CD':
+                published_units = Unit.objects.filter(job = self.job, published = True)
+                # if all the published units completed notify admin of the account 
+                #TODO - as we update status via API - admin might receive multiple emails even when not all judgements are fully completed.
+                if self.job.status == 'PB' and published_units.filter(status = 'NC').count() == 0 and published_units.filter(status = 'CD').count() > 0:
+                    notifyMoneyAdmin(self.job.app.account,3)
+        
         super(Unit, self).save(*args, **kwargs)
 # ====================================================
 # JUDGEMENTS RELATED CLASSES

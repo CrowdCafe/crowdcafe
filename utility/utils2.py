@@ -6,6 +6,7 @@ __author__ = 'stefano'
 _good = ('Your account has been charged', 'Your account has been topped up of %s.')
 _bad = ('Problem with your account', 'We encountred a problem with your account. %s')
 _no_credit = ('Your credit is insufficient', 'Your credit is insufficient to execute the operation you required. %s')
+_units_completed = ('Job is completed', 'We have noticed, that all the units of the job you were running are completed. %s')
 
 def notifyMoneyAdmin(account, status, info=''):
     message = _good
@@ -13,6 +14,8 @@ def notifyMoneyAdmin(account, status, info=''):
         message = _bad
     if status ==2:
         message = _no_credit
+    if status ==3:
+        message = _units_completed
     if account.email:
         emails = [account.email]
     elif account.creator.email:
