@@ -134,9 +134,7 @@ class AccountForm(ModelForm):
 class MembershipForm(ModelForm):
     
     account = forms.ModelChoiceField(queryset=Account.objects.all(), widget=forms.HiddenInput)
-    user = forms.ModelChoiceField(queryset=User.objects.all(), widget=forms.TextInput(
-                                  attrs={'autocomplete':'on',}
-                                     ))
+    #TODO att here autocomplete
     class Meta:
         model = Membership
         exclude = ('date_created')
