@@ -102,7 +102,7 @@ class JobListView(ListView):
 # -----------------------------------
 @login_required 
 def UnitsAssign(request, job_id):
-	job = get_object_or_404(Job, pk = job_id, status = 'PB')
+	job = get_object_or_404(Job, pk = job_id)
 
 	# if this job is published or the current user is its creator	
 	if job.status == 'PB' or job.creator == request.user:
