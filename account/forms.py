@@ -93,8 +93,8 @@ class LoginForm(AuthenticationForm):
 
 class UserUpdate(ModelForm):
     username = forms.CharField(required=True, widget=forms.HiddenInput)
-    first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    #first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    #last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'readonly':'readonly'}))
 
     class Meta:
         model = User
