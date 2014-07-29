@@ -301,7 +301,7 @@ class FundTransferListView(ListView):
 
     def get_queryset(self):
         account = get_object_or_404(Account, pk=self.kwargs.get('account_pk', None), users__in=[self.request.user.id])
-
+        account.recalculate()
         return FundTransfer.objects.filter(
             Q(from_account=account) | Q(to_account=account))  #TODO make sure it is correct
 
