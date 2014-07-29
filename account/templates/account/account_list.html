@@ -14,7 +14,7 @@
 <div class="container">
 	<table class='table table-hover'>
 		{% for account in object_list %}
-		<tr>
+		<tr class='{%if account.balance < 0%}error{%endif%}'>
 			<td>#{{forloop.counter}}
 			</td>
 			<td>{{account.title}} {% if account.personal %} <i>personal</i>{% endif %}
