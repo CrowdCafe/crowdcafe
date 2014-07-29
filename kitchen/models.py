@@ -225,7 +225,7 @@ class Unit(models.Model):
             orig = Unit.objects.get(pk=self.pk)
             # if the status of this unit is "Completed" and before it was different
             if orig.status != self.status and self.status == 'CD':
-                published_units = Unit.objects.filter(job = self.job, published = True)
+                published_units = Unit.objects.filter(job = self.job, published = True).exclude(pk = self.pk)
                 # if all the published units completed notify admin of the account 
                 #TODO - as we update status via API - admin might receive multiple emails even when not all judgements are fully completed.
                 if self.job.status == 'PB' and published_units.filter(status = 'NC').count() == 0 and published_units.filter(status = 'CD').count() > 0:
