@@ -52,6 +52,7 @@ class QualityControlForm(ModelForm):
 	
 	class Meta:
 		model = QualityControl
+		exclude = ('gold_min','gold_max')
 		
 	def __init__(self, *args, **kwargs):
 		self.helper = FormHelper()

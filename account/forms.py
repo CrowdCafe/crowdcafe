@@ -84,10 +84,6 @@ class LoginForm(AuthenticationForm):
                     <div class="col-sm-2">
                     <a href="{% url 'socialauth_begin' 'github' %}" class="btn-block btn btn-github-inversed"><i class="fa fa-github"></i> Github </a>
                     </div>
-                    <div class="col-sm-2">
-                      <a href="{% url 'socialauth_begin' 'dropbox' %}" class="btn-block btn btn-dropbox-inversed"><i class="fa fa-dropbox"></i> Dropbox </a>
-                    </div>
-                    
              </div>
                 """),
             )
