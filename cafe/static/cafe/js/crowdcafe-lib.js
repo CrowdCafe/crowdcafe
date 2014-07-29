@@ -98,7 +98,7 @@ page_scripts = {
 
 		};
 
-		if (getURLParameter('completed_previous') == '0'){
+		if (getURLParameter('completed_previous') == '0' || !getURLParameter('completed_previous')){
 			$$('.instructions-open').trigger('click');
 		}
 
