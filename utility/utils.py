@@ -1,9 +1,9 @@
 import logging
 import re
-import csv
 from datetime import datetime
+import csv
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.core.mail.message import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 import scraperwiki
@@ -61,6 +61,7 @@ def sendEmail(sender, title, html, email):
     msg.send()
     return True
 
+
 def notifySuperUser(job_id):
     log.debug(job_id)
     job = Job.objects.get(pk=job_id)
@@ -101,6 +102,16 @@ def notifySuperUser(job_id):
         log.debug('notification too close')
 
 
-
-
-
+def import_super_user_list(csv_filename):
+    g = Group.objects.get(name='superuser')
+    with open(csv_filename) as csvfile:
+        people = csv.reader(csvfile)
+        for row in people:
+            email = row[0]
+            if '@' in email:
+                try:
+                    user = User.objects.get(email=email)
+                    g.user_set.add(user)
+                    g.save()
+                except :
+                    log.error(('Super user %s just subscribed but there is not match in the db' % email))
