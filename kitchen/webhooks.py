@@ -19,9 +19,9 @@ def createJudgement(unit, postdata, worker, gold_creation):
 			# check gold data if gold exists but qualitycontrol_url is not given
 			if unit.gold:
 				gold_judgement_data = unit.judgements.filter(gold = True).all()[0].output_data
-				if not unit.job.qualitycontrol.qualitycontrol_url and 'gold'+key.replace(dataitem_handle,'') in gold_judgement_data:
+				if not unit.job.qualitycontrol.qualitycontrol_url and 'gold'+key.replace(dataunit_handle,'') in gold_judgement_data:
 					#TODO rethink it
-					if postdata[key] == gold_judgement_data['gold'+key.replace(dataitem_handle,'')]:
+					if postdata[key] == gold_judgement_data['gold'+key.replace(dataunit_handle,'')]:
 						score+=1.0
 					else:
 						score-=1.0
