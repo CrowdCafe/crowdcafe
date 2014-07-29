@@ -62,7 +62,7 @@ class App(models.Model):
         #def __unicode__(self):
         #    return '' + str(self.owner.username) + ' - ' + str(self.name) # TODO this should be redone according to accounts approach
 
-JOB_STATUS_CHOISES = (('NP', 'Not published'), ('PB', 'Published'))
+JOB_STATUS_CHOISES = (('NP', 'Not published'), ('PB', 'Published'), ('TS', 'Test job'), ('HD', 'Hidden'))
 
 class Job(models.Model):
     # general
