@@ -32,7 +32,7 @@
 								<div class="item-title">{{job.title}}</div>
 								<div class="item-after money">{{job.price}} &euro;</div>
 							</div>
-							<div class="item-text">{{job.description}} <br> </div>
+							<div class="item-text">{{job.description|safe}} <br> </div>
 						</div></a>
 					</li>
 					{% endfor %}
