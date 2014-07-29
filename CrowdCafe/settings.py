@@ -4,9 +4,9 @@
 
 # Adjustable settings
 # ---------------------------------------------------------------
-DEBUG = True   
+DEBUG = False   
 TEMPLATE_DEBUG = DEBUG
-ALLOWED_HOSTS = ['localhost', 'crowdcafe.io']
+ALLOWED_HOSTS = ['localhost', 'crowdcafe.io','188.226.160.208']
 
 # Settings for admin account, commission amount etc
 # ---------------------------------------------------------------
