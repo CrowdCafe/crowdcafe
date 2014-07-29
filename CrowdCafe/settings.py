@@ -4,7 +4,7 @@
 
 # Adjustable settings
 # ---------------------------------------------------------------
-DEBUG = True
+DEBUG = False   
 TEMPLATE_DEBUG = DEBUG
 ALLOWED_HOSTS = ['localhost', 'crowdcafe.io']
 
