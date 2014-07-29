@@ -119,13 +119,13 @@ def UnitsAssign(request, job_id):
 
 @login_required 
 def UnitsComplete(request, job_id): 
-	job = get_object_or_404(Job, pk = job_id, status = 'PB')
+	job = get_object_or_404(Job, pk = job_id)
 		# get list of units which are executed in the task form, which has status "Not Completed" and are published
 	units = []
 	gold_creation = False
 	if 'gold_creation' in request.POST and int(request.POST['gold_creation'])==1:
 		gold_creation = True
-	
+
 	units_pool_handler = 'unit_ids' # pool with a list of unit ids completed in this task
 	if units_pool_handler in request.POST:
 		unit_ids_pool = request.POST.getlist(units_pool_handler)

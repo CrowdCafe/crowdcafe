@@ -8,6 +8,7 @@ from kitchen.models import Judgement
 log = logging.getLogger(__name__)
 
 def createJudgement(unit, postdata, worker, gold_creation):
+
 	judgement_output_data = {}
 	score = 0.0
 	for key in postdata:
@@ -34,11 +35,12 @@ def createJudgement(unit, postdata, worker, gold_creation):
 def saveJudgements(units, postdata, worker, gold_creation):
 	judgements = []
 	for unit in units:
-		judgement = createJudgement(unit, postdata, worker, gold_creation)
-		log.debug('new judgement: '+str(judgement))
-		judgement = webhook_quality_conrol(judgement,judgement.unit.job.qualitycontrol.qualitycontrol_url)
-		judgement.unit.updateStatus()
-		judgements.append(judgement)
+		if Judgement.objects.filter(worker = worker, unit = unit).count() == 0:
+			judgement = createJudgement(unit, postdata, worker, gold_creation)
+			log.debug('new judgement: '+str(judgement))
+			judgement = webhook_quality_conrol(judgement,judgement.unit.job.qualitycontrol.qualitycontrol_url)
+			judgement.unit.updateStatus()
+			judgements.append(judgement)
 	# send a request to URL defined in job settings with info about judgements provided
 	webhook_results(judgements, units[0].job.judgements_webhook_url)
 	    
