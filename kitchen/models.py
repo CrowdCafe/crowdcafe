@@ -228,7 +228,8 @@ class Unit(models.Model):
                 published_units = Unit.objects.filter(job = self.job, published = True).exclude(pk = self.pk)
                 # if all the published units completed notify admin of the account 
                 #TODO - as we update status via API - admin might receive multiple emails even when not all judgements are fully completed.
-                if self.job.status == 'PB' and published_units.filter(status = 'NC').count() == 0 and published_units.filter(status = 'CD').count() > 0:
+                #TODO - make it computationally efficient
+                if self.job.status == 'PB' and len([x for x in published_units.filter(status = 'NC') if not x.gold]) == 0 and published_units.filter(status = 'CD').count() > 0:
                     notifyMoneyAdmin(self.job.app.account,3)
         
         super(Unit, self).save(*args, **kwargs)
