@@ -172,6 +172,7 @@ class AccountUpdateView(UpdateView):
         return UpdateView.form_invalid(self, form)
 
     def get_object(self):
+
         return get_object_or_404(Account, pk=self.kwargs.get('account_pk', None), users__in=[self.request.user.id])
 
     def form_valid(self, form):
@@ -204,30 +205,6 @@ def acceptPayment(request):
     return redirect(reverse('account-list'))
 
 
-class AccountCreateView(CreateView):
-    model = Account
-    template_name = "kitchen/crispy.html"
-    form_class = AccountForm
-
-    def get_initial(self):
-        initial = {}
-        initial['creator'] = self.request.user
-        return initial
-
-    def form_invalid(self, form):
-        log.debug("form is not valid")
-        print (form.errors)
-        return CreateView.form_invalid(self, form)
-
-    def form_valid(self, form):
-        log.debug("saved")
-        account = form.save()
-        account.save()
-        membership, created = Membership.objects.get_or_create(user=self.request.user, permission='AN', account=account)
-
-        return redirect(reverse('account-list'))
-
-
 # -------------------------------------------------------------
 # Membership
 # -------------------------------------------------------------
@@ -240,6 +217,9 @@ class MembershipCreateView(CreateView):
 
     def get_initial(self):
         initial = {}
+        #TODO check here that current user can add other members
+        membership = get_object_or_404(Membership, account__pk = self.kwargs.get('account_pk', None), permission = 'AN',
+                                 account__users__in=[self.request.user.id])
         initial['account'] = get_object_or_404(Account, pk=self.kwargs.get('account_pk', None),
                                                users__in=[self.request.user.id])
         return initial
@@ -267,7 +247,7 @@ class MembershipUpdateView(UpdateView):
         return UpdateView.form_invalid(self, form)
 
     def get_object(self):
-        return get_object_or_404(Membership, pk=self.kwargs.get('member_pk', None),
+        return get_object_or_404(Membership, pk=self.kwargs.get('member_pk', None), permission = 'AN',
                                  account__users__in=[self.request.user.id])
 
     def form_valid(self, form):
