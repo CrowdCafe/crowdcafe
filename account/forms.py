@@ -133,7 +133,8 @@ class AccountForm(ModelForm):
 
 class MembershipForm(ModelForm):
     
-    account = forms.ModelChoiceField(queryset=Account.objects.all().order_by('username'), widget=forms.HiddenInput)
+    account = forms.ModelChoiceField(queryset=Account.objects.all(), widget=forms.HiddenInput)
+    user = forms.ModelChoiceField(queryset=User.objects.all().order_by('username'))
     #TODO att here autocomplete
     class Meta:
         model = Membership
@@ -147,8 +148,8 @@ class MembershipForm(ModelForm):
         super(MembershipForm, self).__init__(*args, **kwargs)
 
 class FundTransferForm(ModelForm):
-    from_account = forms.ModelChoiceField(queryset=Account.objects.all().order_by('username'), widget=forms.HiddenInput)
-    to_account = forms.ModelChoiceField(queryset=Account.objects.all().order_by('username'), widget=forms.HiddenInput)
+    #from_account = forms.ModelChoiceField(queryset=Account.objects.all().order_by('title'), widget=forms.HiddenInput)
+    #to_account = forms.ModelChoiceField(queryset=Account.objects.all().order_by('title'), widget=forms.HiddenInput)
     class Meta:
         model = FundTransfer
         exclude = ('date_created')
