@@ -27,6 +27,9 @@ from django.db.models.signals import post_save
 from django.db.models import Q
 import random
 import numpy
+import logging
+
+log = logging.getLogger(__name__)
 
 #TODO - Need to find a way to combine this and TASK_CATEGORIES from settings.
 from utility.utils2 import notifyMoneyAdmin
@@ -92,11 +95,10 @@ class Job(models.Model):
 
     def fundsAreSufficientToCoverAssignment(self, subset):
         units_count = len(subset)
-        #TODO COMMENT THIS LOGIC, it's very long and not really understandable. explain why
-        if (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission'])):
+        # if account is admins or if the balance with some allowed debt (from BUSINESS in settings) is above potential expenses
+        if self.app.account.id == settings.BUSINESS['platform_owner_account_id'] or (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission'])):
             return True
         else:
-            #TODO #MAIL to whom?
             account = self.app.account
             notifyMoneyAdmin(account,2)
             return False
@@ -215,6 +217,8 @@ class Unit(models.Model):
             self.save()
         return self.status
     def save(self, *args, **kwargs):
+        log.debug('unit '+str(self.pk)+' was saved, its status = '+str(self.status))
+
         if self.job.status == 'PB' and Unit.objects.filter(job = self.job, status = 'NC').count() == 0:
             #TODO - send email here to account email if it exists
             sendNotificationToAccountEmail = True
@@ -234,7 +238,6 @@ class Judgement(models.Model):
     def __unicode__(self):
         return str(self.id)
     def save(self, *args, **kwargs):
-        self.unit.updateStatus()
         #if answer is new, task reward is greater than 0 and the worker and the requestor are different people
         if self.pk is None and self.unit.job.price>0 and self.score >= 0:
 

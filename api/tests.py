@@ -249,7 +249,10 @@ class UnitTest(APITestCase):
         new_unit.save()
 
         url = reverse('api-unit-detail', kwargs={'pk': new_unit.pk})
+        print ('\n url: '+url)
+        
         response = self.client.patch(url, data= {'status':'CD'}, format='json')
+        print ('\n response in patch status:CD: '+str(response))
         
         self.assertEqual(response.data['status'], 'CD')
     

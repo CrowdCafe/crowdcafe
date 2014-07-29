@@ -39,4 +39,3 @@ urlpatterns = patterns('',
     url(r'^members/(?P<member_pk>\d+)/update/$', login_required(views.MembershipUpdateView.as_view()), name='member-update'),
 
 )
-

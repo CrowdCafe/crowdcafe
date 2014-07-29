@@ -68,7 +68,7 @@ def notifySuperUser(job_id):
     last_notification, created = Notification.objects.get_or_create(job=job)
     # SQLLIte use string so skip it when debug
     # send notifications only if the job is published (visible)
-    if job.status == 'PB' and (DEBUG or last_notification.last < datetime.today().date() or created):
+    if job.status == 'PB' and (last_notification.last < datetime.today().date() or created):
         group = Group.objects.get(name='superuser')
         superUsers = group.user_set.all()
         emails = superUsers.values_list('email', flat=True)

@@ -105,6 +105,8 @@ class UnitViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
         try:
+            print 'received uni object'
+            print self.kwargs['pk']
             log.debug(self.kwargs)
             
             unit = Unit.objects.filter(pk=self.kwargs['pk'], job__app = self.request.app).get()
@@ -137,23 +139,6 @@ class UnitViewSet(viewsets.ModelViewSet):
         notifySuperUser(job_pk)
         return Response(status=status.HTTP_201_CREATED)
 
-    def partial_update(self, request, *args, **kwargs):
-        try:
-            self.object = self.get_object()
-            created = False
-        except Http404:
-            self.object = None
-            created = True
- 
-        serializer = self.get_serializer(self.object, data=request.DATA, files=request.FILES, partial=True)
- 
-        if serializer.is_valid():
-            self.pre_save(serializer.object)
-            self.object = serializer.save()
-            status_code = created and status.HTTP_201_CREATED or status.HTTP_200_OK
-            return Response(serializer.data, status=status_code)
- 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def destroy(self, request, pk=None):
         # disable this function
         raise exceptions.MethodNotAllowed('DESTROY')
