@@ -95,11 +95,10 @@ class Job(models.Model):
 
     def fundsAreSufficientToCoverAssignment(self, subset):
         units_count = len(subset)
-        #TODO COMMENT THIS LOGIC, it's very long and not really understandable. explain why
-        if (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission'])):
+        # if account is admins or if the balance with some allowed debt (from BUSINESS in settings) is above potential expenses
+        if self.app.account.id == settings.BUSINESS['platform_owner_account_id'] or (self.app.account.balance+Decimal(settings.BUSINESS['allow_debt']) >= Decimal(units_count*self.price) + Decimal(units_count*settings.BUSINESS['platform_commission'])):
             return True
         else:
-            #TODO #MAIL to whom?
             account = self.app.account
             notifyMoneyAdmin(account,2)
             return False

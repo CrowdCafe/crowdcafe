@@ -13,7 +13,7 @@ ALLOWED_HOSTS = ['localhost', 'crowdcafe.io']
 BUSINESS = {
     'platform_owner_account_id': 1027,
     'platform_commission': 0.3,
-    'allow_debt': 30
+    'allow_debt': 0
 }
 APP_URL = 'http://crowdcafe.io'
 # ---------------------------------------------------------------
