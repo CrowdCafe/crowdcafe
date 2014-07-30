@@ -61,3 +61,6 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+db.sqlite3
+CrowdCafe/settings_credentials.py
+CrowdCafe/settings_database.py
