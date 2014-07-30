@@ -8,12 +8,12 @@
         <div class="row plans ">
 
             {% for category in task_categories%}
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <div class='plan'>
                     <div class="title">{{category.title}}<br/><br/>
                         <img src="{% static category.icon %}" width="40">
                     </div><br/>
-                    <div class="price "><b>{{category.cost}}&euro;</b> fixed reward,<br><b>{{category.time}}</b> execution time</div>
+                    <div class="price "><b>{{category.time}}</b> execution time</div>
                     <div class="description ">
                         <b>Required actions:</b><br>
                         {{category.description}}

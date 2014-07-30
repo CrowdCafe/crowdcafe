@@ -79,6 +79,7 @@ container[0].addEventListener('touchend', function(e){
 				this.mousedown = false;
 			}
 		}
+		this.easel.fabric.renderAll();
 	},
 	draw: function(position){
 		if (position){
@@ -91,7 +92,9 @@ container[0].addEventListener('touchend', function(e){
 
 				this.activeShape.update({'x':distance_x,'y':distance_y});
 			}
+			
 		}
+		this.easel.fabric.renderAll();
 	},
 	finish: function(){
 		this.easel.inprocess = false;

@@ -1,0 +1,25 @@
+{%load static%}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% include 'kitchen/meta/meta.html'%}
+	{% include 'kitchen/meta/styles.html'%}
+</head>
+
+<body>
+	{% include 'kitchen/meta/navigation.html'%}
+	{% block title%}
+
+	{% endblock%}
+
+	{% block content%}
+
+	{% endblock%}
+
+	{% include 'kitchen/meta/scripts.html'%}
+
+	{% block js%}
+	{% endblock%}
+</body>
+</html>

@@ -33,7 +33,7 @@
 							<div class="item-inner reward">
 								<div class="item-title-row">
 									<div class="item-title">{{reward.title}}</div>
-									<div class="item-after money">{{reward.cost}}&euro;</div>
+									<div class="item-after money">{{reward.cost_for_worker}}&euro;</div>
 								</div>
 								<div class="item-subtitle">Available: {{reward.amount_available}}</div>
 								<div class="item-text">{{reward.description}}</div>
@@ -44,10 +44,10 @@
 						<div class="swipeout-actions">
 							<div class="swipeout-actions-inner">
 								{% if reward.amount_available > 0 %}
-								{% if user.profile.account.balance < reward.cost%}
+								{% if user.profile.personalAccount.balance < reward.cost_for_worker%}
 								<a href="#" class="link neutral">You do not </br>have enough money</a>
 								{% else %}
-								<a href="{% url 'cafe-reward-purchase' reward.id%}" class="link external positive">Get coupon </br> for {{reward.cost}}&euro;</a>
+								<a href="{% url 'cafe-reward-purchase' reward.id%}" class="link external positive">Get coupon </br> for {{reward.cost_for_worker}}&euro;</a>
 								{% endif %}
 								{% else %}
 								<a href="#" class="link neutral">More coupons <br/> will be available soon</a>

@@ -101,3 +101,6 @@ h1{
 p.social-feed-text{
 	margin-top:25px !important;
 }
+.btn-login:hover{
+	background: none !important;
+}

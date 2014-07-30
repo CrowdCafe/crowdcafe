@@ -48,6 +48,10 @@ Shape.prototype = {
 		}
 		if (this.element){
 			this.drawing.easel.fabric.add(this.element);
+
+			if (this.type == 'rectangle'){
+				this.drawing.easel.actions.finish();
+			}
 		}
 	},
 	update: function(attributes){

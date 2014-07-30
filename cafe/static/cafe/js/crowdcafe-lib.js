@@ -51,7 +51,6 @@ page_scripts = {
 				'value': value_button.val()
 			};
 			$$(to_item.selector).text(to_item.value);
-
 		});
 		$$('[value-to-val]').on('change',function(){
 			var value_button = $$(this);
@@ -60,9 +59,7 @@ page_scripts = {
 				'value': value_button.val()
 			};
 			$$(to_item.selector).val(to_item.value);
-
 		});
-
 		$$('[name]').on('change',function(){
 			if ($$(this).attr('name').indexOf('dataitem')>=0){
 				console.log('quality check');
@@ -71,7 +68,6 @@ page_scripts = {
 				qualityCheck($$(this),value);
 			}
 		});
-
 		$$('[photobrowser-images]').on('click',function(){
 			var images_array_string = $$(this).attr('photobrowser-images');
 			var splitter = $$(this).attr('photobrowser-splitter');
@@ -81,10 +77,10 @@ page_scripts = {
 				photos: images,
 				type: 'popup'
 			});
+			
 			photoBrowserPopup.open();
 			console.log(images_array_string);
 		});
-
 		crowdcafe.swipeoutDelete = function (el) {
 			el = $$(el);
 			if (el.length === 0) return;
@@ -102,28 +98,27 @@ page_scripts = {
 
 		};
 
-
-		if (getURLParameter('completed_previous') == '0'){
+		if (getURLParameter('completed_previous') == '0' || !getURLParameter('completed_previous')){
 			$$('.instructions-open').trigger('click');
 		}
 
 		document.taskForm.onsubmit=function() {
+
 			$$('.shape_data').remove();
 			var error = false;
 			var message = false;
-			var shapes_amount = 0;
+
 			easels.forEach(function(easel){
 
 				easel.serialize($$('#taskForm'));
 				var result = easel.qualityCheck();
-				shapes_amount+=easel.drawing.shapes.length;
 				if (!result.correct){
 					message = result.description;
-
 					error = true;
 				}
 			});
-			if (shapes_amount!= $$('.shape_data').length){
+
+			if (easels.length != $$('.shape_data').length){
 				error = true;
 				message = 'We could not store your shape - try again.';
 			}
@@ -131,6 +126,7 @@ page_scripts = {
 				error = true;
 				message = 'Not all fields are filled. Check carefully.';
 			}
+
 			if (error){
 				crowdcafe.alert(message);
 				return false;
@@ -138,13 +134,12 @@ page_scripts = {
 				crowdcafe.showPreloader('saving...');
 				return true;
 			}
+			crowdcafe.alert('Something went wrong');
 			return false;
 		}
 		$$('.skip-instance').on('click',function(){
 			crowdcafe.showPreloader('shuffle...');
 		});
-
-
 
 		$$('[answer-to]').on('click',function(){
 			var answer_button = $$(this);
@@ -156,15 +151,12 @@ page_scripts = {
 
 			qualityCheck($$(question.name),question.answer);
 			answer_button.parents('.question').removeClass('notanswered').addClass('answered');
-			//qualityCheck($$(question.name),question.answer);
 
 			setTimeout(function(){
 				if (answer_button.parents('.hide-if-empty').find('.question.notanswered').length == 0){
 					answer_button.parents('.hide-if-empty').css({display: 'none'}).addClass('transitioning');
 				}
 			}, 350);
-
-
 		});
 
 	},
@@ -229,7 +221,7 @@ function qualityCheck(element, value){
 				},
 
 				{
-					text: 'I dot not agree. Leave comment to requestor.',
+					text: 'I dot not agree. Leave comment to the requestor.',
 					red: true,
 					onClick: function () {
 						$$('.instructions-open').trigger('click');
@@ -242,6 +234,7 @@ function qualityCheck(element, value){
 
 	}
 }
+
 function allFieldsAreFilled(){
 	var correct = true; 
 	$$('[name]').each(function(){
@@ -252,7 +245,6 @@ function allFieldsAreFilled(){
 	});
 	return correct;
 }
-
 function getURLParameter(name) {
 	var regexS = "[\\?&]" + name + "=([^&#]*)";
 	var regex = new RegExp(regexS);
@@ -262,13 +254,3 @@ function getURLParameter(name) {
 		return null;
 	return results[1];
 }
-
-
-
-		/*$$('.open-popup').on('click', function(){
-			var button = $$(this);
-			if (button.attr('iframe')){
-				var content = '<iframe src="'+button.attr('iframe')+'" height="'+$$(window).height()+'"></iframe>'
-				$$(button.attr('data-popup')+' .content-block').html(content);
-			}
-		});*/

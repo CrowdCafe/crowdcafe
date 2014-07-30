@@ -1,0 +1,49 @@
+{% extends 'cafe/ios7base.html'%}
+{%load static%}
+
+{% block navigation%}
+<!-- Top Navbar-->
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="left"><a href="{% url 'cafe-home' %}" class="back link"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
+		<div class="center sliding">Available jobs</div>
+		<div class="right"><a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a></div>
+	</div>
+</div>
+{% endblock%}
+
+{% block content%}
+<div class="pages navbar-through toolbar-through">
+	<!-- Page, data-page contains page name-->
+	<div data-page="tasklist" class="page">
+		<!-- Scrollable page content-->
+		<div class="page-content">
+			{% if object_list|length > 0 %}
+			<div class="content-block-title">Select a task to work on:</div>
+			<div class="list-block media-list">
+				<ul>
+					{% for job in object_list%}
+					<li><a href="{% url 'cafe-units-assign' job.id %}?completed_previous=0" task-id = "{{job.id}}" class="item-link external item-content task">
+						<div class="item-media">
+							<img src='{{job.owner.profile.avatar}}' class='avatar'>
+						</div>
+						<div class="item-inner">
+							<div class="item-title-row">
+								<div class="item-title">{{job.title}}</div>
+								<div class="item-after money">{{job.price}} &euro;</div>
+							</div>
+							<div class="item-text">{{job.description|striptags}} <br> </div>
+						</div></a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+			{% else %}
+			<div class="content-block-title">No available job</div>
+			<div class="content-block">Please check other job categories. We will publich new tasks soon.
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock%}

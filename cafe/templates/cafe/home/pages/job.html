@@ -11,20 +11,18 @@ canvas{
 	border-width:1px;
 	border:1px solid red;
 }
-
 </style>
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="left">
-			<a href="{% url 'cafe-job-list' %}?category={{task.job.category}}" class="back external link"><i class="icon icon-back-blue"></i><span>Back</span></a>
-			<a href="{% url 'cafe-profile' %}?user={{task.job.owner.id}}" class="link "><i class="fa fa-male"></i>
+			<a href="{% url 'cafe-job-list' %}?category={{job.category}}" class="back external link"><i class="icon icon-back-blue"></i><span>Back</span></a>
 			</a>
 		</div>
 		<div class="center sliding task-title">
 			<a href="#" data-popup=".instructions" class="open-popup instructions-open">Instructions</a>
 		</div>
 		<div class="right">
-			<a href="{% url 'cafe-job-assign' task.job.id %}" class="link external skip-instance"><i class="fa fa-random"></i>
+			<a href="{% url 'cafe-units-assign' job.id %}" class="link external skip-instance"><i class="fa fa-random"></i>
 			</a>
 			<a href="#" class="open-panel link icon-only"><i class="icon icon-bars-blue"></i></a>
 		</div>
@@ -39,17 +37,20 @@ canvas{
 	<div data-page="task" class="page">
 		<!-- Scrollable page content-->
 		<div class="page-content">
-			<form method="POST" name='taskForm' id = "taskForm" action="{% url 'cafe-task-complete' task.id%}">
+			<form method="POST" name='taskForm' id = "taskForm" action="{% url 'cafe-units-complete' job.id%}">
 				{% csrf_token %}
-				{% for item in task.items %}
-				{% include_external task.job.id %}
+				{% for item in units %}
+				{% include_external job.id %}
+				<input type ="hidden" name="unit_ids" value = "{{item.id}}">
 				{% endfor %}
+				<input type ="hidden" name="gold_creation" value = "{{gold_creation}}">
+
 				{% include 'cafe/home/pages/snippets/contexts.html' %}
+
 				<div class="content-block">
 					<div class="row">
 						<div class="col-100">
 							<input type="submit" class="button button-big button-submit" value="Complete"/>
-							<!--a href="#" class="button button-big button-submit">Complete</a-->
 						</div>
 					</div>
 				</div>
@@ -66,7 +67,7 @@ canvas{
 		<div class="page">
 			<div class="navbar">
 				<div class="navbar-inner">
-					<div class="center popup-title" style="left: 583px;">{{task.job.title}}</div>
+					<div class="center popup-title" style="left: 583px;">{{job.title}}</div>
 					<div class="right"><a href="#" class="link close-popup">Close</a></div>
 				</div>
 			</div>
@@ -75,7 +76,7 @@ canvas{
 					<h3>Task instructions:</h3>
 				</div>
 				<div class="content-block popup-content">
-					{{task.job.description}}
+					{{job.description|safe}}
 				</div>
 
 				<div class="content-block">
