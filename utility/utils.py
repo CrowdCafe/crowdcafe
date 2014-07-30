@@ -9,7 +9,6 @@ from django.core.urlresolvers import reverse
 import scraperwiki
 from django.core.mail import EmailMessage
 
-from CrowdCafe.settings import DEBUG
 from kitchen.models import Job, Unit, Notification
 
 
@@ -74,7 +73,7 @@ def notifySuperUser(job_id):
         emails = superUsers.values_list('email', flat=True)
         log.debug(emails)
         msg = EmailMessage(subject="New Task Available",
-                           from_email="CrowdCafe notification <notifications@crowdcafe.io>",
+                           from_email="CrowdCafe notification <team@crowdcafe.io>",
                            to=emails)
         # TODO: change with correct template
         msg.template_name = "NOTIFICATION_SU"
@@ -82,8 +81,8 @@ def notifySuperUser(job_id):
         msg.global_merge_vars = {
             'TASK_TITLE': job.title,
             'TASK_DESCRIPTION': job.description,
-            'TASK_URL': "<a href='http://www.crowdcafe.io/" + reverse('cafe-units-assign',
-                                                                      args=(job_id,)) + "'>DO IT NOW!</a>"
+            'TASK_URL': "<a href='http://www.crowdcafe.io/" + reverse('cafe-units-assign', args=(
+            job_id,)) + "?completed_previous=0'>DO IT NOW!</a>"
         }
         mail_names = superUsers.values_list('email', 'first_name')
         vars = {}
@@ -113,8 +112,9 @@ def import_super_user_list(csv_filename):
                     user = User.objects.get(email=email)
                     g.user_set.add(user)
                     g.save()
-                except :
+                except:
                     log.error(('Super user %s just subscribed but there is not match in the db' % email))
+
 
 def notify_user(email, subject, body, user=''):
     msg = EmailMessage(subject=subject, from_email="CrowdCafe <team@crowdcafe.io>",
@@ -122,7 +122,7 @@ def notify_user(email, subject, body, user=''):
     msg.template_name = "CONTACT_USER"
     msg.global_merge_vars = {
         'MESSAGE': body,
-         "USER": user
+        "USER": user
     }
     msg.async = True
     msg.send()
