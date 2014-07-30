@@ -54,3 +54,5 @@ def duplicateJob(request, job_pk):
     new_job.save()
 
     return redirect(reverse('job-list', kwargs={'app_pk': job.app.id}))
+
+#adding this comment to check git fetch
