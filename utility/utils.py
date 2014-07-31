@@ -5,7 +5,6 @@ import csv
 
 from django.contrib.auth.models import Group, User
 from django.core.mail.message import EmailMultiAlternatives
-from django.core.urlresolvers import reverse
 import scraperwiki
 from django.core.mail import EmailMessage
 
@@ -65,40 +64,43 @@ def notifySuperUser(job_id):
     log.debug(job_id)
     job = Job.objects.get(pk=job_id)
     last_notification, created = Notification.objects.get_or_create(job=job)
-    # SQLLIte use string so skip it when debug
-    # send notifications only if the job is published (visible)
-    if job.status == 'PB' and (last_notification.last < datetime.today().date() or created):
-        group = Group.objects.get(name='superuser')
-        superUsers = group.user_set.all()
-        emails = superUsers.values_list('email', flat=True)
-        log.debug(emails)
-        msg = EmailMessage(subject="New Task Available",
-                           from_email="CrowdCafe notification <team@crowdcafe.io>",
-                           to=emails)
-        # TODO: change with correct template
-        msg.template_name = "NOTIFICATION_SU"
-        # put here the variables for all the data that have to be changed for ALL the users
-        msg.global_merge_vars = {
-            'TASK_TITLE': job.title,
-            'TASK_DESCRIPTION': job.description,
-            'TASK_URL': "<a href='http://www.crowdcafe.io/" + reverse('cafe-units-assign', args=(
-            job_id,)) + "?completed_previous=0'>DO IT NOW!</a>"
-        }
-        mail_names = superUsers.values_list('email', 'first_name')
-        vars = {}
-        for mail_name in mail_names:
-            vars[mail_name[0]] = {"USER": mail_name[1]}
-            # 'stefano.tranquillini@gmail.com': {'USER': "Ste"},
-
-        # this sets the variable for each user, in this case the name
-        msg.merge_vars = vars
-        # use info from the template, check on the mandrill website.
-        msg.async = True
-        msg.use_template_subject = True
-        msg.use_template_from = True
-        msg.send()
-    else:
-        log.debug('notification too close')
+    log.debug("Job: %s created data: %s created? %s. send notification? %s" % (job, last_notification.last, created, (
+    job.status == 'PB' and (last_notification.last < datetime.today().date() or created))))
+    return False
+    # # SQLLIte use string so skip it when debug
+    # # send notifications only if the job is published (visible)
+    # if job.status == 'PB' and (last_notification.last < datetime.today().date() or created):
+    #     group = Group.objects.get(name='superuser')
+    #     superUsers = group.user_set.all()
+    #     emails = superUsers.values_list('email', flat=True)
+    #     log.debug(emails)
+    #     msg = EmailMessage(subject="New Task Available",
+    #                        from_email="CrowdCafe notification <team@crowdcafe.io>",
+    #                        to=emails)
+    #     # TODO: change with correct template
+    #     msg.template_name = "NOTIFICATION_SU"
+    #     # put here the variables for all the data that have to be changed for ALL the users
+    #     msg.global_merge_vars = {
+    #         'TASK_TITLE': job.title,
+    #         'TASK_DESCRIPTION': job.description,
+    #         'TASK_URL': "<a href='http://www.crowdcafe.io/" + reverse('cafe-units-assign', args=(
+    #         job_id,)) + "?completed_previous=0'>DO IT NOW!</a>"
+    #     }
+    #     mail_names = superUsers.values_list('email', 'first_name')
+    #     vars = {}
+    #     for mail_name in mail_names:
+    #         vars[mail_name[0]] = {"USER": mail_name[1]}
+    #         # 'stefano.tranquillini@gmail.com': {'USER': "Ste"},
+    #
+    #     # this sets the variable for each user, in this case the name
+    #     msg.merge_vars = vars
+    #     # use info from the template, check on the mandrill website.
+    #     msg.async = True
+    #     msg.use_template_subject = True
+    #     msg.use_template_from = True
+    #     msg.send()
+    # else:
+    #     log.debug('notification too close')
 
 
 def import_super_user_list(csv_filename):
