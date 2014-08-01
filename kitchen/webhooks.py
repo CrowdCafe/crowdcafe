@@ -25,6 +25,9 @@ def createJudgement(unit, postdata, worker, gold_creation):
 						score+=1.0
 					else:
 						score-=1.0
+	# if there is no data 
+	if judgement_output_data == {}:
+		return False
 	judgement = Judgement(unit = unit, output_data =judgement_output_data, worker = worker, score = score)
 	# if it was a gold creation task and the worker is a member of the job app account
 	if gold_creation and worker in unit.job.app.account.users.all():
@@ -37,10 +40,11 @@ def saveJudgements(units, postdata, worker, gold_creation):
 	for unit in units:
 		if Judgement.objects.filter(worker = worker, unit = unit).count() == 0:
 			judgement = createJudgement(unit, postdata, worker, gold_creation)
-			log.debug('new judgement: '+str(judgement))
-			judgement = webhook_quality_conrol(judgement,judgement.unit.job.qualitycontrol.qualitycontrol_url)
-			judgement.unit.updateStatus()
-			judgements.append(judgement)
+			if judgement:
+				log.debug('new judgement: '+str(judgement))
+				judgement = webhook_quality_conrol(judgement,judgement.unit.job.qualitycontrol.qualitycontrol_url)
+				judgement.unit.updateStatus()
+				judgements.append(judgement)
 	# send a request to URL defined in job settings with info about judgements provided
 	webhook_results(judgements, units[0].job.judgements_webhook_url)
 	    
