@@ -30,7 +30,7 @@ Shape.prototype = {
 
 			case 'polygon':
 			this.element = new fabric.Polygon(
-				[{x:attributes.x, y:attributes.y}],
+				[{x:attributes.x, y:attributes.y},{x:attributes.x+2, y:attributes.y}+2],
 				{
 					opacity:0.5,
 					fill: 'orange',
