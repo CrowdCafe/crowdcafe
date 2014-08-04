@@ -4,9 +4,11 @@
 
 # Adjustable settings
 # ---------------------------------------------------------------
-DEBUG = False   
+from CrowdCafe.logging_filters import skip_suspicious_operations
+
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-ALLOWED_HOSTS = ['localhost', 'crowdcafe.io','188.226.160.208']
+ALLOWED_HOSTS = ['localhost', 'crowdcafe.io', '188.226.160.208']
 
 # Settings for admin account, commission amount etc
 # ---------------------------------------------------------------
@@ -20,9 +22,6 @@ APP_URL = 'http://crowdcafe.io'
 # Django settings for CrowdCafe project.
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 # ---------------------------------------------------------------
-
-import os
-from os.path import join, normpath
 
 from settings_database import *
 from settings_credentials import *
@@ -273,9 +272,9 @@ if DEBUG:
                 'filters': ['require_debug_false'],
                 'class': 'django.utils.log.AdminEmailHandler'
             },
-             'logfile_debug': {
-                'level':'DEBUG',
-                'class':'logging.handlers.RotatingFileHandler',
+            'logfile_debug': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
                 'filename': "/var/log/django/cc_debug.log",
                 'maxBytes': 50000,
                 'backupCount': 3,
@@ -285,7 +284,7 @@ if DEBUG:
         },
         'loggers': {
             'django': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'propagate': True,
                 'level': 'WARN',
             },
@@ -301,47 +300,47 @@ if DEBUG:
             #     'propagate': True,
             # },
             'django.db.backends': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'WARNING',
                 'propagate': False,
             },
             'api.permissions': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'WARN',
                 'propagate': False,
             },
             'api.authentication': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'WARN',
                 'propagate': False,
             },
             'api': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'kitchen': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'cafe': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'utility': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'account': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'rest_framework': {
-                'handlers': ['console','logfile_debug'],
+                'handlers': ['console', 'logfile_debug'],
                 'level': 'DEBUG',
                 'propagate': True,
             }
@@ -363,6 +362,11 @@ else:
         'filters': {
             'require_debug_false': {
                 '()': 'django.utils.log.RequireDebugFalse'
+            },
+            # Define filter
+            'skip_suspicious_operations': {
+                '()': 'django.utils.log.CallbackFilter',
+                'callback': skip_suspicious_operations,
             }
         },
         'handlers': {
@@ -376,13 +380,13 @@ else:
             },
             'mail_admins': {
                 'level': 'ERROR',
-                'filters': ['require_debug_false'],
+                'filters': ['require_debug_false','skip_suspicious_operations'],
                 'class': 'django.utils.log.AdminEmailHandler'
             },
 
             'logfile': {
-                'level':'WARNING',
-                'class':'logging.handlers.RotatingFileHandler',
+                'level': 'WARNING',
+                'class': 'logging.handlers.RotatingFileHandler',
                 'filename': "/var/log/django/cc.log",
                 'maxBytes': 50000,
                 'backupCount': 3,
@@ -409,47 +413,47 @@ else:
             #     'propagate': True,
             # },
             'django.db.backends': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARNING',
                 'propagate': False,
             },
             'api.permissions': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARNING',
                 'propagate': False,
             },
             'api.authentication': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARN',
                 'propagate': False,
             },
             'api': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARNING',
                 'propagate': True,
             },
             'kitchen': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARNING',
                 'propagate': True,
             },
             'cafe': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARNING',
                 'propagate': True,
             },
             'utility': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARNING',
                 'propagate': True,
             },
             'account': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARNING',
                 'propagate': True,
             },
             'rest_framework': {
-                'handlers': ['logfile','mail_admins'],
+                'handlers': ['logfile', 'mail_admins'],
                 'level': 'WARNING',
                 'propagate': True,
             }
