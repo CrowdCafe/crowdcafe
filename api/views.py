@@ -134,7 +134,8 @@ class UnitViewSet(viewsets.ModelViewSet):
             for d in input:
                 Unit.objects.create(job=job, input_data=json.dumps(d))
         else:
-            Unit.objects.create(job=job, input_data=json.dumps(input))
+            new_unit = Unit.objects.create(job=job, input_data=json.dumps(input))
+            return redirect(reverse('api-unit-detail', kwargs={'job_pk': new_unit.job.pk,'pk':new_unit.pk}))
         # this notifies SU once a day
         notifySuperUser(job_pk)
         return Response(status=status.HTTP_201_CREATED)
