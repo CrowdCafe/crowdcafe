@@ -137,8 +137,7 @@ class UnitViewSet(viewsets.ModelViewSet):
                 Unit.objects.create(job=job, input_data=json.dumps(d))
         else:
             new_unit = Unit.objects.create(job=job, input_data=json.dumps(input))
-            self.kwargs['pk'] = new_unit.pk
-            return self.get_object()
+            return new_unit
         # this notifies SU once a day
         notifySuperUser(job_pk)
         return Response(status=status.HTTP_201_CREATED)
