@@ -5,6 +5,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, action
 from rest_framework.generics import get_object_or_404,UpdateAPIView
 from rest_framework.response import Response
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 from rest_framework import routers, viewsets, status, routers
 from rest_framework import exceptions 
 
