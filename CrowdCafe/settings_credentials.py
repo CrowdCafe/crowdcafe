@@ -1,6 +1,7 @@
 # SOCIAL AUTH CREDENTIALS
 # ---------------------------------------------------------------
 # Facebook
+import os
 FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
 FACEBOOK_API_SECRET = os.environ.get('FACEBOOK_API_SECRET')
 # Google
@@ -49,7 +50,7 @@ OPBEAT = {
     "ORGANIZATION_ID": os.environ.get('OPBEAT_ORGANIZATION_ID'),
     "APP_ID": os.environ.get('OPBEAT_APP_ID'),
     "SECRET_TOKEN": os.environ.get('OPBEAT_SECRET_TOKEN'),
-    "DEBUG" : DEBUG
+    "DEBUG" : True
 }
 # -----------------------------------------------------------------------------
 #comment
