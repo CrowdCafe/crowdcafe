@@ -259,223 +259,224 @@ INSTALLED_APPS = (
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
-if DEBUG:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': True,
-        'formatters': {
-            'standard': {
-                'format': "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)s] %(message)s",
-                'datefmt': "%d/%b/%Y %H:%M:%S"
+if not dj_database_url.config():
+    if DEBUG:
+        LOGGING = {
+            'version': 1,
+            'disable_existing_loggers': True,
+            'formatters': {
+                'standard': {
+                    'format': "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)s] %(message)s",
+                    'datefmt': "%d/%b/%Y %H:%M:%S"
+                },
             },
-        },
-        'filters': {
-            'require_debug_false': {
-                '()': 'django.utils.log.RequireDebugFalse'
-            }
-        },
-        'handlers': {
-            'null': {
-                'level': 'DEBUG',
-                'class': 'django.utils.log.NullHandler',
+            'filters': {
+                'require_debug_false': {
+                    '()': 'django.utils.log.RequireDebugFalse'
+                }
             },
-            'console': {
-                'class': 'logging.StreamHandler',
-                'formatter': 'standard'
-            },
-            'mail_admins': {
-                'level': 'ERROR',
-                'filters': ['require_debug_false'],
-                'class': 'django.utils.log.AdminEmailHandler'
-            },
-            'logfile_debug': {
-                'level': 'DEBUG',
-                'class': 'logging.handlers.RotatingFileHandler',
-                'filename': "cc_debug.log",
-                'maxBytes': 50000,
-                'backupCount': 3,
-                'formatter': 'standard',
-            },
+            'handlers': {
+                'null': {
+                    'level': 'DEBUG',
+                    'class': 'django.utils.log.NullHandler',
+                },
+                'console': {
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'standard'
+                },
+                'mail_admins': {
+                    'level': 'ERROR',
+                    'filters': ['require_debug_false'],
+                    'class': 'django.utils.log.AdminEmailHandler'
+                },
+                'logfile_debug': {
+                    'level': 'DEBUG',
+                    'class': 'logging.handlers.RotatingFileHandler',
+                    'filename': "cc_debug.log",
+                    'maxBytes': 50000,
+                    'backupCount': 3,
+                    'formatter': 'standard',
+                },
 
-        },
-        'loggers': {
-            'django': {
-                'handlers': ['console', 'logfile_debug'],
-                'propagate': True,
-                'level': 'WARN',
             },
-            # disallow in debug
-            # 'django.request': {
-            #     'handlers': ['mail_admins'],
-            #     'level': 'ERROR',
-            #     'propagate': True,
-            # },
-            # 'django.db.backends': {
-            #     'handlers': ['mail_admins'],
-            #     'level': 'ERROR',
-            #     'propagate': True,
-            # },
-            'django.db.backends': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'WARNING',
-                'propagate': False,
-            },
-            'api.permissions': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'WARN',
-                'propagate': False,
-            },
-            'api.authentication': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'WARN',
-                'propagate': False,
-            },
-            'api': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'kitchen': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'cafe': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'utility': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'account': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'rest_framework': {
-                'handlers': ['console', 'logfile_debug'],
-                'level': 'DEBUG',
-                'propagate': True,
-            }
+            'loggers': {
+                'django': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'propagate': True,
+                    'level': 'WARN',
+                },
+                # disallow in debug
+                # 'django.request': {
+                #     'handlers': ['mail_admins'],
+                #     'level': 'ERROR',
+                #     'propagate': True,
+                # },
+                # 'django.db.backends': {
+                #     'handlers': ['mail_admins'],
+                #     'level': 'ERROR',
+                #     'propagate': True,
+                # },
+                'django.db.backends': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'WARNING',
+                    'propagate': False,
+                },
+                'api.permissions': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'WARN',
+                    'propagate': False,
+                },
+                'api.authentication': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'WARN',
+                    'propagate': False,
+                },
+                'api': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'DEBUG',
+                    'propagate': True,
+                },
+                'kitchen': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'DEBUG',
+                    'propagate': True,
+                },
+                'cafe': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'DEBUG',
+                    'propagate': True,
+                },
+                'utility': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'DEBUG',
+                    'propagate': True,
+                },
+                'account': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'DEBUG',
+                    'propagate': True,
+                },
+                'rest_framework': {
+                    'handlers': ['console', 'logfile_debug'],
+                    'level': 'DEBUG',
+                    'propagate': True,
+                }
 
+            }
         }
-    }
 
-else:
-    # All the logging.ERROR/CRITICAL are sent via email as well, not only 500
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': True,
-        'formatters': {
-            'standard': {
-                'format': "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)s] %(message)s",
-                'datefmt': "%d/%b/%Y %H:%M:%S"
+    else:
+        # All the logging.ERROR/CRITICAL are sent via email as well, not only 500
+        LOGGING = {
+            'version': 1,
+            'disable_existing_loggers': True,
+            'formatters': {
+                'standard': {
+                    'format': "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)s] %(message)s",
+                    'datefmt': "%d/%b/%Y %H:%M:%S"
+                },
             },
-        },
-        'filters': {
-            'require_debug_false': {
-                '()': 'django.utils.log.RequireDebugFalse'
+            'filters': {
+                'require_debug_false': {
+                    '()': 'django.utils.log.RequireDebugFalse'
+                },
+                # Define filter
+                'skip_suspicious_operations': {
+                    '()': 'django.utils.log.CallbackFilter',
+                    'callback': skip_suspicious_operations,
+                }
             },
-            # Define filter
-            'skip_suspicious_operations': {
-                '()': 'django.utils.log.CallbackFilter',
-                'callback': skip_suspicious_operations,
+            'handlers': {
+                'null': {
+                    'level': 'DEBUG',
+                    'class': 'django.utils.log.NullHandler',
+                },
+                'console': {
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'standard'
+                },
+                'mail_admins': {
+                    'level': 'ERROR',
+                    'filters': ['require_debug_false','skip_suspicious_operations'],
+                    'class': 'django.utils.log.AdminEmailHandler'
+                },
+
+                'logfile': {
+                    'level': 'WARNING',
+                    'class': 'logging.handlers.RotatingFileHandler',
+                    'filename': "cc.log",
+                    'maxBytes': 50000,
+                    'backupCount': 3,
+                    'formatter': 'standard',
+                },
+
+
+            },
+            'loggers': {
+                'django': {
+                    'handlers': ['logfile'],
+                    'propagate': True,
+                    'level': 'WARN',
+                },
+                'django.request': {
+                    'handlers': ['mail_admins'],
+                    'level': 'ERROR',
+                    'propagate': True,
+                },
+                # not user is needed
+                # 'django.db.backends': {
+                #     'handlers': ['mail_admins'],
+                #     'level': 'ERROR',
+                #     'propagate': True,
+                # },
+                'django.db.backends': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARNING',
+                    'propagate': False,
+                },
+                'api.permissions': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARNING',
+                    'propagate': False,
+                },
+                'api.authentication': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARN',
+                    'propagate': False,
+                },
+                'api': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARNING',
+                    'propagate': True,
+                },
+                'kitchen': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARNING',
+                    'propagate': True,
+                },
+                'cafe': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARNING',
+                    'propagate': True,
+                },
+                'utility': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARNING',
+                    'propagate': True,
+                },
+                'account': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARNING',
+                    'propagate': True,
+                },
+                'rest_framework': {
+                    'handlers': ['logfile', 'mail_admins'],
+                    'level': 'WARNING',
+                    'propagate': True,
+                }
+
             }
-        },
-        'handlers': {
-            'null': {
-                'level': 'DEBUG',
-                'class': 'django.utils.log.NullHandler',
-            },
-            'console': {
-                'class': 'logging.StreamHandler',
-                'formatter': 'standard'
-            },
-            'mail_admins': {
-                'level': 'ERROR',
-                'filters': ['require_debug_false','skip_suspicious_operations'],
-                'class': 'django.utils.log.AdminEmailHandler'
-            },
-
-            'logfile': {
-                'level': 'WARNING',
-                'class': 'logging.handlers.RotatingFileHandler',
-                'filename': "cc.log",
-                'maxBytes': 50000,
-                'backupCount': 3,
-                'formatter': 'standard',
-            },
-
-
-        },
-        'loggers': {
-            'django': {
-                'handlers': ['logfile'],
-                'propagate': True,
-                'level': 'WARN',
-            },
-            'django.request': {
-                'handlers': ['mail_admins'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-            # not user is needed
-            # 'django.db.backends': {
-            #     'handlers': ['mail_admins'],
-            #     'level': 'ERROR',
-            #     'propagate': True,
-            # },
-            'django.db.backends': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARNING',
-                'propagate': False,
-            },
-            'api.permissions': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARNING',
-                'propagate': False,
-            },
-            'api.authentication': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARN',
-                'propagate': False,
-            },
-            'api': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARNING',
-                'propagate': True,
-            },
-            'kitchen': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARNING',
-                'propagate': True,
-            },
-            'cafe': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARNING',
-                'propagate': True,
-            },
-            'utility': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARNING',
-                'propagate': True,
-            },
-            'account': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARNING',
-                'propagate': True,
-            },
-            'rest_framework': {
-                'handlers': ['logfile', 'mail_admins'],
-                'level': 'WARNING',
-                'propagate': True,
-            }
-
         }
-    }
 
 AUTHENTICATION_BACKENDS = (
     #    'social_auth.backends.twitter.TwitterBackend',
