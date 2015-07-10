@@ -10,7 +10,7 @@ from settings_credentials import *
 from CrowdCafe.logging_filters import skip_suspicious_operations
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 ALLOWED_HOSTS = ['localhost', 'crowdcafe.io', '188.226.160.208','crowdcafe.herokuapp.com']
 
@@ -196,6 +196,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
+    'opbeat.contrib.django.middleware.Opbeat404CatchMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -227,6 +229,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'opbeat.contrib.django',
     'social_auth',
     'mobi',
     'crispy_forms',
