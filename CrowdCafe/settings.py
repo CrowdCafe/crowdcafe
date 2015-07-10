@@ -4,11 +4,15 @@
 
 # Adjustable settings
 # ---------------------------------------------------------------
+import os
+import dj_database_url
+from settings_credentials import *
 from CrowdCafe.logging_filters import skip_suspicious_operations
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-ALLOWED_HOSTS = ['localhost', 'crowdcafe.io', '188.226.160.208']
+ALLOWED_HOSTS = ['localhost', 'crowdcafe.io', '188.226.160.208','crowdcafe.herokuapp.com']
 
 # Settings for admin account, commission amount etc
 # ---------------------------------------------------------------
@@ -22,9 +26,21 @@ APP_URL = 'http://crowdcafe.io'
 # Django settings for CrowdCafe project.
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 # ---------------------------------------------------------------
+# Database
+# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
+if dj_database_url.config():
+    DATABASES ={
+        'default':  dj_database_url.config()
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'db.sqlite3',
+        }
+    }
 
-from settings_database import *
-from settings_credentials import *
+
 
 
 PROJECT_ROOT = os.path.abspath(

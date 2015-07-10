@@ -6,7 +6,8 @@ import string
 import random
 from random import randint
 
-REWARD_STATUSES = (('NV', 'Not visible'), ('AV', 'Available'), ('AC', 'Activated'), ('UD', 'Used'))
+REWARD_STATUSES = (('PD', 'Published'), ('NP', 'Not published'))
+COUPON_STATUSES = (('NV', 'Not visible'), ('AV', 'Available'), ('AC', 'Activated'), ('UD', 'Used'))
 
 def id_generator(size=4, chars=string.ascii_lowercase + string.digits):
     code = ''.join(random.choice(chars) for x in range(size))
@@ -36,13 +37,12 @@ class Vendor(models.Model):
 
 class Reward(models.Model):
 	vendor = models.ForeignKey(Vendor)
-
 	title = models.CharField(max_length=255, default='New reward')
 	description = models.CharField(max_length=1024, null=True, blank=True)
 	image_url = models.URLField(null=True, blank=True)
 	website_url = models.URLField(null=True, blank=True)
 	creator = models.ForeignKey(User)
-	
+	status = models.CharField(max_length=2, choices=REWARD_STATUSES, default='NP')	
 	cost_for_worker = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
 	cost_for_platform = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
 
@@ -72,7 +72,7 @@ class Reward(models.Model):
 
 class Coupon(models.Model):
 	reward = models.ForeignKey(Reward)
-	status = models.CharField(max_length=2, choices=REWARD_STATUSES, default='AV')	
+	status = models.CharField(max_length=2, choices=COUPON_STATUSES, default='AV')	
 	account = models.ForeignKey(Account, null=True, blank=True)
 
 	code = models.CharField(max_length=32,default=lambda: generateRewardCode())
