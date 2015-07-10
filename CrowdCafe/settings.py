@@ -128,7 +128,7 @@ MEDIA_URL = ''
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
 STATIC_ROOT = 'staticfiles'
-
+STATIC_URL = '/static/'
 #if DEBUG:
 #    STATIC_ROOT = ''
 #else:
