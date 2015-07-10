@@ -1,6 +1,5 @@
 CrowdCafe
 ============
-http://crowdcafe.io
 
 CrowdCafe is a mobile crowdsourcing platform, where people perform micro-tasks published by academic, 
 business and governmental organizations (requestors), in exchange for rewards, such as coffee, desserts, bus tickets.
@@ -12,8 +11,8 @@ Any questions can be asked via:
 - pavel@kucherbaev.com
 
 CrowdCafe has 2 main components:
-- Kitchen - where requestors design and publish their tasks using desktop browser (http://crowdcafe.io/kitchen/)
-- Cafe - where workers perform tasks and get rewards using a browser of their smartphones (http://crowdcafe.io/cafe/)
+- Kitchen - where requestors design and publish their tasks using desktop browser 
+- Cafe - where workers perform tasks and get rewards using a browser of their smartphones
 
 
 #### UI frameworkds, libraries and plugins used:

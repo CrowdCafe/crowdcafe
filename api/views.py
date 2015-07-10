@@ -138,6 +138,8 @@ class UnitViewSet(viewsets.ModelViewSet):
         else:
             new_unit = Unit.objects.create(job=job, input_data=json.dumps(input))
             return self.get_object(kwargs = {'pk':new_unit.pk})
+            # serializer = UnitSerializer(new_unit)
+            # return Response(serializer.data,status=status.HTTP_201_CREATED)
         # this notifies SU once a day
         notifySuperUser(job_pk)
         return Response(status=status.HTTP_201_CREATED)
