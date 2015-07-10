@@ -10,6 +10,8 @@ beautifulsoup4==4.3.2
 billiard==3.3.0.17
 boto==2.29.1
 celery==3.1.12
+static==0.4
+wsgiref==0.1.2
 django-bower==5.0.1
 django-celery==3.1.10
 django-cors-headers==0.12
