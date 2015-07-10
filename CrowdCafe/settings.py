@@ -291,7 +291,7 @@ if DEBUG:
             'logfile_debug': {
                 'level': 'DEBUG',
                 'class': 'logging.handlers.RotatingFileHandler',
-                'filename': "/var/log/django/cc_debug.log",
+                'filename': "cc_debug.log",
                 'maxBytes': 50000,
                 'backupCount': 3,
                 'formatter': 'standard',
@@ -403,7 +403,7 @@ else:
             'logfile': {
                 'level': 'WARNING',
                 'class': 'logging.handlers.RotatingFileHandler',
-                'filename': "/var/log/django/cc.log",
+                'filename': "cc.log",
                 'maxBytes': 50000,
                 'backupCount': 3,
                 'formatter': 'standard',
