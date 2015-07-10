@@ -127,7 +127,8 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = '/var/www/crowdcafe.io/static/'
+STATIC_ROOT = 'staticfiles'
+STATIC_URL = 'https://s3-eu-west-1.amazonaws.com/'+AWS_STORAGE_BUCKET_NAME+'/'
 #if DEBUG:
 #    STATIC_ROOT = ''
 #else:
@@ -135,7 +136,6 @@ STATIC_ROOT = '/var/www/crowdcafe.io/static/'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = '/static/'
 #if DEBUG:
 #    STATIC_URL = '/static/'   
 #else:
