@@ -1,13 +1,11 @@
 db.sqlite3
 scraperwiki.sqlite
-components/bower_components
 .bowerrc
 bower.json
 .DS_Store
 */.DS_Store
 CrowdCafe/settings_local.py
 CrowdCafe/settings_sensitive.py
-CrowdCafe/settings_credentials.py
 CrowdCafe/settings_database.py
 # Byte-compiled / optimized / DLL files
 __pycache__/

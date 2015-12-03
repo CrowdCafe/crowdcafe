@@ -9,7 +9,7 @@ import dj_database_url
 from settings_credentials import *
 from CrowdCafe.logging_filters import skip_suspicious_operations
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 ALLOWED_HOSTS = ['localhost', 'crowdcafe.io', '188.226.160.208','crowdcafe.herokuapp.com']
@@ -127,7 +127,8 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = 'staticfiles'
+
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
 #if DEBUG:
 #    STATIC_ROOT = ''
@@ -570,6 +571,6 @@ CORS_ALLOW_HEADERS = (
 #DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 # STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 os.environ['SCRAPERWIKI_DATABASE_NAME'] = "/tmp/sw.sqlite"
