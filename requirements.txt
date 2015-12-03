@@ -50,3 +50,4 @@ scraperwiki==0.3.10
 six==1.4.0
 urllib3==1.8.3
 wsgiref==0.1.2
+whitenoise
