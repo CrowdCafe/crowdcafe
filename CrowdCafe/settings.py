@@ -248,7 +248,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'requests',
     'djangobower',
-    'paypal.standard.ipn',
+    #'paypal.standard.ipn',
     'djrill',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',

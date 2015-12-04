@@ -10,7 +10,7 @@ from decimal import Decimal
 from django.db.models import Sum
 import hashlib
 from django.db.models.signals import post_save
-from paypal.standard.ipn.signals import payment_was_successful
+# from paypal.standard.ipn.signals import payment_was_successful
 
 
 
@@ -165,4 +165,4 @@ def receivePayment(sender, **kwargs):
 
             send_email = True
 
-payment_was_successful.connect(receivePayment)
+# payment_was_successful.connect(receivePayment)
