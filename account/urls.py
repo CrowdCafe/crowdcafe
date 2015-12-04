@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^fundtransfers/create/$', login_required(views.FundTransferCreateView.as_view()), name='fundtransfer-create'),
     url(r'^accounts/create/$', login_required(views.AccountCreateView.as_view()), name='account-create'),
     url(r'^accounts/(?P<account_pk>\d+)/update/$', login_required(views.AccountUpdateView.as_view()), name='account-update'),
-    url(r'^accounts/(?P<account_pk>\d+)/payment/request/$', login_required(views.PayPalPayment.as_view()), name='account-payment-request'),
+    #url(r'^accounts/(?P<account_pk>\d+)/payment/request/$', login_required(views.PayPalPayment.as_view()), name='account-payment-request'),
 
     url(r'^accounts/payment/accept/$', login_required(views.acceptPayment), name='account-payment-accept'),
     #url(r'^accounts/paypal/', include('paypal.standard.ipn.urls')),
