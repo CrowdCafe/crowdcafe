@@ -1,5 +1,8 @@
 CrowdCafe
 ============
+```
+heroku config:add BUILDPACK_URL=https://github.com/ddollar/heroku-buildpack-multi.git
+```
 
 CrowdCafe is a mobile crowdsourcing platform, where people perform micro-tasks published by academic, 
 business and governmental organizations (requestors), in exchange for rewards, such as coffee, desserts, bus tickets.
