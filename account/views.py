@@ -21,7 +21,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormView
 
 from CrowdCafe.settings_credentials import MC_KEY
-from forms import LoginForm, UserCreateForm, AccountForm, MembershipForm, UserUpdate, PayPalForm, FundTransferForm
+from forms import LoginForm, UserCreateForm, AccountForm, MembershipForm, UserUpdate, FundTransferForm#, PayPalForm
 from models import Account, Membership, FundTransfer
 
 
