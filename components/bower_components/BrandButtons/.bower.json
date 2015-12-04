@@ -1,0 +1,34 @@
+{
+  "name": "brandbuttons",
+  "version": "0.2.1",
+  "homepage": "https://github.com/theaqua/BrandButtons",
+  "authors": [
+    "Eugene Rodionov <hello@theaqua.im>"
+  ],
+  "description": "Brand buttons for Bootstrap",
+  "main": "dist/brand-buttons.min.css",
+  "keywords": [
+    "social",
+    "brands",
+    "bootstrap",
+    "buttons"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.2.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.2.1",
+    "commit": "a153b103a28e1f8568a31695e472078fceba2aa8"
+  },
+  "_source": "git://github.com/theaqua/BrandButtons.git",
+  "_target": "~0.2.1",
+  "_originalSource": "BrandButtons",
+  "_direct": true
+}

@@ -1,0 +1,14 @@
+{
+  "name": "startup-demo",
+  "homepage": "https://github.com/designmodo/startup-demo",
+  "_release": "849044c283",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "849044c28390d6307ecff58767dad3e0c38555fe"
+  },
+  "_source": "git://github.com/designmodo/startup-demo.git",
+  "_target": "*",
+  "_originalSource": "startup-demo",
+  "_direct": true
+}

@@ -1,6 +1,7 @@
 db.sqlite3
 scraperwiki.sqlite
-*/bower_components/
+# */bower_components/
+*.psd
 .bowerrc
 bower.json
 .DS_Store

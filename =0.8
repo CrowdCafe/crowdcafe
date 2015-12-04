@@ -1,0 +1,23 @@
+Requirement already satisfied (use --upgrade to upgrade): setuptools in /opt/crowdcafe/lib/python2.7/site-packages/setuptools-0.6c11-py2.7.egg
+Cleaning up...
+  Exception:
+Traceback (most recent call last):
+  File "/opt/crowdcafe/lib/python2.7/site-packages/pip-1.1-py2.7.egg/pip/basecommand.py", line 104, in main
+    status = self.run(options, args)
+  File "/opt/crowdcafe/lib/python2.7/site-packages/pip-1.1-py2.7.egg/pip/commands/install.py", line 265, in run
+    requirement_set.cleanup_files(bundle=self.bundle)
+  File "/opt/crowdcafe/lib/python2.7/site-packages/pip-1.1-py2.7.egg/pip/req.py", line 1081, in cleanup_files
+    rmtree(dir)
+  File "/opt/crowdcafe/lib/python2.7/site-packages/pip-1.1-py2.7.egg/pip/util.py", line 29, in rmtree
+    onerror=rmtree_errorhandler)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py", line 247, in rmtree
+    rmtree(fullname, ignore_errors, onerror)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py", line 247, in rmtree
+    rmtree(fullname, ignore_errors, onerror)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py", line 252, in rmtree
+    onerror(os.remove, fullname, sys.exc_info())
+  File "/opt/crowdcafe/lib/python2.7/site-packages/pip-1.1-py2.7.egg/pip/util.py", line 46, in rmtree_errorhandler
+    os.chmod(path, stat.S_IWRITE)
+OSError: [Errno 1] Operation not permitted: '/opt/crowdcafe/build/amqp/amqp/__init__.py'
+
+  Storing complete log in /Users/pavelk/.pip/pip.log
