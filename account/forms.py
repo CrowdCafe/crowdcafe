@@ -6,9 +6,9 @@ from models import Profile, Account, Membership, FundTransfer
 from django.forms.forms import Form
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
-from paypal.standard.forms import PayPalPaymentsForm
+#from paypal.standard.forms import PayPalPaymentsForm
 from django.conf import settings
-from paypal.standard import conf
+#from paypal.standard import conf
 
 class SubmitButtonWidget(forms.Widget):
     def render(self, name, value, attrs=None):
@@ -23,7 +23,7 @@ class SubmitButtonField(forms.Field):
 
     def clean(self, value):
         return value
-
+'''
 class PayPalForm(PayPalPaymentsForm):
     action_url = conf.POSTBACK_ENDPOINT
     if settings.PAYPAL_TEST:
@@ -35,7 +35,7 @@ class PayPalForm(PayPalPaymentsForm):
     helper.form_method = 'post'
     helper.form_action = action_url
     helper.add_input(Submit('submit', 'Pay via PayPal'))
-
+'''
 class UserCreateForm(UserCreationForm):
 
     email = forms.EmailField(label=(u'Email'))
