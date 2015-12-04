@@ -180,7 +180,7 @@ class AccountUpdateView(UpdateView):
         account = form.save()
         return redirect(reverse('account-list'))
 
-
+'''
 class PayPalPayment(FormView):
     template_name = "kitchen/crispy.html"
     form_class = PayPalForm
@@ -197,7 +197,7 @@ class PayPalPayment(FormView):
             "custom": self.kwargs.get('account_pk', None)
         }
         return initial
-
+'''
 
 @csrf_exempt
 def acceptPayment(request):
