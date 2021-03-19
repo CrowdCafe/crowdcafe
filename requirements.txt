@@ -26,7 +26,7 @@ django-paypal==0.1.3
 django-paypal-express-checkout==1.7.1
 django-social-auth==0.7.7
 django-storages==1.1.8
-djangorestframework==2.3.14
+djangorestframework==3.11.2
 djangorestframework-csv==1.3.3
 dj-database-url==0.3.0
 djrill==0.7.0
