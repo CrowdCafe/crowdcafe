@@ -49,5 +49,5 @@ requests==2.3.0
 requests-oauthlib==0.4.0
 scraperwiki==0.3.10
 six==1.4.0
-urllib3==1.8.3
+urllib3==1.26.5
 wsgiref==0.1.2
